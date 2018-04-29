@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>ChromeKeePass</title>
+        <script type="text/javascript" src="../js/options.js"></script>
+    </head>
+    <body>
+        <h1>Status</h1>
+        <span id="connectionStatus">Getting status...</span>
+        
+        <h1>Options</h1>
+        <label>
+            <input id="showUsernameIcon" type="checkbox" /> 
+            Show ChromeKeePass icon in username field
+        </label>
+        <br /><br />
+        <label>
+            <input id="showDropdownOnFocus" type="checkbox" /> 
+            Show dropdown when username field gets focussed
+        </label>
+        <br /><br />
+        <label>
+            <input id="autoFillSingleCredential" type="checkbox" /> 
+            Automatically fill credetials if only a single entry is found
+        </label>
+        <br /><br />
+        <label>
+            <input id="autoComplete" type="checkbox" /> 
+            Show matching credetials while typing in the username field
+        </label>
+
+        <br /><br />
+        <button id="save">Save</button> <span id="saveStatus"></span>
+    </body>
+</html>

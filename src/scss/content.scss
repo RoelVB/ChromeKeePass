@@ -1,0 +1,86 @@
+
+$lightPurple: rgb(218, 225, 245);
+$lighterLightPurple: rgba(218, 225, 245, 0.4);
+$darkPurple: rgb(82, 115, 208);
+$lighterDarkPurple: rgba(82, 115, 208, 0.4);
+
+.textboxIcon {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48.png') !important;
+    background-repeat: no-repeat !important;
+    background-position: right !important;
+    background-size: auto 100% !important;
+}
+
+.textboxIcon.green {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_green.png') !important;
+}
+
+.textboxIcon.orange {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_orange.png') !important;
+}
+
+.textboxIcon.red {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_red.png') !important;
+}
+
+.dropdown {
+    position: absolute;
+    border: 1px solid grey;
+    background-color: white;
+    min-width: 225px;
+    z-index: 999999;
+
+    .content {
+        min-height: 30px;
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        max-height: 200px;
+        overflow-y: auto;
+
+        .noResults {
+            color: grey;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .item {
+            color: black;
+            padding: 3px;
+            border-bottom: 1px solid lightgrey;
+            cursor: pointer;
+            overflow-x: hidden;
+
+            .primaryText {
+                font-weight: bold;
+            }
+        }
+
+        .item.selected, .item:hover {
+            background-image: linear-gradient(to right, $lighterLightPurple, $lighterDarkPurple);
+        }
+    }
+
+    .footer {
+        height: 30px;
+        line-height: 23px;
+        font-size: 14px;
+        background-image: linear-gradient(to right, $lightPurple, $darkPurple);
+        border-top: 1px solid grey;
+        padding: 3px;
+        font-weight: bold;
+        color: $lightPurple;
+        text-shadow: 0px 0px 2px black;
+        box-sizing: border-box;
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+
+        img {
+            float: right;
+            height: 100%;
+            width: auto;
+        }
+
+        img.logo {
+            float: left;
+            margin-right: 5px;
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "manifest_version": 2,
+
+    "name": "ChromeKeePass",
+    "description": "Chrome extensions for automatically filling credentials from KeePass",
+    "version": "0.1.0",
+
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["js/content_script.js"],
+            "all_frames": true
+        }
+    ],
+
+    "background": {
+        "scripts": ["js/background.js"]
+    },
+
+    "browser_action": {
+        "default_popup": "html/popup.html",
+        "default_icon": {
+            "128": "images/icon128.png",
+            "48": "images/icon48.png"
+        }
+    },
+
+    "options_ui": {
+        "page": "html/options.html",
+        "chrome_style": true
+    },
+
+    "icons": {
+        "128": "images/icon128.png",
+        "48": "images/icon48.png"
+    },
+
+    "web_accessible_resources": [
+        "images/*"
+    ],
+
+    "permissions": [
+        "storage",
+        "<all_urls>",
+        "webNavigation",
+        "contextMenus"
+    ],
+
+    "minimum_chrome_version": "49"
+  }

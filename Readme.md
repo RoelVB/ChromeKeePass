@@ -1,14 +1,18 @@
 # ChromeKeePass
 
-ChromeKeePass is an open source Chrome extension to automatically fill credentials into websites.
+ChromeKeePass is an open source Chrome extension to automatically entering credentials into websites.
 
-The extension depends on [KeePassHttp](https://github.com/pfn/keepasshttp), with this KeePass plugin we'll get a secure communication between the browserextension and KeePass.
+The extension depends on [KeePassHttp](https://github.com/pfn/keepasshttp), using this KeePass plugin we're able te create a secure communication between the browserextension and KeePass.
 
 ![Demo](Documents/Images/DemoMicrosoft.gif)
 
 The goal of this project is to create a userfriendly KeePass integration. With an easily readable and understandable sourcecode.
 
+## Features
 
+- Automatically entering credentials from KeePass into your browser
+- Autocomplete while typing in the username field
+- More to come
 
 ## Setup
 
@@ -32,4 +36,4 @@ The goal of this project is to create a userfriendly KeePass integration. With a
 
    ![ChromeKeePass Connected](Documents/Images/CKPOptionsConnected.png)
 
-7. The encryption key (for secure communication between KeePass en ChromeKeePass) is stored insite your KeePass database under the entry 'KeePassHttp Settings'
+7. The encryption key (for secure communication between KeePass en ChromeKeePass) is stored inside your KeePass database under the entry 'KeePassHttp Settings'

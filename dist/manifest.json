@@ -2,8 +2,8 @@
     "manifest_version": 2,
 
     "name": "ChromeKeePass",
-    "description": "Chrome extensions for automatically filling credentials from KeePass",
-    "version": "0.1.0",
+    "description": "Chrome extension for automatically entering credentials from KeePass/KeeWeb",
+    "version": "0.2.0",
 
     "content_scripts": [
         {
@@ -43,7 +43,9 @@
         "storage",
         "<all_urls>",
         "webNavigation",
-        "contextMenus"
+        "contextMenus",
+        "webRequest",
+        "webRequestBlocking"
     ],
 
     "minimum_chrome_version": "49"

@@ -1,5 +1,6 @@
 import * as sjcl from 'sjcl-all';
 import * as IMessage from '../IMessage';
+import * as C from './Constants';
 
 export interface IRequestBody
 {
@@ -57,8 +58,6 @@ export interface IResponseBody
 
 export default class KeePassHTTP
 {
-    private _keepassHost: string = 'localhost';
-    private _keepassPort: number = 19455;
     private static _id: string | null = '';
     private static _key: string | null = '';
 
@@ -167,7 +166,7 @@ export default class KeePassHTTP
         };
 
         return new Promise<IResponseBody>((resolve, reject)=>{
-            fetch(`http://${this._keepassHost}:${this._keepassPort}`, request).then((response)=>{
+            fetch(`http://${C.KeePassHost}:${C.KeePassPort}`, request).then((response)=>{
                 if(response.ok)
                 {
                     response.json().then((json)=>{

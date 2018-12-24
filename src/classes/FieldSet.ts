@@ -102,7 +102,7 @@ export default class FieldSet
             e.preventDefault();
 
             if(this._dropdown)
-                this._closeDropdown();
+                this.closeDropdown();
             else
                 this._openDropdown(this._controlField);
         }
@@ -126,7 +126,7 @@ export default class FieldSet
                 break;
             case 27: // Esc
             case 9: // Tab
-                this._closeDropdown();
+                this.closeDropdown();
                 break;
         }
     }
@@ -217,7 +217,7 @@ export default class FieldSet
     }
 
     /** Close the dropdown */
-    private _closeDropdown()
+    public closeDropdown()
     {
         if(this._dropdown)
         {
@@ -343,7 +343,7 @@ export default class FieldSet
             this._selectedCredential = undefined;
             this._selectedCredentialIndex = undefined;
 
-            this._closeDropdown();
+            this.closeDropdown();
         }
     }
 

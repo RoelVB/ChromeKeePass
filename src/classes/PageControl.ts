@@ -57,6 +57,21 @@ export default class PageControl
         // Remember the fields we've found
         this._fieldSets = fieldSets;
         this._findCredentials();
+        this._attachEscapeEvent();
+    }
+
+    private _attachEscapeEvent()
+    {
+        if(!this._fieldSets || this._fieldSets.length === 0) return; // We're not going to listen to keypresses if we don't need them
+
+        $(document).keyup((e: JQuery.Event<HTMLElement, null>)=>{
+            if(e.key == 'Escape')
+            {
+                this._fieldSets.forEach((fieldSet)=>{ // Close dropdown for all fieldsets
+                    fieldSet.closeDropdown();
+                });
+            }
+        });
     }
 
     private _findCredentials()

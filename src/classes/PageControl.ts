@@ -23,14 +23,6 @@ export default class PageControl
         });
     }
 
-    /** Find text input fields and attach doubleclick event */
-    private _attachDblClick()
-    {
-        $('input[type="text"]').dblclick((e)=>{
-            this.detectFields(); // Detect fields on doubleclick
-        });
-    }
-
     /** Try to detect credentials fields */
     public detectFields()
     {

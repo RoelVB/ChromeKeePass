@@ -49,7 +49,12 @@ export default class PageControl
                     {
                         if(prevField) // Is there a previous field? Than this should be our username field
                         {
-                            fieldSets.push(new FieldSet(this, prevField, $(passwordField)));
+                            fieldSets.push(new FieldSet(this, $(passwordField), prevField));
+                            return; // Break the each() loop
+                        }
+                        else // We didn't find the username field
+                        {
+                            fieldSets.push(new FieldSet(this, $(passwordField)));
                             return; // Break the each() loop
                         }
                     }

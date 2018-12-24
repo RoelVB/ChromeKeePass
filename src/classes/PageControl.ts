@@ -23,14 +23,6 @@ export default class PageControl
         });
     }
 
-    /** Find text input fields and attach doubleclick event */
-    private _attachDblClick()
-    {
-        $('input[type="text"]').dblclick((e)=>{
-            this.detectFields(); // Detect fields on doubleclick
-        });
-    }
-
     /** Try to detect credentials fields */
     public detectFields()
     {
@@ -49,7 +41,12 @@ export default class PageControl
                     {
                         if(prevField) // Is there a previous field? Than this should be our username field
                         {
-                            fieldSets.push(new FieldSet(this, prevField, $(passwordField)));
+                            fieldSets.push(new FieldSet(this, $(passwordField), prevField));
+                            return; // Break the each() loop
+                        }
+                        else // We didn't find the username field
+                        {
+                            fieldSets.push(new FieldSet(this, $(passwordField)));
                             return; // Break the each() loop
                         }
                     }
@@ -60,6 +57,21 @@ export default class PageControl
         // Remember the fields we've found
         this._fieldSets = fieldSets;
         this._findCredentials();
+        this._attachEscapeEvent();
+    }
+
+    private _attachEscapeEvent()
+    {
+        if(!this._fieldSets || this._fieldSets.length === 0) return; // We're not going to listen to keypresses if we don't need them
+
+        $(document).keyup((e: JQuery.Event<HTMLElement, null>)=>{
+            if(e.key == 'Escape')
+            {
+                this._fieldSets.forEach((fieldSet)=>{ // Close dropdown for all fieldsets
+                    fieldSet.closeDropdown();
+                });
+            }
+        });
     }
 
     private _findCredentials()

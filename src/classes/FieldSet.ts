@@ -10,8 +10,6 @@ import Client from '../classes/BackgroundClient';
  */
 export default class FieldSet
 {
-    /** Used to remember the original title attribute from the username field (because it changes when the cursor hovers the ChromeKeePass icon) */
-    private _usernameFieldTitle: string = '';
     /** Pointer to the dropdown */
     private _dropdown?: JQuery<HTMLElement>;
     /** Timestamp from when the dropdown is closed, to prevent is from opening again directly after closing */
@@ -30,28 +28,34 @@ export default class FieldSet
     private _onIcon: boolean = false;
     /** Variable holding all icon styles (to easily remove all the styles at once) */
     private static allIconStyles = `${styles.green} ${styles.orange} ${styles.red}`;
+    /** This is the field where gonna use ChromeKeePass's controls */
+    private _controlField: JQuery<HTMLElement> = $('<input>'); // Input a dummy `<div>`, because TypeScript will complain the variable could be undefined
+    /** Used to remember the original title attribute from the username field (because it changes when the cursor hovers the ChromeKeePass icon) */
+    private _controlFieldTitle: string = '';
 
     /**
      * Append ChromeKeePass to the fields
      * @param _pageControl A pointer back to the PageControl class
-     * @param usernameField Pointer to the username field
      * @param passwordField Pointer tot the password field
+     * @param usernameField Pointer to the username field
      */
-    constructor(private _pageControl: PageControl, public readonly usernameField: JQuery<HTMLElement>, public readonly passwordField: JQuery<HTMLElement>)
+    constructor(private _pageControl: PageControl, public readonly passwordField: JQuery<HTMLElement>, public readonly usernameField?: JQuery<HTMLElement>)
     {
-        this._usernameFieldTitle = this.usernameField.attr('title') || '';
-        this.usernameField.attr('autocomplete', 'off');
+        this._controlField = this.usernameField || this.passwordField;
 
-        this.usernameField.on('mousemove', this._onMouseMove.bind(this)).on('mouseleave', this._activateIcon.bind(this, true)).on('focus', this._onFocus.bind(this));
-        this.usernameField.on('click', this._onClick.bind(this)).on('keydown', this._onKeyPress.bind(this)).on('keyup', this._onKeyUp.bind(this));
+        this._controlFieldTitle = this._controlField.attr('title') || '';
+        this._controlField.attr('autocomplete', 'off');
+
+        this._controlField.on('mousemove', this._onMouseMove.bind(this)).on('mouseleave', this._activateIcon.bind(this, true)).on('focus', this._onFocus.bind(this));
+        this._controlField.on('click', this._onClick.bind(this)).on('keydown', this._onKeyPress.bind(this)).on('keyup', this._onKeyUp.bind(this));
 
         // Maybe we need to open the dropdown?
-        if(this._pageControl.settings.showDropdownOnFocus && this.usernameField.is(':focus'))
-            this._openDropdown(this.usernameField);
+        if(this._pageControl.settings.showDropdownOnFocus && this._controlField.is(':focus'))
+            this._openDropdown(this._controlField);
 
         // Should we show the icon in the username field?
         if(this._pageControl.settings.showUsernameIcon)
-            this.usernameField.addClass(styles.textboxIcon).addClass(styles.orange);
+            this._controlField.addClass(styles.textboxIcon).addClass(styles.orange);
 
         // Do we already have credentials?
         if(this._pageControl.credentials)
@@ -66,9 +70,9 @@ export default class FieldSet
             if(this._pageControl.settings.showUsernameIcon) // Do we have to change the icon?
             {
                 if(this._pageControl.credentials.length)
-                    this.usernameField.removeClass(FieldSet.allIconStyles).addClass(styles.green);
+                    this._controlField.removeClass(FieldSet.allIconStyles).addClass(styles.green);
                 else
-                    this.usernameField.removeClass(FieldSet.allIconStyles).addClass(styles.orange);
+                    this._controlField.removeClass(FieldSet.allIconStyles).addClass(styles.orange);
             }
             
             if(this._dropdown) // Is the dropdown open?
@@ -80,14 +84,14 @@ export default class FieldSet
 
         }
         else if(this._pageControl.settings.showUsernameIcon)
-            this.usernameField.removeClass(FieldSet.allIconStyles).addClass(styles.red);
+            this._controlField.removeClass(FieldSet.allIconStyles).addClass(styles.red);
     }
 
     /** Event when the username field gets focussed */
     private _onFocus(e: JQuery.Event<HTMLElement, null>)
     {
         if(this._pageControl.settings.showDropdownOnFocus) // Show the dropdown when this happens?
-            this._openDropdown(this.usernameField);
+            this._openDropdown(this._controlField);
     }
 
     /** Event when the username field is clicked */
@@ -98,9 +102,9 @@ export default class FieldSet
             e.preventDefault();
 
             if(this._dropdown)
-                this._closeDropdown();
+                this.closeDropdown();
             else
-                this._openDropdown(this.usernameField);
+                this._openDropdown(this._controlField);
         }
     }
 
@@ -122,7 +126,7 @@ export default class FieldSet
                 break;
             case 27: // Esc
             case 9: // Tab
-                this._closeDropdown();
+                this.closeDropdown();
                 break;
         }
     }
@@ -139,7 +143,7 @@ export default class FieldSet
             if(this._pageControl.settings.autoComplete) // Is autocomplete enabled?
             {
                 if(this._dropdown === undefined) // The dropdown is not there
-                    this._openDropdown(this.usernameField); // Try opening the dropdown
+                    this._openDropdown(this._controlField); // Try opening the dropdown
 
                 if(this._dropdown) // The dropdown is open?
                     this._generateDropdownContent(this._dropdown.find(`.${styles.content}`), newValue);
@@ -155,7 +159,7 @@ export default class FieldSet
         const targetWidth = target.width();
         const cursorPosX: number | undefined = targetOffset && e.pageX-targetOffset.left - parseInt(target.css('padding-left')) - parseInt(target.css('padding-right'));
 
-        if(cursorPosX && targetWidth && cursorPosX >= targetWidth-(this.usernameField.outerHeight() || 20))
+        if(cursorPosX && targetWidth && cursorPosX >= targetWidth-(this._controlField.outerHeight() || 20))
             this._activateIcon();
         else
             this._activateIcon(true);
@@ -171,9 +175,9 @@ export default class FieldSet
 
         this._onIcon = !deactivate;
         if(deactivate)
-            this.usernameField.css({cursor: ''}).attr('title', this._usernameFieldTitle);
+            this._controlField.css({cursor: ''}).attr('title', this._controlFieldTitle);
         else
-            this.usernameField.css({cursor: 'pointer'}).attr('title', 'Open ChromeKeePass options');
+            this._controlField.css({cursor: 'pointer'}).attr('title', 'Open ChromeKeePass options');
     }
 
     /**
@@ -213,7 +217,7 @@ export default class FieldSet
     }
 
     /** Close the dropdown */
-    private _closeDropdown()
+    public closeDropdown()
     {
         if(this._dropdown)
         {
@@ -294,7 +298,7 @@ export default class FieldSet
     private _selectNextCredential(reverse?: boolean)
     {
         if(this._dropdown === undefined) // The dropdown is not there
-            this._openDropdown(this.usernameField); // Try opening the dropdown
+            this._openDropdown(this._controlField); // Try opening the dropdown
         
         if(this._credentialItems && this._credentialItems.length) // There is something available?
         {
@@ -328,27 +332,33 @@ export default class FieldSet
             this._inputCredential(this._selectedCredential);
 
             // Some field require this to enable the login button
-            this.usernameField[0].dispatchEvent(new Event('input'));
-            this.usernameField[0].dispatchEvent(new Event('change'));
+            if(this.usernameField)
+            {
+                this.usernameField[0].dispatchEvent(new Event('input'));
+                this.usernameField[0].dispatchEvent(new Event('change'));
+            }
             this.passwordField[0].dispatchEvent(new Event('input'));
             this.passwordField[0].dispatchEvent(new Event('change'));
 
             this._selectedCredential = undefined;
             this._selectedCredentialIndex = undefined;
 
-            this._closeDropdown();
+            this.closeDropdown();
         }
     }
 
     /** Input a credential into the fields */
     private _inputCredential(credential: IMessage.Credential)
     {
-        this.usernameField.val(credential.username);
+        if(this.usernameField) this.usernameField.val(credential.username);
         this.passwordField.val(credential.password);
 
         // Some field require this to enable the login button
-        this.usernameField[0].dispatchEvent(new Event('input'));
-        this.usernameField[0].dispatchEvent(new Event('change'));
+        if(this.usernameField)
+        {
+            this.usernameField[0].dispatchEvent(new Event('input'));
+            this.usernameField[0].dispatchEvent(new Event('change'));
+        }
         this.passwordField[0].dispatchEvent(new Event('input'));
         this.passwordField[0].dispatchEvent(new Event('change'));
     }

@@ -37,3 +37,7 @@ The goal of this project is to create a userfriendly KeePass integration. With a
    ![ChromeKeePass Connected](Documents/Images/CKPOptionsConnected.png)
 
 7. The encryption key (for secure communication between KeePass en ChromeKeePass) is stored inside your KeePass database under the entry 'KeePassHttp Settings'
+
+## Build instuctions
+
+You can find [build instuction is this document](Documents/Manuals/Buildinstructions.md).

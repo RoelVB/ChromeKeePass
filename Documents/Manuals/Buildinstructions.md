@@ -8,4 +8,4 @@
 
     1. `npm run dev`: This builds the project including source maps (for easy debugging)
     2. `npm run watch`: This does the same as `dev`, but this command keeps watching for changes in source files and automatically rebuilds when a change is detected
-    3. `npm run prod`: This creates a production build. This means it is minified en without source maps
+    3. `npm run prod`: This creates a production build. This means it is minified and without source maps

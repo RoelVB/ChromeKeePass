@@ -34,7 +34,7 @@ export default class PageControl
             passwordFields.each((passwordIndex, passwordField)=>{ // Loop through password fields
                 let prevField: JQuery<HTMLElement>;
 
-                $('input[type="text"],input[type="email"],input[type="password"]').each((inputIndex, input)=>{ // Loop through input fields to find the field before our password field
+                $('input[type="text"],input[type="email"],input[type="tel"],input[type="password"]').each((inputIndex, input)=>{ // Loop through input fields to find the field before our password field
                     if($(input).attr('type') != 'password') // We didn't reach our password field?
                         prevField = $(input);
                     else if($(input).is($(passwordField))) // Found our password field?

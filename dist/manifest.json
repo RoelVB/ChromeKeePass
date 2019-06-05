@@ -3,7 +3,7 @@
 
     "name": "ChromeKeePass",
     "description": "Chrome extension for automatically entering credentials from KeePass/KeeWeb",
-    "version": "1.0.1",
+    "version": "1.0.4",
 
     "content_scripts": [
         {

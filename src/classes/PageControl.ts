@@ -38,7 +38,7 @@ export default class PageControl
                     const inputType = $(input).attr('type') || 'text'; // Get input type, if none default to "text"
                     if(inputType != 'password') // We didn't reach our password field?
                     {
-                        if(inputType === 'text' || inputType === 'email' || inputType === 'tel') // Is this a possible username field?
+                        if($(input).is(':visible') && (inputType === 'text' || inputType === 'email' || inputType === 'tel')) // Is this a possible username field?
                             prevField = $(input);
                     }
                     else if($(input).is($(passwordField))) // Found our password field?

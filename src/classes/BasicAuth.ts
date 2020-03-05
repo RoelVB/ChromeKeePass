@@ -1,5 +1,6 @@
 import KeePassHTTP from './KeePassHTTP';
 import * as IMessage from '../IMessage';
+import { ISettings, defaultSettings } from '../ISettings';
 
 /**
  * This class is responsible for handling HTTP Basic Authentication
@@ -18,6 +19,7 @@ export default class BasicAuth
     private _nonce: number;
     /** Found credentials */
     private _credentials?: IMessage.Credential[];
+    private _settings: ISettings = defaultSettings;
 
     /** This static method instantiates this class, and prevents loops */
     public static async handleAuth(request: chrome.webRequest.WebAuthenticationChallengeDetails): Promise<chrome.webRequest.BlockingResponse>
@@ -36,6 +38,10 @@ export default class BasicAuth
 
     constructor()
     {
+        chrome.storage.sync.get(defaultSettings, (items)=>{
+            this._settings = items as ISettings;
+        });
+
         this._nonce = ++BasicAuth._nonce;
     }
 
@@ -47,34 +53,41 @@ export default class BasicAuth
             this._credentials = await KeePassHTTP.getLogins(request.url);
             if(this._credentials.length) // Found some credentials?
             {
-                this._popupWindowId = await this._createPopup();
-                if(!this._popupWindowId)
-                    console.error('Failed to create a popup window?!');
-                else
+                if(this._settings.autoFillSingleCredential && this._credentials.length === 1) // Auto-fill single credential?
                 {
-                    // Add listeners
-                    const windowListener = this._onWindowRemoved.bind(this);
-                    const messageListener = this._onMessage.bind(this);
-                    chrome.windows.onRemoved.addListener(windowListener);
-                    chrome.runtime.onMessage.addListener(messageListener);
-
-                    // Wait for answer
-                    const selectedCredential = await this._waitPopup();
-
-                    // Remove listeners
-                    chrome.windows.onRemoved.removeListener(windowListener);
-                    chrome.runtime.onMessage.removeListener(messageListener);
-
-                    // Close the popup window if it's still open
-                    if(this._popupWindowId !== undefined) chrome.windows.remove(this._popupWindowId);
-
-                    if(selectedCredential !== undefined) // Credentials selected?
-                    {
-                        console.log(`Send credentials for "${selectedCredential.username}" to "${request.url}"`);
-                        return {authCredentials: {username: selectedCredential.username, password: selectedCredential.password}};
-                    }
+                    return {authCredentials: {username: this._credentials[0].username, password: this._credentials[0].password}};
+                }
+                else // Show options
+                {
+                    this._popupWindowId = await this._createPopup();
+                    if(!this._popupWindowId)
+                        console.error('Failed to create a popup window?!');
                     else
-                        console.log(`No credentials where selected for ${request.url}`);
+                    {
+                        // Add listeners
+                        const windowListener = this._onWindowRemoved.bind(this);
+                        const messageListener = this._onMessage.bind(this);
+                        chrome.windows.onRemoved.addListener(windowListener);
+                        chrome.runtime.onMessage.addListener(messageListener);
+
+                        // Wait for answer
+                        const selectedCredential = await this._waitPopup();
+
+                        // Remove listeners
+                        chrome.windows.onRemoved.removeListener(windowListener);
+                        chrome.runtime.onMessage.removeListener(messageListener);
+
+                        // Close the popup window if it's still open
+                        if(this._popupWindowId !== undefined) chrome.windows.remove(this._popupWindowId);
+
+                        if(selectedCredential !== undefined) // Credentials selected?
+                        {
+                            console.log(`Send credentials for "${selectedCredential.username}" to "${request.url}"`);
+                            return {authCredentials: {username: selectedCredential.username, password: selectedCredential.password}};
+                        }
+                        else
+                            console.log(`No credentials where selected for ${request.url}`);
+                    }
                 }
             }
         } catch(error) {

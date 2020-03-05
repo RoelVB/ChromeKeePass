@@ -3,7 +3,6 @@ import KeePassHTTP from './KeePassHTTP';
 
 export default class BackgroundListener
 {
-    private _keePass: KeePassHTTP = new KeePassHTTP();
 
     constructor()
     {
@@ -49,9 +48,10 @@ export default class BackgroundListener
     private _findCredentials(url: string): Promise<IMessage.Credential[]>
     {
         return new Promise<IMessage.Credential[]>((resolve, reject)=>{
+            console.log('get credentials for ', url);
             if(url)
             {
-                this._keePass.getLogins(url).then((result)=>{
+                KeePassHTTP.getLogins(url).then((result)=>{
                     this._setErrorIcon(true);
                     resolve(result);
                 }).catch((error)=>{
@@ -68,10 +68,10 @@ export default class BackgroundListener
     private _associate(): Promise<IMessage.Association>
     {
         return new Promise<IMessage.Association>((resolve)=>{
-            this._keePass.associate().then((associated)=>{
+            KeePassHTTP.associate().then((associated)=>{
                 this._setErrorIcon(true);
                 resolve({
-                    Id: this._keePass.id,
+                    Id: KeePassHTTP.id,
                     Associated: associated,
                 });
 
@@ -79,7 +79,7 @@ export default class BackgroundListener
                 console.error(error);
                 this._setErrorIcon();
                 resolve({
-                    Id: this._keePass.id,
+                    Id: KeePassHTTP.id,
                     Associated: false,
                     Error: 'Something went wrong... did you accept the connection within KeePass?',
                 });
@@ -91,10 +91,10 @@ export default class BackgroundListener
     private _testAssociate(): Promise<IMessage.Association>
     {
         return new Promise<IMessage.Association>((resolve)=>{
-            this._keePass.testAssociate().then((associated)=>{
+            KeePassHTTP.testAssociate().then((associated)=>{
                 this._setErrorIcon(associated);
                 resolve({
-                    Id: this._keePass.id,
+                    Id: KeePassHTTP.id,
                     Associated: associated,
                 });
 
@@ -102,7 +102,7 @@ export default class BackgroundListener
                 console.error(error);
                 this._setErrorIcon();
                 resolve({
-                    Id: this._keePass.id,
+                    Id: KeePassHTTP.id,
                     Associated: false,
                     Error: 'Something went wrong... is KeePass running and is the KeePassHttp plugin installed?',
                 });

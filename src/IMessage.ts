@@ -33,3 +33,16 @@ export interface Association
     Associated: boolean;
     Error?: string;
 }
+
+export interface BasicAuth
+{
+    command?: 'selectCredential'|'getCredentials';
+    nonce: number;
+    credential?: Credential;
+}
+
+export interface BasicAuthResponse
+{
+    credentials?: Credential[];
+    url?: string;
+}

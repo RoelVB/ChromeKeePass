@@ -7,6 +7,7 @@ module.exports = {
         content_script: './src/content_script.ts',
         popup: './src/popup.ts',
         options: './src/options.ts',
+        credentialSelector: './src/credentialSelector.ts',
     },
     output: {
         path: path.resolve(__dirname, 'dist/js'),

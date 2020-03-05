@@ -1,4 +1,5 @@
 import BackgroundListener from './classes/BackgroundListener';
+import BasicAuth from './classes/BasicAuth';
 import * as IMessage from './IMessage';
 import * as C from './classes/Constants';
 
@@ -40,6 +41,10 @@ chrome.webRequest.onBeforeSendHeaders.addListener((details)=>{
 {urls: [`http://${C.KeePassHost}:${C.KeePassPort}/*`]},
 ['blocking', 'requestHeaders']);
 
+/** Catch basic authentication requests */
+chrome.webRequest.onAuthRequired.addListener(async (details, callback)=>{
+    callback!(await BasicAuth.handleAuth(details));
+}, {urls: ["<all_urls>"]}, ['asyncBlocking']);
 
 function sendRedetect(info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab)
 {

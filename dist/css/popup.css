@@ -20,6 +20,9 @@ body {
     color: var(--lightPurple);
     text-shadow: 0px 0px 2px black;
     box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .banner img {
@@ -31,4 +34,36 @@ body {
 .banner img.logo {
     float: left;
     margin-right: 5px;
+}
+
+#credentialsList {
+    background-color: #fff;
+    position: absolute;
+    left: 0px;
+    top: 30px;
+    right: 0px;
+    bottom: 30px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+.credentialItem {
+    color: black;
+    padding: 3px;
+    border-bottom: 1px solid lightgrey;
+    cursor: pointer;
+    overflow-x: hidden;
+}
+
+.credentialItem:hover {
+    background-image: linear-gradient(to right, rgba(218, 225, 245, 0.4), rgba(82, 115, 208, 0.4));
+}
+
+.footer {
+    position: absolute;
+    padding: 5px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    text-align: right;
 }

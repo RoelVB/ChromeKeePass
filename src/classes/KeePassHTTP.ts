@@ -56,7 +56,7 @@ export interface IResponseBody
     Version: string;
 }
 
-export default class KeePassHTTP
+export class KeePassHTTP
 {
     private static _id: string | null = '';
     private static _key: string | null = '';
@@ -234,3 +234,6 @@ export default class KeePassHTTP
     }
     
 }
+
+const KeePassHTTPInstance = new KeePassHTTP();
+export default KeePassHTTPInstance;

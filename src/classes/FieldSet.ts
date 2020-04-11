@@ -331,15 +331,6 @@ export default class FieldSet
         {
             this._inputCredential(this._selectedCredential);
 
-            // Some field require this to enable the login button
-            if(this.usernameField)
-            {
-                this.usernameField[0].dispatchEvent(new Event('input'));
-                this.usernameField[0].dispatchEvent(new Event('change'));
-            }
-            this.passwordField[0].dispatchEvent(new Event('input'));
-            this.passwordField[0].dispatchEvent(new Event('change'));
-
             this._selectedCredential = undefined;
             this._selectedCredentialIndex = undefined;
 
@@ -350,17 +341,15 @@ export default class FieldSet
     /** Input a credential into the fields */
     private _inputCredential(credential: IMessage.Credential)
     {
-        if(this.usernameField) this.usernameField.val(credential.username);
-        this.passwordField.val(credential.password);
-
-        // Some field require this to enable the login button
         if(this.usernameField)
         {
-            this.usernameField[0].dispatchEvent(new Event('input'));
-            this.usernameField[0].dispatchEvent(new Event('change'));
+            this.usernameField.val(credential.username);
+            this.usernameField[0].dispatchEvent(new Event('input', {bubbles: true}));
+            this.usernameField[0].dispatchEvent(new Event('change', {bubbles: true}));
         }
-        this.passwordField[0].dispatchEvent(new Event('input'));
-        this.passwordField[0].dispatchEvent(new Event('change'));
+        this.passwordField.val(credential.password);
+        this.passwordField[0].dispatchEvent(new Event('input', {bubbles: true}));
+        this.passwordField[0].dispatchEvent(new Event('change', {bubbles: true}));
     }
 
     /** Open the extension's option window */

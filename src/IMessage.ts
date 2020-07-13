@@ -11,6 +11,8 @@ export enum RequestType
     associate,
     /** Redetect the credetials fields */
     redetectFields,
+    /** Get extension commands */
+    getCommands,
 }
 
 export interface Request
@@ -18,7 +20,7 @@ export interface Request
     type: RequestType;
 }
 
-export type Response = Credential[] | Association;
+export type Response = Credential[] | Association | chrome.commands.Command[];
 
 export interface Credential
 {

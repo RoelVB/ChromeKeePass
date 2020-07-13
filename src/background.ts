@@ -46,6 +46,19 @@ chrome.webRequest.onAuthRequired.addListener(async (details, callback)=>{
     callback!(await BasicAuth.handleAuth(details));
 }, {urls: ["<all_urls>"]}, ['asyncBlocking']);
 
+
+/** Listen for commands */
+chrome.commands.onCommand.addListener(async (command)=>{
+    if(command === 'redetect_fields')
+    {
+        const activeTab = await C.getActiveTab();
+        chrome.tabs.sendMessage(activeTab?.id as number, {
+            type: IMessage.RequestType.redetectFields,
+        } as IMessage.Request);
+    }
+});
+
+
 function sendRedetect(info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab)
 {
     // Send redetect command to active tab
@@ -53,7 +66,6 @@ function sendRedetect(info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Ta
         type: IMessage.RequestType.redetectFields,
     } as IMessage.Request);
 }
-
 
 
 // Start the background listener

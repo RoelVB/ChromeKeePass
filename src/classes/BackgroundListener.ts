@@ -30,6 +30,9 @@ export default class BackgroundListener
             case IMessage.RequestType.findCredentials:
                 responsePromise = this._findCredentials(sender.url || '');
                 break;
+            case IMessage.RequestType.getCommands:
+                responsePromise = this._getExtentionCommands();
+                break;
         }
 
         if(responsePromise) // Did the switch-case result in a promise?
@@ -106,6 +109,15 @@ export default class BackgroundListener
                     Associated: false,
                     Error: 'Something went wrong... is KeePass running and is the KeePassHttp plugin installed?',
                 });
+            });
+        });
+    }
+
+    private _getExtentionCommands(): Promise<chrome.commands.Command[]>
+    {
+        return new Promise<chrome.commands.Command[]>((resolve, reject)=>{
+            chrome.commands.getAll((commands)=>{
+                resolve(commands);
             });
         });
     }

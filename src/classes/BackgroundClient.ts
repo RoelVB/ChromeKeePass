@@ -63,4 +63,19 @@ export default class BackgroundClient
             type: IMessage.RequestType.openOptions,
         } as IMessage.Request);
     }
+
+    /**
+     * Get extension commands/shortcuts
+     */
+    public static getExtensionCommands(): Promise<chrome.commands.Command[]>
+    {
+        return new Promise<chrome.commands.Command[]>((resolve)=>{
+            chrome.runtime.sendMessage({
+                type: IMessage.RequestType.getCommands,
+            } as IMessage.Request, (response)=>{
+                resolve(response);
+            });
+        });
+    }
+
 }

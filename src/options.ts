@@ -4,6 +4,7 @@ import { ISettings, defaultSettings } from './ISettings';
 
 $(document).ready(()=>{
     loadSettings();
+    getExtensionCommands();
 
     Client.testAssociate().then((association)=>{
         if(association.Associated)
@@ -64,5 +65,19 @@ function saveSettings()
     } as ISettings, ()=>{
         $('#saveStatus').text('Options saved');
         setTimeout(()=>$('#saveStatus').text(''), 1500);
+    });
+}
+
+/**
+ * Get extension commands/shortcuts
+ */
+async function getExtensionCommands()
+{
+    const commands = await Client.getExtensionCommands();
+    $('#shortcuts').empty();
+
+    commands.forEach((command)=>{
+        if(command.description)
+            $('#shortcuts').append($('<div>').text(`${command.description}: ${command.shortcut}`));
     });
 }

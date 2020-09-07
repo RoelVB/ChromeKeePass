@@ -27,7 +27,7 @@ export default class PageControl
     public detectFields()
     {
         const fieldSets: FieldSet[] = [];
-        let passwordFields: JQuery<HTMLElement> = $('input[type="password"]:visible');
+        let passwordFields: JQuery<HTMLElement> = $('input[type="password"]');
 
         if(passwordFields.length) // Found some password fields?
         {
@@ -48,11 +48,13 @@ export default class PageControl
                             fieldSets.push(new FieldSet(this, $(passwordField), prevField));
                             return; // Break the each() loop
                         }
-                        else // We didn't find the username field
+                        else if($(input).is(':visible')) // We didn't find the username field. Check if it's actually visible
                         {
                             fieldSets.push(new FieldSet(this, $(passwordField)));
                             return; // Break the each() loop
                         }
+                        else // We didn't find a visible username of password field
+                            return;
                     }
                 });
             });

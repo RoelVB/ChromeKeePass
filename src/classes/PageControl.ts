@@ -27,7 +27,7 @@ export default class PageControl
     public detectFields()
     {
         const fieldSets: FieldSet[] = [];
-        let passwordFields: JQuery<HTMLElement> = $('input[type="password"]');
+        let passwordFields: JQuery<HTMLElement> = $('input[type="password"]:visible');
 
         if(passwordFields.length) // Found some password fields?
         {

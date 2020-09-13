@@ -2,6 +2,7 @@ import BackgroundListener from './classes/BackgroundListener';
 import BasicAuth from './classes/BasicAuth';
 import * as IMessage from './IMessage';
 import * as C from './classes/Constants';
+import { loadSettings } from './Settings';
 
 /**
  * Create the contextMenu
@@ -23,23 +24,25 @@ chrome.contextMenus.create({
  * This is because Chrome doesn't send the right `Origin`-header in `Fetch` requests. Because of this, KeeWebHttp denies the request.
  * The implementation below corrects the `Origin`-header.
  */
-chrome.webRequest.onBeforeSendHeaders.addListener((details)=>{
-    if(details.requestHeaders)
-    {
-        for(const key in details.requestHeaders)
+loadSettings().then((settings)=>{
+    chrome.webRequest.onBeforeSendHeaders.addListener((details)=>{
+        if(details.requestHeaders)
         {
-            if(details.requestHeaders[key].name === 'Origin') // Found the `Origin`-header
+            for(const key in details.requestHeaders)
             {
-                details.requestHeaders[key].value = `chrome-extension://${chrome.runtime.id}`;
-                break;
+                if(details.requestHeaders[key].name === 'Origin') // Found the `Origin`-header
+                {
+                    details.requestHeaders[key].value = `chrome-extension://${chrome.runtime.id}`;
+                    break;
+                }
             }
+    
+            return {requestHeaders: details.requestHeaders};
         }
-
-        return {requestHeaders: details.requestHeaders};
-    }
-},
-{urls: [`http://${C.KeePassHost}:${C.KeePassPort}/*`]},
-['blocking', 'requestHeaders']);
+    },
+    {urls: [`http://${settings.keePassHost}:${settings.keePassPort}/*`]},
+    ['blocking', 'requestHeaders']);
+});
 
 /** Catch basic authentication requests */
 chrome.webRequest.onAuthRequired.addListener(async (details, callback)=>{

@@ -1,9 +1,9 @@
 import * as $ from 'jquery-slim';
 import Client from './classes/BackgroundClient';
-import { ISettings, defaultSettings } from './ISettings';
+import { ISettings, loadSettings, saveSettings } from './Settings';
 
 $(document).ready(()=>{
-    loadSettings();
+    fillSettings();
     getExtensionCommands();
 
     Client.testAssociate().then((association)=>{
@@ -19,7 +19,7 @@ $(document).ready(()=>{
         $('#connectionStatus').text('Something went wrong... is KeePass running and is the KeePassHttp plugin installed?');
     });
 
-    $('#save').click(saveSettings);
+    $('#save').click(doSave);
 });
 
 function associate()
@@ -42,27 +42,31 @@ function associate()
 /**
  * Method called when settings need to be loaded
  */
-function loadSettings()
+function fillSettings()
 {
-    chrome.storage.sync.get(defaultSettings, (items)=>{
-        $('#showUsernameIcon').prop('checked', (items as ISettings).showUsernameIcon);
-        $('#showDropdownOnFocus').prop('checked', (items as ISettings).showDropdownOnFocus);
-        $('#autoFillSingleCredential').prop('checked', (items as ISettings).autoFillSingleCredential);
-        $('#autoComplete').prop('checked', (items as ISettings).autoComplete);
+    loadSettings().then((settings)=>{
+        $('#showUsernameIcon').prop('checked', settings.showUsernameIcon);
+        $('#showDropdownOnFocus').prop('checked', settings.showDropdownOnFocus);
+        $('#autoFillSingleCredential').prop('checked', settings.autoFillSingleCredential);
+        $('#autoComplete').prop('checked', settings.autoComplete);
+        $('#keePassHost').val(settings.keePassHost);
+        $('#keePassPort').val(settings.keePassPort);
     });
 }
 
 /**
  * Method called when save button is pressed
  */
-function saveSettings()
+function doSave()
 {
-    chrome.storage.sync.set({
+    saveSettings({
         showUsernameIcon: $('#showUsernameIcon').prop('checked'),
         showDropdownOnFocus: $('#showDropdownOnFocus').prop('checked'),
         autoFillSingleCredential: $('#autoFillSingleCredential').prop('checked'),
         autoComplete: $('#autoComplete').prop('checked'),
-    } as ISettings, ()=>{
+        keePassHost: $('#keePassHost').val() as string,
+        keePassPort: parseInt($('#keePassPort').val() as any),
+    }).then(()=>{
         $('#saveStatus').text('Options saved');
         setTimeout(()=>$('#saveStatus').text(''), 1500);
     });

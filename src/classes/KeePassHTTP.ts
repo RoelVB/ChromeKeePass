@@ -1,6 +1,6 @@
 import * as sjcl from 'sjcl-all';
 import * as IMessage from '../IMessage';
-import * as C from './Constants';
+import { loadSettings } from '../Settings';
 
 export interface IRequestBody
 {
@@ -145,7 +145,7 @@ export class KeePassHTTP
     /**
      * fetch wrapper for KeePassHttp requests
      */
-    private _fetchJson(body: IRequestBody): Promise<IResponseBody>
+    private async _fetchJson(body: IRequestBody): Promise<IResponseBody>
     {
         if(KeePassHTTP._key) // Do we have a key?
         {
@@ -165,20 +165,22 @@ export class KeePassHTTP
             body: JSON.stringify(body),
         };
 
-        return new Promise<IResponseBody>((resolve, reject)=>{
-            fetch(`http://${C.KeePassHost}:${C.KeePassPort}`, request).then((response)=>{
-                if(response.ok)
-                {
-                    response.json().then((json)=>{
-                        resolve(json);
-                    }).catch(()=>{
-                        reject('Parsing reponse JSON failed');
-                    });
-                }
-                else
-                    reject(`HTTP error ${response.status}`);
-            }).catch(reject);
-        });
+        // Load our host and port
+        const settings = await loadSettings();
+
+        // Send the request to KeePass
+        const response = await fetch(`http://${settings.keePassHost}:${settings.keePassPort}`, request);
+        if(response.ok)
+        {
+            try {
+                const json = await response.json();
+                return json;
+            } catch {
+                throw 'Parsing reponse JSON failed';
+            }
+        }
+        else
+            throw `HTTP error ${response.status}`
     }
 
     /**

@@ -2,7 +2,7 @@ import * as $ from 'jquery-slim';
 
 import FieldSet from './FieldSet';
 import * as IMessage from '../IMessage';
-import { ISettings, defaultSettings } from '../ISettings';
+import { ISettings, defaultSettings } from '../Settings';
 import Client from '../classes/BackgroundClient';
 
 export default class PageControl

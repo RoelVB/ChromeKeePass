@@ -43,3 +43,9 @@ The goal of this project is to create a userfriendly KeePass integration. With a
 ## Build instuctions
 
 You can find [build instuction is this document](Documents/Manuals/Buildinstructions.md).
+
+## Donate
+
+I'm creating this in my spare time. If you like it, please consider a small donation.
+It's very much appreciated.
+[![Donate](https://www.paypalobjects.com/en_US/NL/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=C9H7NGKDULKDN)

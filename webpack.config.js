@@ -50,6 +50,9 @@ module.exports = {
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.scss', '.js'],
+        fallback: {
+            'crypto': false
+        },
     },
     devtool: process.env.npm_lifecycle_event!=='prod'?'inline-source-map':undefined,
     performance: {

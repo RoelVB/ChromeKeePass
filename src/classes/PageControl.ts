@@ -70,7 +70,7 @@ export default class PageControl
     {
         if(!this._fieldSets || this._fieldSets.length === 0) return; // We're not going to listen to keypresses if we don't need them
 
-        $(document).keyup((e: JQuery.Event<HTMLElement, null>)=>{
+        $(document).keyup((e: JQuery.KeyUpEvent<Document>)=>{
             if(e.key == 'Escape')
             {
                 this._fieldSets.forEach((fieldSet)=>{ // Close dropdown for all fieldsets

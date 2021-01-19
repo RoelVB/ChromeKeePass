@@ -34,9 +34,10 @@ export function loadSettings(): Promise<ISettings>
 }
 
 /** Async method for saving settings */
-export function saveSettings(settings: Partial<ISettings>): Promise<void>
-{
-    return new Promise<void>((resolve, reject)=>{
-        chrome.storage.sync.set(settings, resolve);
+export function saveSettings(settings: Partial<ISettings>): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        chrome.storage.sync.set(settings, () => {
+            resolve()
+        });
     });
 }

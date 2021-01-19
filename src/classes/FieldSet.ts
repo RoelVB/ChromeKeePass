@@ -88,14 +88,14 @@ export default class FieldSet
     }
 
     /** Event when the username field gets focussed */
-    private _onFocus(e: JQuery.Event<HTMLElement, null>)
+    private _onFocus(e: JQuery.FocusEvent)
     {
         if(this._pageControl.settings.showDropdownOnFocus) // Show the dropdown when this happens?
             this._openDropdown(this._controlField);
     }
 
     /** Event when the username field is clicked */
-    private _onClick(e: JQuery.Event<HTMLElement, null>)
+    private _onClick(e: JQuery.ClickEvent)
     {
         if(this._onIcon) // Only continue if the cursor is on the icon
         {
@@ -109,7 +109,7 @@ export default class FieldSet
     }
 
     /** Event when a key is pressed while in the username field */
-    private _onKeyPress(e: JQuery.Event<HTMLElement, null>)
+    private _onKeyPress(e: JQuery.KeyDownEvent)
     {
         switch(e.keyCode)
         {
@@ -132,7 +132,7 @@ export default class FieldSet
     }
 
     /** Event when a key was pressed in the username field */
-    private _onKeyUp(e: JQuery.Event<HTMLElement, null>)
+    private _onKeyUp(e: JQuery.KeyUpEvent)
     {
         const newValue: string = $(e.target).val() as string;
 
@@ -152,7 +152,7 @@ export default class FieldSet
     }
 
     /** Event when te mouse is moving over the username field */
-    private _onMouseMove(e: JQuery.Event<HTMLElement, null>)
+    private _onMouseMove(e: JQuery.MouseMoveEvent)
     {
         const target = $(e.target);
         const targetOffset = target.offset();
@@ -285,7 +285,7 @@ export default class FieldSet
     }
 
     /** Event when a credential item is clicked */
-    private _onClickCredential(e: JQuery.Event<HTMLElement, null>)
+    private _onClickCredential(e: JQuery.ClickEvent)
     {
         this._selectedCredential = $(e.target).closest(`.${styles.item}`).data('credential');
         this._enterSelection();

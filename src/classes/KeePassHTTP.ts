@@ -23,13 +23,13 @@ export interface IRequestBody
 
 export interface IEntry
 {
-    /** ENCRYPTED: Loginname */
+    /** ENCRYPTED: Login name */
     Login: string;
     /** ENCRYPTED: Item name */
     Name: string;
     /** ENCRYPTED: Password */
     Password: string;
-    /** ENCRYPTED: Fieldnames? We don't use this */
+    /** ENCRYPTED: Field names? We don't use this */
     StringFields: string;
     /** ENCRYPTED: UUID */
     Uuid: string;
@@ -81,9 +81,9 @@ export class KeePassHTTP
     public associate(): Promise<boolean>
     {
         return new Promise<boolean>((resolve, reject)=>{
-            KeePassHTTP._key = this._generateSharedKey();
+            KeePassHTTP._key = KeePassHTTP._generateSharedKey();
 
-            this._fetchJson({
+            KeePassHTTP._fetchJson({
                 RequestType: 'associate',
                 Key: KeePassHTTP._key,
             }).then((json)=>{
@@ -106,7 +106,7 @@ export class KeePassHTTP
     public testAssociate(): Promise<boolean>
     {
         return new Promise<boolean>((resolve, reject)=>{
-            this._fetchJson({RequestType: 'test-associate'}).then((json)=>{
+            KeePassHTTP._fetchJson({RequestType: 'test-associate'}).then((json)=>{
                 if(json.Id) KeePassHTTP._id = json.Id;
 
                 resolve(json.Success);
@@ -120,16 +120,16 @@ export class KeePassHTTP
     public getLogins(url: string): Promise<IMessage.Credential[]>
     {
         return new Promise<IMessage.Credential[]>((resolve, reject)=>{
-            this._fetchJson({RequestType: 'get-logins', Url: url}).then((json)=>{
+            KeePassHTTP._fetchJson({RequestType: 'get-logins', Url: url}).then((json)=>{
                 if(json.Entries && json.Nonce)
                 {
                     const output: IMessage.Credential[] = [];
 
                     json.Entries.forEach((entry)=>{
                         output.push({
-                            title: this._decryptData(entry.Name, json.Nonce as string),
-                            username: this._decryptData(entry.Login, json.Nonce as string),
-                            password: this._decryptData(entry.Password, json.Nonce as string),
+                            title: KeePassHTTP._decryptData(entry.Name, json.Nonce as string),
+                            username: KeePassHTTP._decryptData(entry.Login, json.Nonce as string),
+                            password: KeePassHTTP._decryptData(entry.Password, json.Nonce as string),
                         });
                     });
 
@@ -145,19 +145,19 @@ export class KeePassHTTP
     /**
      * fetch wrapper for KeePassHttp requests
      */
-    private async _fetchJson(body: IRequestBody): Promise<IResponseBody>
+    private static async _fetchJson(body: IRequestBody): Promise<IResponseBody>
     {
         if(KeePassHTTP._key) // Do we have a key?
         {
-            const nonce = this._generateNonce();
+            const nonce = KeePassHTTP._generateNonce();
             body = Object.assign({}, body, {
                 Nonce: nonce, // Add the Nonce to the request
-                Verifier: this._encryptData(nonce, nonce), // Add the Verifier to the request
+                Verifier: KeePassHTTP._encryptData(nonce, nonce), // Add the Verifier to the request
                 Id: KeePassHTTP._id?KeePassHTTP._id:'', // Add the Id, if we have one
             } as IRequestBody);
 
-            if(body.Url) body.Url = this._encryptData(body.Url, nonce);
-            if(body.SubmitUrl) body.SubmitUrl = this._encryptData(body.SubmitUrl, nonce);
+            if(body.Url) body.Url = KeePassHTTP._encryptData(body.Url, nonce);
+            if(body.SubmitUrl) body.SubmitUrl = KeePassHTTP._encryptData(body.SubmitUrl, nonce);
         }        
         
         const request: RequestInit = {
@@ -173,10 +173,9 @@ export class KeePassHTTP
         if(response.ok)
         {
             try {
-                const json = await response.json();
-                return json;
+                return await response.json();
             } catch {
-                throw 'Parsing reponse JSON failed';
+                throw 'Parsing response JSON failed';
             }
         }
         else
@@ -186,7 +185,7 @@ export class KeePassHTTP
     /**
      * Encrypt the data we want to send to KeePassHttp
      */
-    private _encryptData(data: string, nonce: string)
+    private static _encryptData(data: string, nonce: string)
     {
         const encrypted = sjcl.mode.cbc.encrypt(
             new sjcl.cipher.aes(sjcl.codec.base64.toBits(KeePassHTTP._key as string)),
@@ -200,7 +199,7 @@ export class KeePassHTTP
     /**
      * Decrypt the data we want to received from KeePassHttp
      */
-    private _decryptData(data: string, nonce: string)
+    private static _decryptData(data: string, nonce: string)
     {
         const decrypted = sjcl.mode.cbc.decrypt(
             new sjcl.cipher.aes(sjcl.codec.base64.toBits(KeePassHTTP._key as string)),
@@ -214,7 +213,7 @@ export class KeePassHTTP
     /**
      * Generate a (128bit) Nonce, base64 encoded
      */
-    private _generateNonce(): string
+    private static _generateNonce(): string
     {
         let key = '';
         for(let i=0; i<16; i++)
@@ -226,7 +225,7 @@ export class KeePassHTTP
     /**
      * Generate a (256bit) shared key, base64 encoded
      */
-    private _generateSharedKey(): string
+    private static _generateSharedKey(): string
     {
         let key = '';
         for(let i=0; i<32; i++)

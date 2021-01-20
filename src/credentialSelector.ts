@@ -1,14 +1,14 @@
 import * as $ from 'jquery-slim';
 import * as IMessage from './IMessage';
 
-$(document).ready(()=>{
+$(()=>{
     new CredentialSelector();
 });
 
 class CredentialSelector
 {
-    private _nonce: number;
-    private _credentialsList: JQuery<HTMLElement>;
+    private readonly _nonce: number;
+    private _credentialsList: JQuery;
 
     constructor()
     {

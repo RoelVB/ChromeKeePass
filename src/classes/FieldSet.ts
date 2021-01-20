@@ -182,11 +182,15 @@ export default class FieldSet
 
     /**
      * Open the credentials dropdown under the `target`
-     * @param target 
+     * @param target The html element to open the target under.
+     * @param showWithOnlyOneChoice: Whether or not to show the dropdown if there is only one choice.
      */
-    private _openDropdown(target: JQuery)
+    private _openDropdown(target: JQuery, showWithOnlyOneChoice = true)
     {
         if(this._dropdown !== undefined) return; // Dropdown is already open
+        if (!showWithOnlyOneChoice && this._pageControl.credentials && this._pageControl.credentials.length === 1) {
+            return; // No need to display the dropdown menu if there is only one option
+        }
         if((new Date()).getTime() - (this._dropdownCloseTime || 0) < 1000) return; // The dropdown was closed less than a second ago, it doesn't make sense to open it again so quickly
         this._dropdownOpenTime = (new Date()).getTime();
 

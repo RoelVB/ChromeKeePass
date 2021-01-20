@@ -48,6 +48,7 @@ function fillSettings()
     loadSettings().then((settings)=>{
         $('#showUsernameIcon').prop('checked', settings.showUsernameIcon);
         $('#showDropdownOnFocus').prop('checked', settings.showDropdownOnFocus);
+        $('#showDropdownOnClick').prop('checked', settings.showDropdownOnClick);
         $('#autoFillSingleCredential').prop('checked', settings.autoFillSingleCredential);
         $('#autoComplete').prop('checked', settings.autoComplete);
         $('#keePassHost').val(settings.keePassHost);
@@ -64,6 +65,7 @@ function doSave()
     saveSettings({
         showUsernameIcon: $('#showUsernameIcon').prop('checked'),
         showDropdownOnFocus: $('#showDropdownOnFocus').prop('checked'),
+        showDropdownOnClick: $('#showDropdownOnClick').prop('checked'),
         autoFillSingleCredential: $('#autoFillSingleCredential').prop('checked'),
         autoComplete: $('#autoComplete').prop('checked'),
         keePassHost: $('#keePassHost').val() as string,

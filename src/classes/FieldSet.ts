@@ -51,7 +51,7 @@ export default class FieldSet
 
         // Maybe we need to open the dropdown?
         if(this._pageControl.settings.showDropdownOnFocus && this._controlField.is(':focus'))
-            this._openDropdown(this._controlField);
+            this._openDropdown(this._controlField, false);
 
         // Should we show the icon in the username field?
         if(this._pageControl.settings.showUsernameIcon)
@@ -95,16 +95,16 @@ export default class FieldSet
     }
 
     /** Event when the username field is clicked */
-    private _onClick(e: JQuery.ClickEvent)
-    {
-        if(this._onIcon) // Only continue if the cursor is on the icon
-        {
-            e.preventDefault();
-
-            if(this._dropdown)
+    private _onClick(event: JQuery.ClickEvent) {
+        if (this._onIcon) { // Only continue if the cursor is on the icon
+            event.preventDefault();
+            if (this._dropdown) {
                 this.closeDropdown();
-            else
+            } else {
                 this._openDropdown(this._controlField);
+            }
+        } else if (this._pageControl.settings.showDropdownOnClick && this._dropdown === undefined) {
+            this._openDropdown(this._controlField);
         }
     }
 

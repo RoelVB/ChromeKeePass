@@ -46,7 +46,7 @@ export default class FieldSet
         this._controlFieldTitle = this._controlField.attr('title') || '';
         this._controlField.attr('autocomplete', 'off');
 
-        this._controlField.on('mousemove', this._onMouseMove.bind(this)).on('mouseleave', this._activateIcon.bind(this, true)).on('focus', this._onFocus.bind(this));
+        this._controlField.on('mousemove', this._onMouseMove.bind(this)).on('mouseleave', this._activateIcon.bind(this, true)).on('focusin', this._onFocus.bind(this)).on('focusout', this._onFocusLost.bind(this));
         this._controlField.on('click', this._onClick.bind(this)).on('keydown', this._onKeyPress.bind(this)).on('keyup', this._onKeyUp.bind(this));
 
         // Maybe we need to open the dropdown?
@@ -89,10 +89,18 @@ export default class FieldSet
     }
 
     /** Event when the username field gets focussed */
-    private _onFocus(_event: JQuery.FocusEvent)
-    {
-        if(this._pageControl.settings.showDropdownOnFocus) // Show the dropdown when this happens?
-            this._openDropdown(this._controlField);
+    private _onFocus(_event: JQuery.FocusInEvent) {
+        // Show the dropdown on focus when enabled and whe either have more than one credential or no credentials.
+        if (this._pageControl.settings.showDropdownOnFocus) {
+            this._openDropdown(this._controlField, false);
+        }
+    }
+
+    /** Event when the username field loses focussed */
+    private _onFocusLost(event: JQuery.FocusOutEvent) {
+        if (this._dropdown && !this._dropdown.is(':focus')) {
+            this.closeDropdown();
+        }
     }
 
     /** Event when the username field is clicked */

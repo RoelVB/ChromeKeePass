@@ -8,6 +8,7 @@ export default class BackgroundListener
     {
         chrome.runtime.onMessage.addListener(this._onMessage.bind(this));
 
+        // noinspection JSIgnoredPromiseFromCall
         this._testAssociate();
     }
 
@@ -31,7 +32,7 @@ export default class BackgroundListener
                 responsePromise = this._findCredentials(sender.url || '');
                 break;
             case IMessage.RequestType.getCommands:
-                responsePromise = this._getExtentionCommands();
+                responsePromise = this._getExtensionCommands();
                 break;
         }
 
@@ -46,7 +47,7 @@ export default class BackgroundListener
 
     /**
      * We got a credentials request
-     * @param url URL the user wants credetials for
+     * @param url URL the user wants credentials for
      */
     private _findCredentials(url: string): Promise<IMessage.Credential[]>
     {
@@ -55,10 +56,10 @@ export default class BackgroundListener
             if(url)
             {
                 KeePassHTTP.getLogins(url).then((result)=>{
-                    this._setErrorIcon(true);
+                    BackgroundListener._setErrorIcon(true);
                     resolve(result);
                 }).catch((error)=>{
-                    this._setErrorIcon();
+                    BackgroundListener._setErrorIcon();
                     reject(error);
                 });
             }
@@ -72,7 +73,7 @@ export default class BackgroundListener
     {
         return new Promise<IMessage.Association>((resolve)=>{
             KeePassHTTP.associate().then((associated)=>{
-                this._setErrorIcon(true);
+                BackgroundListener._setErrorIcon(true);
                 resolve({
                     Id: KeePassHTTP.id,
                     Associated: associated,
@@ -80,7 +81,7 @@ export default class BackgroundListener
 
             }).catch((error)=>{
                 console.error(error);
-                this._setErrorIcon();
+                BackgroundListener._setErrorIcon();
                 resolve({
                     Id: KeePassHTTP.id,
                     Associated: false,
@@ -95,7 +96,7 @@ export default class BackgroundListener
     {
         return new Promise<IMessage.Association>((resolve)=>{
             KeePassHTTP.testAssociate().then((associated)=>{
-                this._setErrorIcon(associated);
+                BackgroundListener._setErrorIcon(associated);
                 resolve({
                     Id: KeePassHTTP.id,
                     Associated: associated,
@@ -103,7 +104,7 @@ export default class BackgroundListener
 
             }).catch((error)=>{
                 console.error(error);
-                this._setErrorIcon();
+                BackgroundListener._setErrorIcon();
                 resolve({
                     Id: KeePassHTTP.id,
                     Associated: false,
@@ -113,9 +114,9 @@ export default class BackgroundListener
         });
     }
 
-    private _getExtentionCommands(): Promise<chrome.commands.Command[]>
+    private _getExtensionCommands(): Promise<chrome.commands.Command[]>
     {
-        return new Promise<chrome.commands.Command[]>((resolve, reject)=>{
+        return new Promise<chrome.commands.Command[]>((resolve, _reject)=>{
             chrome.commands.getAll((commands)=>{
                 resolve(commands);
             });
@@ -123,10 +124,10 @@ export default class BackgroundListener
     }
 
     /**
-     * Set the icon next to the addressbar to the error icon
+     * Set the icon next to the address bar to the error icon
      * @param clear If true, te default icon is shown
      */
-    private _setErrorIcon(clear?: boolean)
+    private static _setErrorIcon(clear?: boolean)
     {
         if(clear)
             chrome.browserAction.setIcon({path: 'images/icon48.png'});

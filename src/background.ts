@@ -64,7 +64,7 @@ chrome.commands.onCommand.addListener(async (command)=>{
 
 function sendRedetect(info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab)
 {
-    // Send redetect command to active tab
+    // Send re-detect command to active tab
     chrome.tabs.sendMessage(tab.id as number, {
         type: IMessage.RequestType.redetectFields,
     } as IMessage.Request);

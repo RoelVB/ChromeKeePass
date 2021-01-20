@@ -11,13 +11,13 @@ import Client from '../classes/BackgroundClient';
 export default class FieldSet
 {
     /** Pointer to the dropdown */
-    private _dropdown?: JQuery<HTMLElement>;
+    private _dropdown?: JQuery;
     /** Timestamp from when the dropdown is closed, to prevent is from opening again directly after closing */
     private _dropdownCloseTime?: number;
     /** Timestamp from when the dropdown is opened, to prevent is from closing directly after opening */
     private _dropdownOpenTime?: number;
     /** Pointers to the credentials shown in the dropdown */
-    private _credentialItems?: JQuery<HTMLElement>[];
+    private _credentialItems?: JQuery[];
     /** Index of the credentials selected from `_credentialItems` */
     private _selectedCredentialIndex?: number;
     /** The selected credentials from `_credentialItems` */
@@ -29,9 +29,9 @@ export default class FieldSet
     /** Variable holding all icon styles (to easily remove all the styles at once) */
     private static allIconStyles = `${styles.green} ${styles.orange} ${styles.red}`;
     /** This is the field where gonna use ChromeKeePass's controls */
-    private _controlField: JQuery<HTMLElement> = $('<input>'); // Input a dummy `<div>`, because TypeScript will complain the variable could be undefined
+    private readonly _controlField: JQuery = $('<input>'); // Input a dummy `<div>`, because TypeScript will complain the variable could be undefined
     /** Used to remember the original title attribute from the username field (because it changes when the cursor hovers the ChromeKeePass icon) */
-    private _controlFieldTitle: string = '';
+    private readonly _controlFieldTitle: string = '';
 
     /**
      * Append ChromeKeePass to the fields
@@ -39,7 +39,7 @@ export default class FieldSet
      * @param passwordField Pointer tot the password field
      * @param usernameField Pointer to the username field
      */
-    constructor(private _pageControl: PageControl, public readonly passwordField: JQuery<HTMLElement>, public readonly usernameField?: JQuery<HTMLElement>)
+    constructor(private _pageControl: PageControl, public readonly passwordField: JQuery, public readonly usernameField?: JQuery)
     {
         this._controlField = this.usernameField || this.passwordField;
 
@@ -88,7 +88,7 @@ export default class FieldSet
     }
 
     /** Event when the username field gets focussed */
-    private _onFocus(e: JQuery.FocusEvent)
+    private _onFocus(_event: JQuery.FocusEvent)
     {
         if(this._pageControl.settings.showDropdownOnFocus) // Show the dropdown when this happens?
             this._openDropdown(this._controlField);
@@ -111,21 +111,21 @@ export default class FieldSet
     /** Event when a key is pressed while in the username field */
     private _onKeyPress(e: JQuery.KeyDownEvent)
     {
-        switch(e.keyCode)
+        switch(e.key)
         {
-            case 38: // Up
+            case 'ArrowUp':
                 e.preventDefault(); // Else this action will move the cursor
                 this._selectNextCredential(true);
                 break;
-            case 40: // Down
+            case 'ArrowDown':
                 e.preventDefault(); // Else this action will move the cursor
                 this._selectNextCredential();
                 break;
-            case 13: // Enter
+            case 'Enter':
                 this._enterSelection();
                 break;
-            case 27: // Esc
-            case 9: // Tab
+            case 'Escape':
+            case 'Tab':
                 this.closeDropdown();
                 break;
         }
@@ -171,7 +171,7 @@ export default class FieldSet
      */
     private _activateIcon(deactivate?: boolean)
     {
-        if(deactivate && this._onIcon == false) return; // We don't have to deactivate when the cursor isn't on the icon
+        if(deactivate && !this._onIcon) return; // We don't have to deactivate when the cursor isn't on the icon
 
         this._onIcon = !deactivate;
         if(deactivate)
@@ -184,7 +184,7 @@ export default class FieldSet
      * Open the credentials dropdown under the `target`
      * @param target 
      */
-    private _openDropdown(target: JQuery<HTMLElement>)
+    private _openDropdown(target: JQuery)
     {
         if(this._dropdown !== undefined) return; // Dropdown is already open
         if((new Date()).getTime() - (this._dropdownCloseTime || 0) < 1000) return; // The dropdown was closed less than a second ago, it doesn't make sense to open it again so quickly
@@ -237,10 +237,10 @@ export default class FieldSet
      * @param target The generated content will be inserted into this element
      * @param filter Optional text to filter credentials on
      */
-    private _generateDropdownContent(target: JQuery<HTMLElement>, filter?: string)
+    private _generateDropdownContent(target: JQuery, filter?: string)
     {
         let credentials: IMessage.Credential[] = [];
-        if(this._pageControl.credentials instanceof Array) // Do we have credetials available for this page?
+        if(this._pageControl.credentials instanceof Array) // Do we have credentials available for this page?
         {
             if(filter) // Do we need to filter?
             {
@@ -256,7 +256,7 @@ export default class FieldSet
         
         if(credentials.length)
         {
-            const items: JQuery<HTMLElement>[] = [];
+            const items: JQuery[] = [];
 
             credentials.forEach((credential)=>{
                 items.push(
@@ -323,7 +323,7 @@ export default class FieldSet
     }
 
     /** Enter the selected credentials into the fields */
-    private _enterSelection(doNotCloseDropdown?: boolean)
+    private _enterSelection()
     {
         if(!this._dropdown) return; // We don't want to do this when the dropdown isn't open
         
@@ -353,7 +353,7 @@ export default class FieldSet
     }
 
     /** Open the extension's option window */
-    private _openOptionsWindow()
+    private static _openOptionsWindow()
     {
         Client.openOptions();
     }

@@ -199,20 +199,26 @@ export default class FieldSet
             width: `${target.outerWidth()}px`
         });
 
-        const footerItems: (JQuery<HTMLElement>|string)[] = [
-            $('<img>').addClass(styles.logo).attr('src', chrome.extension.getURL('images/icon48.png')),
-            'ChromeKeePass',
-            $('<img>').attr('src', chrome.extension.getURL('images/gear.png')).attr('title', 'Open settings').css({cursor: 'pointer'}).click(this._openOptionsWindow.bind(this)),
-            // $('<img>').attr('src', chrome.extension.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
-        ];
-        const footer = $('<div>').addClass(styles.footer).append(...footerItems);
-
         // Generate the content
         const content = $('<div>').addClass(styles.content);
         this._generateDropdownContent(content);
+        this._dropdown.append(content);
         
-        // Add the content en footer to the dropdown and show it
-        this._dropdown.append(content).append(footer);
+        if (this._pageControl.settings.theme.enableDropdownFooter) {
+            // Create the footer and add it to the dropdown
+            const footerItems: (JQuery | string)[] = [
+                $('<img>').addClass(styles.logo).attr('src', chrome.extension.getURL('images/icon48.png')),
+                'ChromeKeePass',
+                $('<img>').attr('src', chrome.extension.getURL('images/gear.png'))
+                    .attr('title', 'Open settings').css({cursor: 'pointer'})
+                    .on('click', FieldSet._openOptionsWindow.bind(this)),
+                // $('<img>').attr('src', chrome.extension.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
+            ];
+            const footer = $('<div>').addClass(styles.footer).append(...footerItems);
+            this._dropdown.append(footer);
+        }
+
+        // Show the dropdown
         $(document.body).append(this._dropdown);
     }
 

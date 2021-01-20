@@ -1,4 +1,9 @@
 
+export interface ITheme {
+    /** Show a footer in the credential dropdown list? */
+    enableDropdownFooter: boolean;
+}
+
 export interface ISettings
 {
     /** Show the ChromeKeePass icon in the username field? */
@@ -13,6 +18,8 @@ export interface ISettings
     keePassHost: string;
     /** The port for KeePassHttp */
     keePassPort: number;
+    /** Settings determining the look of user interface elements */
+    theme: ITheme;
 }
 
 export const defaultSettings: ISettings = 
@@ -23,6 +30,9 @@ export const defaultSettings: ISettings =
     autoComplete: true,
     keePassHost: 'localhost',
     keePassPort: 19455,
+    theme: {
+        enableDropdownFooter: true,
+    }
 }
 
 /** Async method for loading settings */

@@ -52,6 +52,7 @@ function fillSettings()
         $('#autoComplete').prop('checked', settings.autoComplete);
         $('#keePassHost').val(settings.keePassHost);
         $('#keePassPort').val(settings.keePassPort);
+        $('#enableDropdownFooter').prop('checked', settings.theme.enableDropdownFooter);
     });
 }
 
@@ -67,6 +68,9 @@ function doSave()
         autoComplete: $('#autoComplete').prop('checked'),
         keePassHost: $('#keePassHost').val() as string,
         keePassPort: parseInt($('#keePassPort').val() as any),
+        theme: {
+            enableDropdownFooter: $('#enableDropdownFooter').prop('checked'),
+        },
     }).then(() => {
         const saveStatus = $('#saveStatus');
         saveStatus.text('Options saved');

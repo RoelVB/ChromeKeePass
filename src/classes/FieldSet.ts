@@ -25,7 +25,7 @@ export default class FieldSet
     /** Variable holding all icon styles (to easily remove all the styles at once) */
     private static allIconStyles = `${styles.green} ${styles.orange} ${styles.red}`;
     /** This is the field where gonna use ChromeKeePass's controls */
-    private readonly _controlField: JQuery = $('<input>'); // Input a dummy `<div>`, because TypeScript will complain the variable could be undefined
+    private readonly _controlField: JQuery;
     /** Used to remember the original title attribute from the username field (because it changes when the cursor hovers the ChromeKeePass icon) */
     private readonly _controlFieldTitle: string = '';
 
@@ -93,7 +93,7 @@ export default class FieldSet
     }
 
     /** Event when the username field loses focussed */
-    private _onFocusLost(event: JQuery.FocusOutEvent) {
+    private _onFocusLost(_event: JQuery.FocusOutEvent) {
         if (this._dropdown && !this._dropdown.is(':focus')) {
             this.closeDropdown();
         }
@@ -213,11 +213,13 @@ export default class FieldSet
         
         if (this._pageControl.settings.theme.enableDropdownFooter) {
             // Create the footer and add it to the dropdown
+            // noinspection HtmlRequiredAltAttribute,RequiredAttributes
             const footerItems: (JQuery | string)[] = [
-                $('<img>').addClass(styles.logo).attr('src', chrome.extension.getURL('images/icon48.png')),
+                $('<img>').addClass(styles.logo).attr('src', chrome.extension.getURL('images/icon48.png'))
+                    .attr('alt', ''),
                 'ChromeKeePass',
                 $('<img>').attr('src', chrome.extension.getURL('images/gear.png'))
-                    .attr('title', 'Open settings').css({cursor: 'pointer'})
+                    .attr('alt', 'Open Settings').attr('title', 'Open settings').css({cursor: 'pointer'})
                     .on('click', FieldSet._openOptionsWindow.bind(this)),
                 // $('<img>').attr('src', chrome.extension.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
             ];

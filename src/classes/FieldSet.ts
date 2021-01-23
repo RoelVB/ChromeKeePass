@@ -12,10 +12,6 @@ export default class FieldSet
 {
     /** Pointer to the dropdown */
     private _dropdown?: JQuery;
-    /** Timestamp from when the dropdown is closed, to prevent is from opening again directly after closing */
-    private _dropdownCloseTime?: number;
-    /** Timestamp from when the dropdown is opened, to prevent is from closing directly after opening */
-    private _dropdownOpenTime?: number;
     /** Pointers to the credentials shown in the dropdown */
     private _credentialItems?: JQuery[];
     /** Index of the credentials selected from `_credentialItems` */
@@ -200,8 +196,6 @@ export default class FieldSet
         if (!showWithOnlyOneChoice && this._pageControl.credentials && this._pageControl.credentials.length === 1) {
             return; // No need to display the dropdown menu if there is only one option
         }
-        if((new Date()).getTime() - (this._dropdownCloseTime || 0) < 1000) return; // The dropdown was closed less than a second ago, it doesn't make sense to open it again so quickly
-        this._dropdownOpenTime = (new Date()).getTime();
 
         const targetOffset = target.offset();
 
@@ -240,14 +234,11 @@ export default class FieldSet
     {
         if(this._dropdown)
         {
-            if((new Date()).getTime() - (this._dropdownOpenTime || 0) < 500) return; // The dropdown was opened less than 0.5 seconds ago, it doesn't make sense to close it again so quickly
-
             this._dropdown.remove();
             this._credentialItems = undefined;
             this._selectedCredential = undefined;
             this._selectedCredentialIndex = undefined;
             this._dropdown = undefined;
-            this._dropdownCloseTime = (new Date()).getTime();
         }
     }
 

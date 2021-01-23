@@ -94,9 +94,11 @@ export default class FieldSet
 
     /** Event when the username field loses focussed */
     private _onFocusLost(_event: JQuery.FocusOutEvent) {
-        if (this._dropdown && !this._dropdown.is(':focus')) {
-            this.closeDropdown();
-        }
+        setTimeout(() => {
+            if (this._dropdown && !this._dropdown.is(':focus')) {
+                this.closeDropdown();
+            }
+        }, 100);
     }
 
     /** Event when the username field is clicked */

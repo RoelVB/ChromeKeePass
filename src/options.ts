@@ -93,7 +93,8 @@ async function getExtensionCommands()
     $('#shortcuts').empty();
 
     commands.forEach((command)=>{
-        if(command.description)
-            $('#shortcuts').append($('<div>').text(`${command.description}: ${command.shortcut}`));
+        if(command.description) {
+            $('#shortcuts').append($('<div>').text(`${command.description}: ${command.shortcut || '<Unassigned>'}`));
+        }
     });
 }

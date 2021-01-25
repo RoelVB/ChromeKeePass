@@ -21,6 +21,7 @@ $(()=>{
     });
 
     $('#save').on('click', doSave);
+    $('#openShortcuts').on('click', openShortcuts);
 });
 
 function associate()
@@ -82,6 +83,15 @@ function doSave()
         saveStatus.text('Options saved');
         setTimeout(() => saveStatus.text(''), 1500);
     });
+}
+
+/**
+ * Open the Chrome shortcut manager in a new tab.
+ */
+function openShortcuts() {
+    chrome.tabs.create({
+        url: 'chrome://extensions/shortcuts'
+    })
 }
 
 /**

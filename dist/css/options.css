@@ -55,6 +55,21 @@ body {
     margin-left: 10px;
 }
 
+#openShortcuts {
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    padding: 8px;
+}
+
+#openShortcuts svg {
+    fill: #5f6368;
+    pointer-events: none;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 .separator {
     background: rgba(0, 0, 0, 0.06);
     height: 1px;
@@ -68,7 +83,7 @@ h2 {
     margin: 21px 0 12px 0;
 }
 
-label {
+label, .option-element {
     display: flex;
     justify-content: space-between;
     align-items: center;

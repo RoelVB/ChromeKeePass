@@ -1,71 +1,81 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>ChromeKeePass</title>
-        <script type="text/javascript" src="../js/options.js"></script>
-    </head>
-    <body>
-        <h1>Status</h1>
-        <span id="connectionStatus">Getting status...</span>
-
-        <h1>Options</h1>
-        <label>
-            <input id="showUsernameIcon" type="checkbox" />
-            Show ChromeKeePass icon in username field
-        </label>
-        <br /><br />
-        <label>
-            <input id="showDropdownOnFocus" type="checkbox" />
-            Show dropdown when username field gets focussed
-        </label>
-        <br /><br />
-        <label>
-            Show dropdown when username fields is focussed on detection
-            <input id="showDropdownOnDetectionFocus" type="checkbox"/>
-        </label>
-        <br /><br />
-        <label>
-            <input id="showDropdownOnClick" type="checkbox" />
-            Show dropdown when username field is clicked
-        </label>
-        <br /><br />
-        <label>
-            <input id="autoFillSingleCredential" type="checkbox" />
-            Automatically fill credentials if only a single entry is found
-        </label>
-        <br /><br />
-        <label>
-            <input id="searchForInputsOnUpdate" type="checkbox" />
-            Re-detect username and password fields when the website updates
-        </label>
-        <br /><br />
-        <label>
-            <input id="autoComplete" type="checkbox" />
-            Show matching credentials while typing in the username field
-        </label>
-        <br /><br />
-        <label>
-            KeePassHttp host:
-            <input id="keePassHost" type="text" />
-        </label>
-        <br /><br />
-        <label>
-            KeePassHttp port:
-            <input id="keePassPort" type="number" />
-        </label>
-        <br /><br />
-        <h1>Theme</h1>
-        <label>
-            <input id="enableDropdownFooter" type="checkbox" />
-            Enable the footer in the credential list dropdown
-        </label>
-        <br /><br />
-        <h1>Shortcuts</h1>
-        <div id="shortcuts"></div>
-        <small>You can change shortcuts using the Extensions > Keyboard Shortcuts option in Chrome</small>
-
-        <br /><br />
-        <button id="save">Save</button> <span id="saveStatus"></span>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <title>ChromeKeePass</title>
+    <link rel="stylesheet" type="text/css" href="../css/options.css" />
+    <script type="text/javascript" src="../js/options.js"></script>
+</head>
+<body>
+<div id="main-container">
+    <div id="option-container">
+        <h2 style="margin-top: 10px">Connection</h2>
+        <div class="group-container">
+            <label class="option-element">
+                Status <span id="connectionStatus">Getting status...</span>
+            </label>
+            <div class="separator"></div>
+            <label>
+                KeePassHttp address
+                <span class="option-element">
+                    <input id="keePassHost" type="text" placeholder="host"/>:<input id="keePassPort" type="number" placeholder="port"/>
+                </span>
+            </label>
+        </div>
+        <h2>Options</h2>
+        <div class="group-container">
+            <label>
+                Show ChromeKeePass icon in username fields
+                <input id="showUsernameIcon" type="checkbox"/>
+            </label>
+            <div class="separator"></div>
+            <label>
+                Show dropdown when username fields get focussed
+                <input id="showDropdownOnFocus" type="checkbox"/>
+            </label>
+            <div class="separator"></div>
+            <label>
+                Show dropdown when username fields is focussed on detection
+                <input id="showDropdownOnDetectionFocus" type="checkbox"/>
+            </label>
+            <div class="separator"></div>
+            <label>
+                Show dropdown when username fields are clicked
+                <input id="showDropdownOnClick" type="checkbox"/>
+            </label>
+            <div class="separator"></div>
+            <label>
+                Automatically fill credentials if only a single entry is found
+                <input id="autoFillSingleCredential" type="checkbox"/>
+            </label>
+            <div class="separator"></div>
+            <label>
+                Re-detect password fields when the website updates
+                <input id="searchForInputsOnUpdate" type="checkbox"/>
+            </label>
+            <div class="separator"></div>
+            <label>
+                Show matching credentials while typing in the username field
+                <input id="autoComplete" type="checkbox"/>
+            </label>
+        </div>
+        <h2>Theme</h2>
+        <div class="group-container">
+            <label>
+                Enable the footer in the credential list dropdown
+                <input id="enableDropdownFooter" type="checkbox"/>
+            </label>
+        </div>
+        <h2>Shortcuts</h2>
+        <div class="group-container">
+            <div id="shortcuts"></div>
+            <small>You can change shortcuts using the Extensions > Keyboard Shortcuts option in Chrome</small>
+        </div>
+    </div>
+    <div id="save-footer">
+        <button id="save">Save</button>
+        <span id="saveStatus"></span>
+    </div>
+</div>
+</body>
 </html>

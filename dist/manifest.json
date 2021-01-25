@@ -36,8 +36,7 @@
     },
 
     "options_ui": {
-        "page": "html/options.html",
-        "chrome_style": true
+        "page": "html/options.html"
     },
 
     "icons": {

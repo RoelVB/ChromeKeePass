@@ -27,6 +27,7 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
     position: absolute;
     border: 1px solid grey;
     border-radius: 4px;
+    margin: 2px;
     background-color: white;
     min-width: 225px;
     z-index: 999999;
@@ -58,9 +59,18 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
             }
         }
 
+        .item:first-child {
+            -webkit-border-radius: 4px 4px 0 0;
+            -moz-border-radius: 4px 4px 0 0;
+        }
+
+        .item:last-child {
+            border-bottom: 0;
+            -webkit-border-radius: 0 0 4px 4px;
+            -moz-border-radius: 0 0 4px 4px;
+        }
+
         .item.selected, .item:hover {
-            -webkit-border-radius: 4px;
-            -moz-border-radius: 4px;
             background-image: linear-gradient(
                             to right, var(--dropdown-select-background-start), var(--dropdown-select-background-end));
         }

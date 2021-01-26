@@ -203,7 +203,7 @@ export default class FieldSet
         const theme = this._pageControl.settings.theme;
         // Create the dropdown
         this._dropdown = $('<div>').addClass(styles.dropdown).css({
-            left: `${targetOffset && targetOffset.left}px`,
+            left: `${(targetOffset ? targetOffset.left : 0) - 2}px`,
             top: `${targetOffset && targetOffset.top + (target.outerHeight() || 10)}px`,
             width: `${target.outerWidth()}px`
         });

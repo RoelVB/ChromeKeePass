@@ -2,6 +2,10 @@
 export interface ITheme {
     /** Show a footer in the credential dropdown list? */
     enableDropdownFooter: boolean;
+    /** The start of the background color gradient of the selected item in the credential dropdown list */
+    dropdownSelectedItemColorStart: string;
+    /** The end of the background color gradient of the selected item in the credential dropdown list */
+    dropdownSelectedItemColorEnd: string;
 }
 
 export interface ISettings
@@ -41,6 +45,8 @@ export const defaultSettings: ISettings =
     searchForInputsOnUpdate: true,
     theme: {
         enableDropdownFooter: true,
+        dropdownSelectedItemColorStart: '#f0f3fb',
+        dropdownSelectedItemColorEnd: '#bac7ec',
     }
 }
 

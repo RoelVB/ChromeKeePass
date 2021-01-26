@@ -63,6 +63,8 @@ function fillSettings()
         $('#keePassHost').val(settings.keePassHost);
         $('#keePassPort').val(settings.keePassPort);
         $('#enableDropdownFooter').prop('checked', settings.theme.enableDropdownFooter);
+        $('#dropdownSelectedItemColorStart').val(settings.theme.dropdownSelectedItemColorStart);
+        $('#dropdownSelectedItemColorEnd').val(settings.theme.dropdownSelectedItemColorEnd);
     });
 }
 
@@ -83,6 +85,8 @@ function doSave()
         keePassPort: parseInt($('#keePassPort').val() as any),
         theme: {
             enableDropdownFooter: $('#enableDropdownFooter').prop('checked'),
+            dropdownSelectedItemColorStart: $('#dropdownSelectedItemColorStart').val() as string,
+            dropdownSelectedItemColorEnd: $('#dropdownSelectedItemColorEnd').val() as string,
         },
     }).then(() => {
         const saveStatus = $('#saveStatus');

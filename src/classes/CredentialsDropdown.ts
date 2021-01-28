@@ -130,7 +130,7 @@ export default class CredentialsDropdown {
         } else {
             this._credentialItems[selectedIndex].removeClass(styles.selected);
             if (!reverse) {
-                selectedIndex = selectedIndex++ % this._credentialItems.length;
+                selectedIndex = ++selectedIndex % this._credentialItems.length;
             } else if (--selectedIndex < 0) { // Jump back to the last item if we get past the first item
                 selectedIndex = this._credentialItems.length - 1;
             }

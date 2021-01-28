@@ -4,6 +4,7 @@ import FieldSet from './FieldSet';
 import * as IMessage from '../IMessage';
 import { ISettings, defaultSettings } from '../Settings';
 import Client from '../classes/BackgroundClient';
+import CredentialsDropdown from "./CredentialsDropdown";
 
 export default class PageControl
 {
@@ -11,6 +12,8 @@ export default class PageControl
     private _fieldSets: FieldSet[] = [];
     private _foundCredentials?: IMessage.Credential[];
     private _settings: ISettings = defaultSettings;
+    /** The dropdown that allows the user to choose credentials */
+    private readonly _dropdown: CredentialsDropdown;
 
     constructor()
     {
@@ -22,6 +25,7 @@ export default class PageControl
             if(message.type === IMessage.RequestType.redetectFields)
                 this.detectFields();
         });
+        this._dropdown = new CredentialsDropdown(this);
     }
 
     /** Try to detect credentials fields */
@@ -93,11 +97,8 @@ export default class PageControl
         }
         this._installedEscapeHandler = true;
         $(document).on('keyup', (e: JQuery.KeyUpEvent<Document>)=>{
-            if(e.key == 'Escape')
-            {
-                this._fieldSets.forEach((fieldSet)=>{ // Close dropdown for all fieldSets
-                    fieldSet.closeDropdown();
-                });
+            if(e.key == 'Escape') {
+                this._dropdown.close();
             }
         });
     }
@@ -121,5 +122,9 @@ export default class PageControl
     get settings(): ISettings
     {
         return this._settings;
+    }
+
+    get dropdown(): CredentialsDropdown {
+        return this._dropdown;
     }
 }

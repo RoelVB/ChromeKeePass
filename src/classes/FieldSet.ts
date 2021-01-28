@@ -3,20 +3,14 @@ import * as styles from '../scss/content.scss';
 
 import PageControl from './PageControl';
 import * as IMessage from '../IMessage';
-import Client from '../classes/BackgroundClient';
+
 
 /**
  * Class for handling a set (username+password) fields
  */
 export default class FieldSet
 {
-    /** Pointer to the dropdown */
-    private _dropdown?: JQuery;
-    /** Pointers to the credentials shown in the dropdown */
-    private _credentialItems?: JQuery[];
-    /** Index of the credentials selected from `_credentialItems` */
-    private _selectedCredentialIndex?: number;
-    /** The selected credentials from `_credentialItems` */
+    /** The selected credential. */
     private _selectedCredential?: IMessage.Credential;
     /** Holds the old value for the username field, so we only react when the value changes */
     private _oldUsernameValue: string = '';
@@ -48,8 +42,9 @@ export default class FieldSet
         this._controlField.on('click', this._onClick.bind(this)).on('keydown', this._onKeyPress.bind(this)).on('keyup', this._onKeyUp.bind(this));
 
         // Maybe we need to open the dropdown?
-        if (this._pageControl.settings.showDropdownOnDetectionFocus && this._controlField.is(':focus')) {
-            this._openDropdown(this._controlField, false);
+        if (this._pageControl.settings.showDropdownOnDetectionFocus && this._controlField.is(':focus')
+            && this._pageControl.credentials && this._pageControl.credentials.length === 1) {
+            this._pageControl.dropdown.open(this);
         }
 
         // Should we show the icon in the username field?
@@ -73,10 +68,9 @@ export default class FieldSet
                 else
                     this._controlField.removeClass(FieldSet.allIconStyles).addClass(styles.orange);
             }
-
-            if(this._dropdown) // Is the dropdown open?
-                this._generateDropdownContent(this._dropdown.find(`.${styles.content}`));
-
+            if (this._pageControl.dropdown.isOpen()) { // Is the dropdown open?
+                this._changeCredentials();
+            }
             // Do we already have to fill the fields?
             if(this._pageControl.settings.autoFillSingleCredential && this._pageControl.credentials.length === 1)
                 this._inputCredential(this._pageControl.credentials[0]);
@@ -86,19 +80,63 @@ export default class FieldSet
             this._controlField.removeClass(FieldSet.allIconStyles).addClass(styles.red);
     }
 
+    /**
+     * Select the specified credential.
+     * @param credential The credential to select.
+     */
+    public selectCredential(credential?: IMessage.Credential) {
+        this._selectedCredential = credential;
+    }
+
+    /**
+     * @param filter An optional filter.
+     * @return The filtered credentials list.
+     */
+    public getCredentials(filter?: string): IMessage.Credential[] {
+        if(!(this._pageControl.credentials instanceof Array)) { // Do we have credentials available for this page?
+            return [];
+        }
+        if(filter) { // Do we need to filter?
+            filter = filter.toLowerCase();
+            return this._pageControl.credentials.filter(credential=>
+                credential.title.toLowerCase().indexOf(filter as string) !== -1
+                || credential.username.toLowerCase().indexOf(filter as string) !== -1
+            );
+        }
+        return this._pageControl.credentials; // No filter
+    }
+
+    /**
+     * @return The field that has the ChromeKeePass icon and should display the dropdown.
+     */
+    public get controlField(): JQuery {
+        return this._controlField;
+    }
+
+    /** Enter the selected credentials into the fields */
+    public enterSelection() {
+        if (!this._selectedCredential || !this._pageControl.dropdown.isOpen()) {
+            return; // We don't want to do this if we have no selection or the dropdown isn't open
+        }
+        this._inputCredential(this._selectedCredential);
+        this._selectedCredential = undefined;
+        this._pageControl.dropdown.close();
+    }
+
     /** Event when the username field gets focussed */
     private _onFocus(_event: JQuery.FocusInEvent) {
         // Show the dropdown on focus when enabled and whe either have more than one credential or no credentials.
-        if (this._pageControl.settings.showDropdownOnFocus && !this._iconOwnsClick) {
-            this._openDropdown(this._controlField, false);
+        if (this._pageControl.settings.showDropdownOnFocus && !this._iconOwnsClick
+            && this._pageControl.credentials && this._pageControl.credentials.length === 1) {
+            this._pageControl.dropdown.open(this);
         }
     }
 
     /** Event when the username field loses focussed */
     private _onFocusLost(_event: JQuery.FocusOutEvent) {
         setTimeout(() => {
-            if (this._dropdown && !this._dropdown.is(':focus')) {
-                this.closeDropdown();
+            if (!this._pageControl.dropdown.hasFocus()) {
+                this._pageControl.dropdown.close();
             }
         }, 100);
     }
@@ -114,36 +152,32 @@ export default class FieldSet
     private _onClick(event: JQuery.ClickEvent) {
         if (this._onIcon) { // Only continue if the cursor is on the icon
             event.preventDefault();
-            if (this._dropdown) {
-                this.closeDropdown();
+            if (this._pageControl.dropdown.isOpen()) {
+                this._pageControl.dropdown.close();
             } else {
-                this._openDropdown(this._controlField);
+                this._pageControl.dropdown.open(this);
             }
-        } else if (this._pageControl.settings.showDropdownOnClick && this._dropdown === undefined) {
-            this._openDropdown(this._controlField);
+        } else if (this._pageControl.settings.showDropdownOnClick) {
+            this._pageControl.dropdown.open(this);
         }
         this._iconOwnsClick = false;
     }
 
     /** Event when a key is pressed while in the username field */
-    private _onKeyPress(e: JQuery.KeyDownEvent)
-    {
-        switch(e.key)
-        {
+    private _onKeyPress(event: JQuery.KeyDownEvent) {
+        switch (event.key) {
             case 'ArrowUp':
-                e.preventDefault(); // Else this action will move the cursor
-                this._selectNextCredential(true);
-                break;
             case 'ArrowDown':
-                e.preventDefault(); // Else this action will move the cursor
-                this._selectNextCredential();
+                event.preventDefault(); // Else this action will move the cursor
+                this._pageControl.dropdown.open(this)
+                this._pageControl.dropdown.selectNextCredential(event.key === 'ArrowUp');
                 break;
             case 'Enter':
-                this._enterSelection();
+                this.enterSelection();
                 break;
             case 'Escape':
             case 'Tab':
-                this.closeDropdown();
+                this._pageControl.dropdown.close();
                 break;
         }
     }
@@ -159,11 +193,10 @@ export default class FieldSet
 
             if(this._pageControl.settings.autoComplete) // Is autocomplete enabled?
             {
-                if(this._dropdown === undefined) // The dropdown is not there
-                    this._openDropdown(this._controlField); // Try opening the dropdown
-
-                if(this._dropdown) // The dropdown is open?
-                    this._generateDropdownContent(this._dropdown.find(`.${styles.content}`), newValue);
+                this._pageControl.dropdown.open(this); // Try opening the dropdown
+                if (this._pageControl.dropdown.isOpen()) { // The dropdown is open?
+                    this._changeCredentials(newValue)
+                }
             }
         }
     }
@@ -198,175 +231,17 @@ export default class FieldSet
     }
 
     /**
-     * Open the credentials dropdown under the `target`
-     * @param target The html element to open the target under.
-     * @param showWithOnlyOneChoice: Whether or not to show the dropdown if there is only one choice.
+     * Change the available credentials based on the filter.
+     * @param filter Optional text to filter credentials on.
      */
-    private _openDropdown(target: JQuery, showWithOnlyOneChoice = true)
-    {
-        if(this._dropdown !== undefined) return; // Dropdown is already open
-        if (!showWithOnlyOneChoice && this._pageControl.credentials && this._pageControl.credentials.length === 1) {
-            return; // No need to display the dropdown menu if there is only one option
-        }
-
-        const targetOffset = target.offset();
-        const theme = this._pageControl.settings.theme;
-        // Create the dropdown
-        this._dropdown = $('<div>').addClass(styles.dropdown).css({
-            left: `${(targetOffset ? targetOffset.left : 0) - Math.max(theme.dropdownShadowWidth, 2)}px`,
-            top: `${targetOffset && targetOffset.top + (target.outerHeight() || 10)}px`,
-            width: `${target.outerWidth()}px`,
-            'margin-bottom': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
-            'margin-right': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
-            'margin-left': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
-            'border-width': `${theme.dropdownBorderWidth}px`,
-            'box-shadow': `0 ${theme.dropdownShadowWidth}px ${theme.dropdownShadowWidth}px 0 rgba(0,0,0,0.2)`,
-        });
-        let style = this._dropdown.get(0).style;
-        style.setProperty('--dropdown-select-background-start', theme.dropdownSelectedItemColorStart);
-        style.setProperty('--dropdown-select-background-end', theme.dropdownSelectedItemColorEnd);
-
-        // Generate the content
-        const content = $('<div>').addClass(styles.content);
-        this._generateDropdownContent(content);
-        this._dropdown.append(content);
-
-        if (theme.enableDropdownFooter) {
-            // Create the footer and add it to the dropdown
-            // noinspection HtmlRequiredAltAttribute,RequiredAttributes
-            const footerItems: (JQuery | string)[] = [
-                $('<img>').addClass(styles.logo).attr('src', chrome.extension.getURL('images/icon48.png'))
-                    .attr('alt', ''),
-                'ChromeKeePass',
-                $('<img>').attr('src', chrome.extension.getURL('images/gear.png'))
-                    .attr('alt', 'Open Settings').attr('title', 'Open settings').css({cursor: 'pointer'})
-                    .on('click', FieldSet._openOptionsWindow.bind(this)),
-                // $('<img>').attr('src', chrome.extension.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
-            ];
-            const footer = $('<div>').addClass(styles.footer).append(...footerItems);
-            this._dropdown.append(footer);
-        }
-
-        // Show the dropdown
-        $(document.body).append(this._dropdown);
-    }
-
-    /** Close the dropdown */
-    public closeDropdown()
-    {
-        if(this._dropdown)
-        {
-            this._dropdown.remove();
-            this._credentialItems = undefined;
-            this._selectedCredential = undefined;
-            this._selectedCredentialIndex = undefined;
-            this._dropdown = undefined;
-        }
-    }
-
-    /**
-     * Generate the HTML for the credential items to display
-     * @param target The generated content will be inserted into this element
-     * @param filter Optional text to filter credentials on
-     */
-    private _generateDropdownContent(target: JQuery, filter?: string)
-    {
-        let credentials: IMessage.Credential[] = [];
-        if(this._pageControl.credentials instanceof Array) // Do we have credentials available for this page?
-        {
-            if(filter) // Do we need to filter?
-            {
-                filter = filter.toLowerCase();
-                credentials = this._pageControl.credentials.filter(credential=>
-                    credential.title.toLowerCase().indexOf(filter as string) !== -1
-                    || credential.username.toLowerCase().indexOf(filter as string) !== -1
-                );
-            }
-            else // No filter
-                credentials = this._pageControl.credentials;
-        }
-
-        if(credentials.length)
-        {
-            const items: JQuery[] = [];
-
-            credentials.forEach((credential)=>{
-                items.push(
-                    $('<div>').data('credential', credential).addClass(styles.item).append(
-                        $('<div>').addClass(styles.primaryText).text(credential.title)
-                    ).append(
-                        $('<div>').text(credential.username)
-                    ).on('click', this._onClickCredential.bind(this))
-                );
-            });
-
-            this._credentialItems = items;
-            target.empty().append(items);
-
-            if(items.length === 1) // Is there only one item?
-                this._selectNextCredential(); // Select it
-
-        }
-        else // No credentials available
-        {
-            this._credentialItems = undefined;
-            this._selectedCredential = undefined;
-            this._selectedCredentialIndex = undefined;
-            target.empty().append($('<div>').addClass(styles.noResults).text('No credentials found'));
-        }
-    }
-
-    /** Event when a credential item is clicked */
-    private _onClickCredential(e: JQuery.ClickEvent)
-    {
-        this._selectedCredential = $(e.target).closest(`.${styles.item}`).data('credential');
-        this._enterSelection();
-    }
-
-    /**
-     * Select the next credential in `_credentialItems`
-     * @param reverse Select previous
-     */
-    private _selectNextCredential(reverse?: boolean)
-    {
-        if(this._dropdown === undefined) // The dropdown is not there
-            this._openDropdown(this._controlField); // Try opening the dropdown
-
-        if(this._credentialItems && this._credentialItems.length) // There is something available?
-        {
-            if(this._selectedCredentialIndex !== undefined) // There's something selected?
-            {
-                if(this._credentialItems[this._selectedCredentialIndex]) this._credentialItems[this._selectedCredentialIndex].removeClass(styles.selected); // Unselect current credential
-                if(reverse)
-                {
-                    if(--this._selectedCredentialIndex < 0) this._selectedCredentialIndex = this._credentialItems.length-1; // Jump back to the last item if we get past the first item
-                }
-                else
-                {
-                    if(++this._selectedCredentialIndex >= this._credentialItems.length) this._selectedCredentialIndex = 0; // Jump back to the first item if we get past the last item
-                }
-            }
-            else // There was no selection yet
-                this._selectedCredentialIndex = 0;
-
-            this._credentialItems[this._selectedCredentialIndex].addClass(styles.selected);
-            this._selectedCredential = this._credentialItems[this._selectedCredentialIndex].data('credential');
-        }
-    }
-
-    /** Enter the selected credentials into the fields */
-    private _enterSelection()
-    {
-        if(!this._dropdown) return; // We don't want to do this when the dropdown isn't open
-
-        if(this._selectedCredential)
-        {
-            this._inputCredential(this._selectedCredential);
-
-            this._selectedCredential = undefined;
-            this._selectedCredentialIndex = undefined;
-
-            this.closeDropdown();
+    private _changeCredentials(filter?: string) {
+        const credentials = this.getCredentials(filter);
+        this._pageControl.dropdown.setCredentials(credentials);
+        if (credentials.length === 1) {
+            this._pageControl.dropdown.open(this)
+            this._pageControl.dropdown.selectNextCredential(); // Select it
+        } else if (!credentials.length) { // No credentials available
+            this.selectCredential(undefined)
         }
     }
 
@@ -382,11 +257,5 @@ export default class FieldSet
         this.passwordField.val(credential.password);
         this.passwordField[0].dispatchEvent(new Event('input', {bubbles: true}));
         this.passwordField[0].dispatchEvent(new Event('change', {bubbles: true}));
-    }
-
-    /** Open the extension's option window */
-    private static _openOptionsWindow()
-    {
-        Client.openOptions();
     }
 }

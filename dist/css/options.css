@@ -36,12 +36,26 @@ body {
     border-top: solid rgba(0,0,0,0.2);
     border-width: 1px;
     background: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#save-footer div {
+    display: flex;
+}
+
+#cancel {
+    margin-right: 8px;
+    color: var(--accent-color);
+    background: white;
+    border: 1px solid #dadce0;
 }
 
 .group-container {
     background: white;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2);
-    transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);;
+    transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 4px;
     margin: 2px;
     padding: 10px;

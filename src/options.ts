@@ -21,6 +21,7 @@ $(()=>{
     });
 
     $('#save').on('click', doSave);
+    $('#cancel').on('click', closeOptionDialog);
     $('#openShortcuts').on('click', openShortcuts);
 });
 
@@ -83,6 +84,13 @@ function doSave()
         saveStatus.text('Options saved');
         setTimeout(() => saveStatus.text(''), 1500);
     });
+}
+
+/**
+ * Close the options dialog.
+ */
+function closeOptionDialog() {
+    window.close();
 }
 
 /**

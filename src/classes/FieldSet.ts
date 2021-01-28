@@ -304,7 +304,7 @@ export default class FieldSet
             this._credentialItems = undefined;
             this._selectedCredential = undefined;
             this._selectedCredentialIndex = undefined;
-            target.empty().append($('<div>').addClass(styles.noResults).text('There are no credentials found'));
+            target.empty().append($('<div>').addClass(styles.noResults).text('No credentials found'));
         }
     }
 

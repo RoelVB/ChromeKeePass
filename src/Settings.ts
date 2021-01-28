@@ -10,6 +10,8 @@ export interface ISettings
     showUsernameIcon: boolean;
     /** Show the dropdown when username field gets focus */
     showDropdownOnFocus: boolean;
+    /** Show the dropdown when username field has focus when it is detected */
+    showDropdownOnDetectionFocus: boolean;
     /** Show the dropdown when username field is clicked */
     showDropdownOnClick: boolean;
     /** Automatically fill credential field when there is only one credential found */
@@ -28,6 +30,7 @@ export const defaultSettings: ISettings =
 {
     showUsernameIcon: true,
     showDropdownOnFocus: true,
+    showDropdownOnDetectionFocus: true,
     showDropdownOnClick: false,
     autoFillSingleCredential: true,
     autoComplete: true,

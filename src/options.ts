@@ -48,6 +48,7 @@ function fillSettings()
     loadSettings().then((settings)=>{
         $('#showUsernameIcon').prop('checked', settings.showUsernameIcon);
         $('#showDropdownOnFocus').prop('checked', settings.showDropdownOnFocus);
+        $('#showDropdownOnPageLoadFocus').prop('checked', settings.showDropdownOnDetectionFocus);
         $('#showDropdownOnClick').prop('checked', settings.showDropdownOnClick);
         $('#autoFillSingleCredential').prop('checked', settings.autoFillSingleCredential);
         $('#autoComplete').prop('checked', settings.autoComplete);
@@ -65,6 +66,7 @@ function doSave()
     saveSettings({
         showUsernameIcon: $('#showUsernameIcon').prop('checked'),
         showDropdownOnFocus: $('#showDropdownOnFocus').prop('checked'),
+        showDropdownOnDetectionFocus: $('#showDropdownOnPageLoadFocus').prop('checked'),
         showDropdownOnClick: $('#showDropdownOnClick').prop('checked'),
         autoFillSingleCredential: $('#autoFillSingleCredential').prop('checked'),
         autoComplete: $('#autoComplete').prop('checked'),

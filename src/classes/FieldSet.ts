@@ -50,8 +50,9 @@ export default class FieldSet
         this._controlField.on('click', this._onClick.bind(this)).on('keydown', this._onKeyPress.bind(this)).on('keyup', this._onKeyUp.bind(this));
 
         // Maybe we need to open the dropdown?
-        if(this._pageControl.settings.showDropdownOnFocus && this._controlField.is(':focus'))
+        if (this._pageControl.settings.showDropdownOnDetectionFocus && this._controlField.is(':focus')) {
             this._openDropdown(this._controlField, false);
+        }
 
         // Should we show the icon in the username field?
         if(this._pageControl.settings.showUsernameIcon)

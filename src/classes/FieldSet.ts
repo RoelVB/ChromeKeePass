@@ -36,7 +36,7 @@ export default class FieldSet
         this._controlField = this.usernameField || this.passwordField;
 
         this._controlFieldTitle = this._controlField.attr('title') || '';
-        this._controlField.attr('autocomplete', 'off');
+        this._controlField.attr('autocomplete', 'chrome-off');
 
         this._controlField.on('mousemove', this._onMouseMove.bind(this)).on('mousedown', this._onMouseDown.bind(this)).on('mouseleave', this._activateIcon.bind(this, true)).on('focusin', this._onFocus.bind(this)).on('focusout', this._onFocusLost.bind(this));
         this._controlField.on('click', this._onClick.bind(this)).on('keydown', this._onKeyPress.bind(this)).on('keyup', this._onKeyUp.bind(this));

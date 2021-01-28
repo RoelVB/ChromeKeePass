@@ -6,6 +6,10 @@ export interface ITheme {
     dropdownSelectedItemColorStart: string;
     /** The end of the background color gradient of the selected item in the credential dropdown list */
     dropdownSelectedItemColorEnd: string;
+    /** The width of the border of the credential dropdown list dropdown */
+    dropdownBorderWidth: number
+    /** The width of the shadow of the credential dropdown list dropdown */
+    dropdownShadowWidth: number
 }
 
 export interface ISettings
@@ -47,6 +51,8 @@ export const defaultSettings: ISettings =
         enableDropdownFooter: true,
         dropdownSelectedItemColorStart: '#f0f3fb',
         dropdownSelectedItemColorEnd: '#bac7ec',
+        dropdownBorderWidth: 1,
+        dropdownShadowWidth: 0,
     }
 }
 

@@ -203,13 +203,18 @@ export default class FieldSet
         const theme = this._pageControl.settings.theme;
         // Create the dropdown
         this._dropdown = $('<div>').addClass(styles.dropdown).css({
-            left: `${(targetOffset ? targetOffset.left : 0) - 2}px`,
+            left: `${(targetOffset ? targetOffset.left : 0) - Math.max(theme.dropdownShadowWidth, 2)}px`,
             top: `${targetOffset && targetOffset.top + (target.outerHeight() || 10)}px`,
-            width: `${target.outerWidth()}px`
+            width: `${target.outerWidth()}px`,
+            'margin-bottom': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
+            'margin-right': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
+            'margin-left': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
+            'border-width': `${theme.dropdownBorderWidth}px`,
+            'box-shadow': `0 ${theme.dropdownShadowWidth}px ${theme.dropdownShadowWidth}px 0 rgba(0,0,0,0.2)`,
         });
-        this._dropdown.get(0).style.setProperty(
-            '--dropdown-select-background-start', theme.dropdownSelectedItemColorStart);
-        this._dropdown.get(0).style.setProperty('--dropdown-select-background-end', theme.dropdownSelectedItemColorEnd);
+        let style = this._dropdown.get(0).style;
+        style.setProperty('--dropdown-select-background-start', theme.dropdownSelectedItemColorStart);
+        style.setProperty('--dropdown-select-background-end', theme.dropdownSelectedItemColorEnd);
 
         // Generate the content
         const content = $('<div>').addClass(styles.content);

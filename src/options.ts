@@ -28,7 +28,51 @@ $(()=>{
     else
         $('#cancel').on('click', closeOptionDialog);
     $('#openShortcuts').on('click', openShortcuts);
+    const rangeInputs = $('.range-input');
+    rangeInputs.on('mouseover', (event) => {
+        let valueBubble = event.delegateTarget.querySelector<HTMLElement>('.value-bubble');
+        if (valueBubble) {
+            valueBubble.style.visibility = 'visible';
+        }
+    });
+    rangeInputs.on('mouseout', (event) => {
+        let valueBubble = event.delegateTarget.querySelector<HTMLElement>('.value-bubble');
+        if (valueBubble) {
+            valueBubble.style.visibility = 'hidden';
+        }
+    });
+    rangeInputs.on('input', (event) => {
+        console.log('On Value')
+        onRangeValueChange(event.delegateTarget);
+    });
+    setTimeout(() => {
+        rangeInputs.each((_index, input) => onRangeValueChange(input));
+    }, 100);
 });
+
+/**
+ * Handle the value cahnge of a range input.
+ *
+ * @param rangeInput The range input element that changed.
+ */
+function onRangeValueChange(rangeInput: HTMLElement) {
+    const input = rangeInput.querySelector<HTMLInputElement>('input');
+    if (!input) {
+        return;
+    }
+    const value = parseInt(input.value);
+    const percent = value / parseInt(input.max);
+    input.style.setProperty('--percent', `${percent * 100}%`);
+    let valueBubble = rangeInput.querySelector<HTMLElement>('.value-bubble');
+    if (valueBubble) {
+        valueBubble.textContent = `${value}`;
+        console.log(`parent: ${input.offsetWidth}, bubble: ${valueBubble.offsetWidth}`);
+        const knobSize = 10;
+        const padding = 16;
+        valueBubble.style.marginLeft = `${padding + knobSize / 2 + (input.offsetWidth - (
+            padding * 2 + knobSize)) * (percent) - (valueBubble.offsetWidth / 2)}px`;
+    }
+}
 
 function associate()
 {
@@ -65,6 +109,8 @@ function fillSettings()
         $('#enableDropdownFooter').prop('checked', settings.theme.enableDropdownFooter);
         $('#dropdownSelectedItemColorStart').val(settings.theme.dropdownSelectedItemColorStart);
         $('#dropdownSelectedItemColorEnd').val(settings.theme.dropdownSelectedItemColorEnd);
+        $('#dropdownBorderWidth').val(settings.theme.dropdownBorderWidth);
+        $('#dropdownShadowWidth').val(settings.theme.dropdownShadowWidth);
     });
 }
 
@@ -87,6 +133,8 @@ function doSave()
             enableDropdownFooter: $('#enableDropdownFooter').prop('checked'),
             dropdownSelectedItemColorStart: $('#dropdownSelectedItemColorStart').val() as string,
             dropdownSelectedItemColorEnd: $('#dropdownSelectedItemColorEnd').val() as string,
+            dropdownBorderWidth: $('#dropdownBorderWidth').val() as number,
+            dropdownShadowWidth: $('#dropdownShadowWidth').val() as number,
         },
     }).then(() => {
         const saveStatus = $('#saveStatus');

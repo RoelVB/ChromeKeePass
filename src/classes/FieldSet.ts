@@ -22,6 +22,8 @@ export default class FieldSet
     private _oldUsernameValue: string = '';
     /** Is the cursor currently on the KeePass icon? */
     private _onIcon: boolean = false;
+    /** Did the click start on the KeePass icon? */
+    private _iconOwnsClick: boolean = false;
     /** Variable holding all icon styles (to easily remove all the styles at once) */
     private static allIconStyles = `${styles.green} ${styles.orange} ${styles.red}`;
     /** This is the field where gonna use ChromeKeePass's controls */
@@ -42,7 +44,7 @@ export default class FieldSet
         this._controlFieldTitle = this._controlField.attr('title') || '';
         this._controlField.attr('autocomplete', 'off');
 
-        this._controlField.on('mousemove', this._onMouseMove.bind(this)).on('mouseleave', this._activateIcon.bind(this, true)).on('focusin', this._onFocus.bind(this)).on('focusout', this._onFocusLost.bind(this));
+        this._controlField.on('mousemove', this._onMouseMove.bind(this)).on('mousedown', this._onMouseDown.bind(this)).on('mouseleave', this._activateIcon.bind(this, true)).on('focusin', this._onFocus.bind(this)).on('focusout', this._onFocusLost.bind(this));
         this._controlField.on('click', this._onClick.bind(this)).on('keydown', this._onKeyPress.bind(this)).on('keyup', this._onKeyUp.bind(this));
 
         // Maybe we need to open the dropdown?
@@ -87,7 +89,7 @@ export default class FieldSet
     /** Event when the username field gets focussed */
     private _onFocus(_event: JQuery.FocusInEvent) {
         // Show the dropdown on focus when enabled and whe either have more than one credential or no credentials.
-        if (this._pageControl.settings.showDropdownOnFocus) {
+        if (this._pageControl.settings.showDropdownOnFocus && !this._iconOwnsClick) {
             this._openDropdown(this._controlField, false);
         }
     }
@@ -99,6 +101,13 @@ export default class FieldSet
                 this.closeDropdown();
             }
         }, 100);
+    }
+
+    /** Event when the mouse is clicked on the username field */
+    private _onMouseDown(_event: JQuery.MouseDownEvent) {
+        if (this._onIcon) {
+            this._iconOwnsClick = true;
+        }
     }
 
     /** Event when the username field is clicked */
@@ -113,6 +122,7 @@ export default class FieldSet
         } else if (this._pageControl.settings.showDropdownOnClick && this._dropdown === undefined) {
             this._openDropdown(this._controlField);
         }
+        this._iconOwnsClick = false;
     }
 
     /** Event when a key is pressed while in the username field */

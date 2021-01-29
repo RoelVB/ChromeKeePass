@@ -10,6 +10,8 @@ export interface ITheme {
     dropdownBorderWidth: number
     /** The width of the shadow of the credential dropdown list dropdown */
     dropdownShadowWidth: number
+    /** The padding of an item in the credential dropdown list dropdown */
+    dropdownItemPadding: number
 }
 
 export interface ISettings
@@ -53,6 +55,7 @@ export const defaultSettings: ISettings =
         dropdownSelectedItemColorEnd: '#bac7ec',
         dropdownBorderWidth: 1,
         dropdownShadowWidth: 0,
+        dropdownItemPadding: 3,
     }
 }
 

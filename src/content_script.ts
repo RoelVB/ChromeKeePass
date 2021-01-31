@@ -5,21 +5,15 @@ const pageControl = new PageControl();
 
 $(()=>{
     pageControl.detectFields();
-
-    if(pageControl.settings.searchForInputsOnUpdate) // Should the MutationObserver be enabled?
-    {
-        // The MutationObserver implementation
-        const observer = new MutationObserver((mutations)=>{
-            for(const mutation of mutations)
-            {
-                for(const node of mutation.addedNodes)
-                {
-                    if(node instanceof HTMLElement)
-                    {
-                        const passwordFields = node.querySelectorAll('input[type="password"]');
-
-                        if(passwordFields.length)
-                            setTimeout(() => pageControl.detectNewFields(passwordFields), 100);
+    if (pageControl.settings.searchForInputsOnUpdate) { // Should the MutationObserver be enabled?
+        const observer = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                for (const node of mutation.addedNodes) {
+                    if (node instanceof HTMLElement) {
+                        const inputFields = node.querySelectorAll<HTMLInputElement>('input[type="password"]');
+                        if (inputFields.length) {
+                            setTimeout(() => pageControl.detectNewFields(inputFields), 100);
+                        }
                     }
                 }
             }

@@ -183,18 +183,18 @@ input[type=text]:focus, input[type=number]:focus {
 }
 
 #option-container::-webkit-scrollbar {
-    height: 5px;
-    width: 5px;
+    height: 6px;
+    width: 6px;
 }
 
 /* Track */
 #option-container::-webkit-scrollbar-track {
     background: #f1f1f1;
-    border-radius: 5px;
+    border-radius: 3px;
 }
 
 /* Handle */
 #option-container::-webkit-scrollbar-thumb {
     background: var(--accent-color);
-    border-radius: 5px;
+    border-radius: 3px;
 }

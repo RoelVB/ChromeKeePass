@@ -51,7 +51,7 @@ $(()=>{
 });
 
 /**
- * Handle the value cahnge of a range input.
+ * Handle the value change of a range input.
  *
  * @param rangeInput The range input element that changed.
  */
@@ -112,6 +112,7 @@ function fillSettings()
         $('#dropdownBorderWidth').val(settings.theme.dropdownBorderWidth);
         $('#dropdownShadowWidth').val(settings.theme.dropdownShadowWidth);
         $('#dropdownItemPadding').val(settings.theme.dropdownItemPadding);
+        $('#dropdownScrollbarColor').val(settings.theme.dropdownScrollbarColor);
     });
 }
 
@@ -137,6 +138,7 @@ function doSave()
             dropdownBorderWidth: $('#dropdownBorderWidth').val() as number,
             dropdownShadowWidth: $('#dropdownShadowWidth').val() as number,
             dropdownItemPadding: $('#dropdownItemPadding').val() as number,
+            dropdownScrollbarColor: $('#dropdownScrollbarColor').val() as string,
         },
     }).then(() => {
         const saveStatus = $('#saveStatus');

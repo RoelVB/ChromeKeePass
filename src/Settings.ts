@@ -12,6 +12,8 @@ export interface ITheme {
     dropdownShadowWidth: number
     /** The padding of an item in the credential dropdown list dropdown */
     dropdownItemPadding: number
+    /** The color of the scrollbar in the credential dropdown list dropdown */
+    dropdownScrollbarColor: string
 }
 
 export interface ISettings
@@ -56,6 +58,7 @@ export const defaultSettings: ISettings =
         dropdownBorderWidth: 1,
         dropdownShadowWidth: 0,
         dropdownItemPadding: 3,
+        dropdownScrollbarColor: '#5273d0'
     }
 }
 

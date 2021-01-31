@@ -64,6 +64,7 @@ export default class CredentialsDropdown {
         let style = this._dropdown.get(0).style;
         style.setProperty('--dropdown-select-background-start', theme.dropdownSelectedItemColorStart);
         style.setProperty('--dropdown-select-background-end', theme.dropdownSelectedItemColorEnd);
+        style.setProperty('--scrollbar-color', theme.dropdownScrollbarColor);
 
         // Generate the content
         const content = $('<div>').addClass(styles.content);

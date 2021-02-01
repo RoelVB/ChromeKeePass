@@ -72,6 +72,11 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
             cursor: pointer;
             overflow-x: hidden;
 
+            div {
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+
             .primaryText {
                 font-weight: bold;
             }

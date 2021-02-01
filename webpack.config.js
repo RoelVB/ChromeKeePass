@@ -18,13 +18,7 @@ module.exports = {
                 exclude: /node_modules/,
                 test: /\.scss$/,
                 use: [
-                    {
-                        loader: 'style-loader',
-                        options: {
-                            convertToAbsoluteUrls: false,
-                            transform: './styleTransform.js',
-                        },
-                    },
+                    'style-loader',
                     {
                         loader: 'typings-for-css-modules-loader',
                         options: {

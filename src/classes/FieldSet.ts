@@ -14,22 +14,13 @@ export default class FieldSet
     private _selectedCredential?: IMessage.Credential;
     /** Holds the old value for the username field, so we only react when the value changes */
     private _oldUsernameValue: string = '';
-    /** Is the cursor currently on the KeePass icon? */
-    private _onIcon: boolean = false;
-    /** Did the click start on the KeePass icon? */
-    private _iconOwnsClick: boolean = false;
-    /** Variable holding all icon styles (to easily remove all the styles at once) */
-    private static allIconStyles = `${styles.green} ${styles.orange} ${styles.red}`;
+    /** The KeePass icon in the control field. */
+    private _usernameIcon?: JQuery;
     /**
      * This is the field where gonna use ChromeKeePass's controls.
      * Might me undefined, if neither the username nor the password field is visible.
      */
     private _controlField?: JQuery;
-    /**
-     * Used to remember the original title attribute from the username field
-     * (because it changes when the cursor hovers the ChromeKeePass icon)
-     */
-    private _controlFieldTitle: string = '';
     /** A list of listener functions that are attached to the control field. So we can detach and re-attach them */
     private readonly _LISTENER_FUNCTIONS: Record<
         keyof JQuery.TypeToTriggeredEventMap<HTMLElement, undefined, FieldSet, HTMLElement>,
@@ -42,9 +33,6 @@ export default class FieldSet
      * @param usernameField Pointer to the username field
      */
     constructor(private _pageControl: PageControl, public readonly passwordField: JQuery, public readonly usernameField?: JQuery) {
-        this._addListenerFunction('mousemove', this._onMouseMove.bind(this));
-        this._addListenerFunction('mousedown', this._onMouseDown.bind(this));
-        this._addListenerFunction('mouseleave', this._activateIcon.bind(this, true));
         this._addListenerFunction('focusin', this._onFocus.bind(this));
         this._addListenerFunction('focusout', this._onFocusLost.bind(this));
         this._addListenerFunction('click', this._onClick.bind(this));
@@ -66,27 +54,21 @@ export default class FieldSet
     }
 
     /** This method is called by the PageControl class when it receives credentials */
-    public receivedCredentials()
-    {
-        if(this._pageControl.credentials)
-        {
-            if(this._pageControl.settings.showUsernameIcon) // Do we have to change the icon?
-            {
-                if (this._pageControl.credentials.length) {
-                    this._controlField?.removeClass(FieldSet.allIconStyles).addClass(styles.green);
-                } else {
-                    this._controlField?.removeClass(FieldSet.allIconStyles).addClass(styles.orange);
-                }
+    public receivedCredentials() {
+        if (this._pageControl.credentials) {
+            if (this._usernameIcon) { // Do we have to change the icon?
+                this._updateUsernameIconStyle();
             }
             if (this._pageControl.dropdown.isOpen) { // Is the dropdown open?
                 this._changeCredentials();
             }
             // Do we already have to fill the fields?
-            if(this._pageControl.settings.autoFillSingleCredential && this._pageControl.credentials.length === 1)
+            if (this._pageControl.settings.autoFillSingleCredential && this._pageControl.credentials.length === 1) {
                 this._inputCredential(this._pageControl.credentials[0]);
+            }
 
-        } else if (this._pageControl.settings.showUsernameIcon) {
-            this._controlField?.removeClass(FieldSet.allIconStyles).addClass(styles.red);
+        } else if (this._usernameIcon) {
+            this._updateUsernameIconStyle();
         }
     }
 
@@ -135,9 +117,9 @@ export default class FieldSet
 
     /** Event when the username field gets focussed */
     private _onFocus(_event: JQuery.FocusInEvent) {
-        // Show the dropdown on focus when enabled and whe either have more than one credential or no credentials.
-        if (this._pageControl.settings.showDropdownOnFocus && !this._iconOwnsClick
-            && this._pageControl.credentials && this._pageControl.credentials.length === 1) {
+        // Show the dropdown on focus when enabled and we either have more than one credential or no credentials.
+        if (this._pageControl.settings.showDropdownOnFocus && this._pageControl.credentials
+            && this._pageControl.credentials.length === 1) {
             this._pageControl.dropdown.open(this);
         }
     }
@@ -148,31 +130,28 @@ export default class FieldSet
      * @param event The focus lost event.
      */
     private _onFocusLost(event: JQuery.FocusOutEvent) {
-        if (!this._pageControl.dropdown.hasGainedFocus(event)) {
+        if (!this._pageControl.dropdown.hasGainedFocus(event)
+            && (this._usernameIcon === undefined || this._usernameIcon.get(0) !== event.relatedTarget)) {
             this._pageControl.dropdown.close();
         }
     }
 
-    /** Event when the mouse is clicked on the username field */
-    private _onMouseDown(_event: JQuery.MouseDownEvent) {
-        if (this._onIcon) {
-            this._iconOwnsClick = true;
+    /** Event when the username field is clicked */
+    private _onClick(_event: JQuery.ClickEvent) {
+        if (this._pageControl.settings.showDropdownOnClick) {
+            this._pageControl.dropdown.open(this);
         }
     }
 
-    /** Event when the username field is clicked */
-    private _onClick(event: JQuery.ClickEvent) {
-        if (this._onIcon) { // Only continue if the cursor is on the icon
-            event.preventDefault();
-            if (this._pageControl.dropdown.isOpen) {
-                this._pageControl.dropdown.close();
-            } else {
-                this._pageControl.dropdown.open(this);
-            }
-        } else if (this._pageControl.settings.showDropdownOnClick) {
+    /** Event when the icon in the username field is clicked */
+    private _onIconClick(_event: JQuery.ClickEvent) {
+        const dropdownHasFocus = this._pageControl.dropdown.isOpen;
+        this._controlField?.focus();
+        if (dropdownHasFocus) {
+            this._pageControl.dropdown.close();
+        } else {
             this._pageControl.dropdown.open(this);
         }
-        this._iconOwnsClick = false;
     }
 
     /** Event when a key is pressed while in the username field */
@@ -211,23 +190,6 @@ export default class FieldSet
                 }
             }
         }
-    }
-
-    /** Event when te mouse is moving over the username field */
-    private _onMouseMove(e: JQuery.MouseMoveEvent)
-    {
-        if (this._controlField === undefined) {
-            return;
-        }
-        const target = $(e.target);
-        const targetOffset = target.offset();
-        const targetWidth = target.width();
-        const cursorPosX: number | undefined = targetOffset && e.pageX-targetOffset.left - parseInt(target.css('padding-left')) - parseInt(target.css('padding-right'));
-
-        if(cursorPosX && targetWidth && cursorPosX >= targetWidth-(this._controlField.outerHeight() || 20))
-            this._activateIcon();
-        else
-            this._activateIcon(true);
     }
 
     /**
@@ -270,7 +232,8 @@ export default class FieldSet
                 this._controlField.off(callbackName, this._LISTENER_FUNCTIONS[callbackName]);
             }
             this._pageControl.dropdown.close();
-            this._controlField.removeClass(FieldSet.allIconStyles).removeClass(styles.textboxIcon)
+            this._usernameIcon?.remove()
+            this._usernameIcon = undefined;
         }
 
         // Setup the controlField
@@ -294,26 +257,24 @@ export default class FieldSet
             }
             // Should we show the icon in the username field?
             if (this._pageControl.settings.showUsernameIcon) {
-                this._controlField.addClass(styles.textboxIcon).addClass(
-                    this._pageControl.credentials?.length ? styles.green : styles.orange);
+                const targetOffset = this._controlField.offset();
+                const fieldWidth = this._controlField.outerWidth() || 48
+                const size = Math.min(fieldWidth, this._controlField.outerHeight() || 48);
+                // Create the username icon
+                // noinspection HtmlRequiredAltAttribute,RequiredAttributes
+                this._usernameIcon = $('<img>').attr('alt', 'Open the credentials dropdown')
+                    .attr('title', 'Open the credentials dropdown').attr('tabindex', '0')
+                    .addClass(styles.textBoxIcon).css({
+                        left: `${(targetOffset ? targetOffset.left : size) + fieldWidth - size}px`,
+                        top: `${targetOffset && targetOffset.top || 0}px`,
+                        height: `${size}px`,
+                        width: `${size}px`,
+                        'border-radius': `${size / 2.0}px`,
+                        // 'box-shadow': `0 ${theme.dropdownShadowWidth}px ${theme.dropdownShadowWidth}px 0 rgba(0,0,0,0.2)`,
+                    }).on('click', this._onIconClick.bind(this));
+                this._updateUsernameIconStyle();
+                $(document.body).append(this._usernameIcon);
             }
-        }
-    }
-
-    /**
-     * Method to change the icon style
-     * @param deactivate Remove the 'active' style
-     */
-    private _activateIcon(deactivate?: boolean)
-    {
-        if(deactivate && !this._onIcon) return; // We don't have to deactivate when the cursor isn't on the icon
-
-        this._onIcon = !deactivate;
-        if(deactivate) {
-            this._controlField?.css({cursor: ''}).attr('title', this._controlFieldTitle);
-        } else {
-            this._controlFieldTitle = this._controlField?.attr('title') || '';
-            this._controlField?.css({cursor: 'pointer'}).attr('title', 'Open ChromeKeePass options');
         }
     }
 
@@ -338,5 +299,14 @@ export default class FieldSet
         this.passwordField.val(credential.password);
         this.passwordField[0].dispatchEvent(new Event('input', {bubbles: true}));
         this.passwordField[0].dispatchEvent(new Event('change', {bubbles: true}));
+    }
+
+    /** Update the style of the username icon to reflect the current availability of credentials. */
+    private _updateUsernameIconStyle() {
+        let iconStyle = 'red';
+        if (this._pageControl.credentials) {
+            iconStyle = this._pageControl.credentials.length ? 'green' : 'orange';
+        }
+        this._usernameIcon?.attr('src', chrome.extension.getURL(`images/icon48_${iconStyle}.png`));
     }
 }

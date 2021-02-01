@@ -4,23 +4,13 @@ $lighterLightPurple: rgba(218, 225, 245, 0.4);
 $darkPurple: rgb(82, 115, 208);
 $lighterDarkPurple: rgba(82, 115, 208, 0.4);
 
-.textboxIcon {
-    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48.png') !important;
-    background-repeat: no-repeat !important;
-    background-position: right !important;
-    background-size: auto 100% !important;
-}
-
-.textboxIcon.green {
-    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_green.png') !important;
-}
-
-.textboxIcon.orange {
-    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_orange.png') !important;
-}
-
-.textboxIcon.red {
-    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_red.png') !important;
+.textBoxIcon {
+    position: absolute;
+    cursor: pointer;
+    z-index: 999998;
+    padding: 2px;
+    outline: none;
+    box-sizing: border-box;
 }
 
 .dropdown {

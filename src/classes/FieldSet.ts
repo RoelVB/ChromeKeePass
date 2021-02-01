@@ -132,13 +132,15 @@ export default class FieldSet
         }
     }
 
-    /** Event when the username field loses focussed */
-    private _onFocusLost(_event: JQuery.FocusOutEvent) {
-        setTimeout(() => {
-            if (!this._pageControl.dropdown.hasFocus()) {
-                this._pageControl.dropdown.close();
-            }
-        }, 100);
+    /**
+     * Event when the username field loses focus.
+     *
+     * @param event The focus lost event.
+     */
+    private _onFocusLost(event: JQuery.FocusOutEvent) {
+        if (!this._pageControl.dropdown.hasGainedFocus(event)) {
+            this._pageControl.dropdown.close();
+        }
     }
 
     /** Event when the mouse is clicked on the username field */

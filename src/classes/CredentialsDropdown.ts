@@ -61,9 +61,6 @@ export default class CredentialsDropdown {
             'border-width': `${theme.dropdownBorderWidth}px`,
             'box-shadow': `0 ${theme.dropdownShadowWidth}px ${theme.dropdownShadowWidth}px 0 rgba(0,0,0,0.2)`,
         });
-        if (this._dropdown === undefined) {
-            return;
-        }
         this._fieldSet = fieldSet;
         let style = this._dropdown.get(0).style;
         style.setProperty('--dropdown-select-background-start', theme.dropdownSelectedItemColorStart);

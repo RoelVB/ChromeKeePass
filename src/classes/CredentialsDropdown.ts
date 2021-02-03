@@ -32,8 +32,7 @@ export default class CredentialsDropdown {
      * @return Whether or not the event caused an element in the dropdown to gain focus.
      */
     public hasGainedFocus(event: JQuery.FocusOutEvent): boolean {
-        return this._dropdown !== undefined && event.relatedTarget instanceof HTMLElement &&
-            this._dropdown.has(event.relatedTarget).length != 0;
+        return event.relatedTarget instanceof HTMLElement && this._dropdown?.has(event.relatedTarget).length != 0;
     }
 
     /**

@@ -4,6 +4,11 @@ $lighterLightPurple: rgba(218, 225, 245, 0.4);
 $darkPurple: rgb(82, 115, 208);
 $lighterDarkPurple: rgba(82, 115, 208, 0.4);
 
+.textBoxIconContainer {
+    display: inline;
+    position: relative;
+}
+
 .textBoxIcon {
     position: absolute;
     cursor: pointer;

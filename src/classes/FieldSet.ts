@@ -1,8 +1,8 @@
 import * as $ from 'jquery-slim';
-import * as styles from '../scss/content.scss';
 
 import PageControl from './PageControl';
 import * as IMessage from '../IMessage';
+import CredentialsIcon from "./CredentialsIcon";
 
 
 /**
@@ -15,7 +15,7 @@ export default class FieldSet
     /** Holds the old value for the username field, so we only react when the value changes */
     private _oldUsernameValue: string = '';
     /** The KeePass icon in the control field. */
-    private _usernameIcon?: JQuery;
+    private _credentialsIcon?: CredentialsIcon;
     /**
      * This is the field where gonna use ChromeKeePass's controls.
      * Might me undefined, if neither the username nor the password field is visible.
@@ -56,9 +56,7 @@ export default class FieldSet
     /** This method is called by the PageControl class when it receives credentials */
     public receivedCredentials() {
         if (this._pageControl.credentials) {
-            if (this._usernameIcon) { // Do we have to change the icon?
-                this._updateUsernameIconStyle();
-            }
+            this._credentialsIcon?.updateStyle();
             if (this._pageControl.dropdown.isOpen) { // Is the dropdown open?
                 this._changeCredentials();
             }
@@ -67,8 +65,8 @@ export default class FieldSet
                 this._inputCredential(this._pageControl.credentials[0]);
             }
 
-        } else if (this._usernameIcon) {
-            this._updateUsernameIconStyle();
+        } else if (this._credentialsIcon) {
+            this._credentialsIcon.updateStyle();
         }
     }
 
@@ -130,8 +128,7 @@ export default class FieldSet
      * @param event The focus lost event.
      */
     private _onFocusLost(event: JQuery.FocusOutEvent) {
-        if (!this._pageControl.dropdown.hasGainedFocus(event)
-            && (this._usernameIcon === undefined || this._usernameIcon.get(0) !== event.relatedTarget)) {
+        if (!this._pageControl.dropdown.hasGainedFocus(event) && !this._credentialsIcon?.hasGainedFocus(event)) {
             this._pageControl.dropdown.close();
         }
     }
@@ -144,9 +141,9 @@ export default class FieldSet
     }
 
     /** Event when the icon in the username field is clicked */
-    private _onIconClick(_event: JQuery.ClickEvent) {
+    private _onIconClick() {
         const dropdownHasFocus = this._pageControl.dropdown.isOpen;
-        this._controlField?.focus();
+        this._controlField?.trigger('focus');
         if (dropdownHasFocus) {
             this._pageControl.dropdown.close();
         } else {
@@ -232,8 +229,8 @@ export default class FieldSet
                 this._controlField.off(callbackName, this._LISTENER_FUNCTIONS[callbackName]);
             }
             this._pageControl.dropdown.close();
-            this._usernameIcon?.remove()
-            this._usernameIcon = undefined;
+            this._credentialsIcon?.remove()
+            this._credentialsIcon = undefined;
         }
 
         // Setup the controlField
@@ -257,23 +254,8 @@ export default class FieldSet
             }
             // Should we show the icon in the username field?
             if (this._pageControl.settings.showUsernameIcon) {
-                const targetOffset = this._controlField.offset();
-                const fieldWidth = this._controlField.outerWidth() || 48
-                const size = Math.min(fieldWidth, this._controlField.outerHeight() || 48);
-                // Create the username icon
-                // noinspection HtmlRequiredAltAttribute,RequiredAttributes
-                this._usernameIcon = $('<img>').attr('alt', 'Open the credentials dropdown')
-                    .attr('title', 'Open the credentials dropdown').attr('tabindex', '0')
-                    .addClass(styles.textBoxIcon).css({
-                        left: `${(targetOffset ? targetOffset.left : size) + fieldWidth - size}px`,
-                        top: `${targetOffset && targetOffset.top || 0}px`,
-                        height: `${size}px`,
-                        width: `${size}px`,
-                        'border-radius': `${size / 2.0}px`,
-                        // 'box-shadow': `0 ${theme.dropdownShadowWidth}px ${theme.dropdownShadowWidth}px 0 rgba(0,0,0,0.2)`,
-                    }).on('click', this._onIconClick.bind(this));
-                this._updateUsernameIconStyle();
-                $(document.body).append(this._usernameIcon);
+                this._credentialsIcon = new CredentialsIcon(
+                    this._pageControl, this._controlField, this._onIconClick.bind(this));
             }
         }
     }
@@ -299,14 +281,5 @@ export default class FieldSet
         this.passwordField.val(credential.password);
         this.passwordField[0].dispatchEvent(new Event('input', {bubbles: true}));
         this.passwordField[0].dispatchEvent(new Event('change', {bubbles: true}));
-    }
-
-    /** Update the style of the username icon to reflect the current availability of credentials. */
-    private _updateUsernameIconStyle() {
-        let iconStyle = 'red';
-        if (this._pageControl.credentials) {
-            iconStyle = this._pageControl.credentials.length ? 'green' : 'orange';
-        }
-        this._usernameIcon?.attr('src', chrome.extension.getURL(`images/icon48_${iconStyle}.png`));
     }
 }

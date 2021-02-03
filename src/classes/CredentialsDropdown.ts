@@ -133,6 +133,10 @@ export default class CredentialsDropdown {
             }
         }
         this._credentialItems[selectedIndex].addClass(styles.selected);
+        this._credentialItems[selectedIndex].get(0).scrollIntoView({
+            behavior: "auto",
+            block: "nearest"
+        });
         this._fieldSet?.selectCredential(this._credentialItems[selectedIndex].data('credential'));
     }
 

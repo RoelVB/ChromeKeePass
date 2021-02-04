@@ -79,7 +79,7 @@ export default class CredentialsDropdown {
                 'ChromeKeePass',
                 $('<img>').attr('src', chrome.extension.getURL('images/gear.png')).attr('tabindex', '0')
                     .attr('alt', 'Open Settings').attr('title', 'Open settings').css({cursor: 'pointer'})
-                    .on('click', this._openOptionsWindow.bind(this)),
+                    .on('click', this._openOptionsWindow.bind(this)).on('focusout', this._onItemFocusLost.bind(this)),
                 // $('<img>').attr('src', chrome.extension.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
             ];
             const footer = $('<div>').addClass(styles.footer).append(...footerItems);
@@ -155,7 +155,7 @@ export default class CredentialsDropdown {
                         $('<div>').addClass(styles.primaryText).text(credential.title)
                     ).append(
                         $('<div>').text(credential.username)
-                    ).on('click', this._onClickCredential.bind(this))
+                    ).on('click', this._onClickCredential.bind(this)).on('focusout', this._onItemFocusLost.bind(this))
                 );
             });
             this._credentialItems = items;
@@ -176,5 +176,16 @@ export default class CredentialsDropdown {
     private _onClickCredential(event: JQuery.ClickEvent) {
         this._fieldSet?.selectCredential($(event.target).closest(`.${styles.item}`).data('credential'));
         this._fieldSet?.enterSelection();
+    }
+
+    /**
+     * Handle a focus lost event on one of the credentials items.
+     * @param event The focus out event.
+     */
+    private _onItemFocusLost(event: JQuery.FocusOutEvent) {
+        if (!this.hasGainedFocus(event) && (event.relatedTarget === undefined
+            || event.relatedTarget !== this._fieldSet?.controlField?.get(0))) {
+            this.close();
+        }
     }
 }

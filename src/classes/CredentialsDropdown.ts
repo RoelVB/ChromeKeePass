@@ -52,14 +52,21 @@ export default class CredentialsDropdown {
         }
         const targetOffset = target.offset();
         const theme = this._pageControl.settings.theme;
-        const targetWidth = target.outerWidth() || 225;
-        let leftOffset = 0;
-        if (targetWidth < 225) { // min-width
-            leftOffset = (225 - targetWidth) / 2.0;
+        const minWidth = 225;
+        const targetWidth = target.outerWidth() || minWidth;
+        let left = (targetOffset ? targetOffset.left : 0) - Math.max(theme.dropdownShadowWidth, 2);
+        if (targetWidth < minWidth) {
+            left -= (minWidth - targetWidth) / 2.0;
+            const screenWidth = $(document.body).outerWidth() || Number.MAX_VALUE;
+            if (left < 0) {
+                left = -Math.max(theme.dropdownShadowWidth, 2);
+            } else if (left + minWidth > screenWidth) {
+                left = screenWidth - minWidth - Math.max(theme.dropdownShadowWidth, 2);
+            }
         }
         // Create the dropdown
         this._dropdown = $('<div>').addClass(styles.dropdown).css({
-            left: `${(targetOffset ? targetOffset.left : 0) - Math.max(theme.dropdownShadowWidth, 2) - leftOffset}px`,
+            left: `${left}px`,
             top: `${targetOffset && targetOffset.top + (target.outerHeight() || 10)}px`,
             width: `${targetWidth}px`,
             'margin-bottom': `${Math.max(theme.dropdownShadowWidth, 2)}px`,

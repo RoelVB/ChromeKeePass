@@ -154,6 +154,7 @@ export default class CredentialsDropdown {
         const documentBody = $(document.body);
         const bodyIsOffsetParent = this._dropdown.offsetParent().get(0) === document.body;
         const bodyWidth = documentBody.outerWidth(bodyIsOffsetParent) || window.innerWidth;
+        const bodyHeight = documentBody.outerHeight(bodyIsOffsetParent) || window.innerHeight;
         const targetOffset = target.offset();
         const theme = this._pageControl.settings.theme;
         const minWidth = 225;
@@ -168,7 +169,16 @@ export default class CredentialsDropdown {
             }
         }
         let top = targetOffset && targetOffset.top + (target.outerHeight() || 10) || 0;
-        if (this._dropdown.offsetParent().get(0) === document.body) {
+        const dropdownHeight = this._dropdown.outerHeight(true) || 0;
+        if (top + dropdownHeight > bodyHeight) {
+            const offset = dropdownHeight + (target.outerHeight() || 0);
+            if (bodyHeight - top >= top || top - offset < 0) {
+                top = window.innerHeight - dropdownHeight;
+            } else {
+                top -= offset;
+            }
+        }
+        if (bodyIsOffsetParent) {
             top -= parseFloat(documentBody.css('marginTop')) + parseFloat(documentBody.css('borderTopWidth'));
             left -= parseFloat(documentBody.css('marginLeft')) + parseFloat(documentBody.css('borderLeftWidth'));
         }

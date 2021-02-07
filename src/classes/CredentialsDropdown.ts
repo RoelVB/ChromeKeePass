@@ -153,27 +153,27 @@ export default class CredentialsDropdown {
         }
         const documentBody = $(document.body);
         const bodyIsOffsetParent = this._dropdown.offsetParent().get(0) === document.body;
-        const bodyWidth = documentBody.outerWidth(bodyIsOffsetParent) || window.innerWidth;
-        const bodyHeight = documentBody.outerHeight(bodyIsOffsetParent) || window.innerHeight;
+        const bodyWidth = Math.max(documentBody.outerWidth(bodyIsOffsetParent) || 0, window.innerWidth);
+        const bodyHeight = Math.max(documentBody.outerHeight(bodyIsOffsetParent) || 0, window.innerHeight);
         const targetOffset = target.offset();
         const theme = this._pageControl.settings.theme;
         const minWidth = 225;
         const targetWidth = target.outerWidth() || minWidth;
-        let left = (targetOffset ? targetOffset.left : 0) - Math.max(theme.dropdownShadowWidth, 2);
+        let left = (targetOffset?.left || 0) - Math.max(theme.dropdownShadowWidth, 2);
         if (targetWidth < minWidth) {
             left -= (minWidth - targetWidth) / 2.0;
-            if (left < 0) {
-                left = -Math.max(theme.dropdownShadowWidth, 2);
-            } else if (left + minWidth > bodyWidth) {
-                left = bodyWidth - minWidth - Math.max(theme.dropdownShadowWidth, 2);
-            }
         }
-        let top = targetOffset && targetOffset.top + (target.outerHeight() || 10) || 0;
+        if (left < 0) {
+            left = -Math.max(theme.dropdownShadowWidth, 2);
+        } else if (left + minWidth > bodyWidth) {
+            left = bodyWidth - minWidth - Math.max(theme.dropdownShadowWidth, 2);
+        }
+        let top = (targetOffset?.top || 0) + (target.outerHeight() || 10);
         const dropdownHeight = this._dropdown.outerHeight(true) || 0;
         if (top + dropdownHeight > bodyHeight) {
             const offset = dropdownHeight + (target.outerHeight() || 0);
             if (bodyHeight - top >= top || top - offset < 0) {
-                top = window.innerHeight - dropdownHeight;
+                top = bodyHeight - dropdownHeight;
             } else {
                 top -= offset;
             }

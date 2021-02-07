@@ -50,6 +50,7 @@ export default class CredentialsDropdown {
         if (target === undefined) {
             return;
         }
+        const documentBody = $(document.body);
         const targetOffset = target.offset();
         const theme = this._pageControl.settings.theme;
         const minWidth = 225;
@@ -57,17 +58,22 @@ export default class CredentialsDropdown {
         let left = (targetOffset ? targetOffset.left : 0) - Math.max(theme.dropdownShadowWidth, 2);
         if (targetWidth < minWidth) {
             left -= (minWidth - targetWidth) / 2.0;
-            const screenWidth = $(document.body).outerWidth() || Number.MAX_VALUE;
+            const screenWidth = documentBody.outerWidth() || Number.MAX_VALUE;
             if (left < 0) {
                 left = -Math.max(theme.dropdownShadowWidth, 2);
             } else if (left + minWidth > screenWidth) {
                 left = screenWidth - minWidth - Math.max(theme.dropdownShadowWidth, 2);
             }
         }
+        let top = targetOffset && targetOffset.top + (target.outerHeight() || 10) || 0;
+        if (documentBody.children().first().offsetParent().get(0) === document.body) {
+            top -= parseFloat(documentBody.css('marginTop')) + parseFloat(documentBody.css('borderTopWidth'));
+            left -= parseFloat(documentBody.css('marginLeft')) + parseFloat(documentBody.css('borderLeftWidth'));
+        }
         // Create the dropdown
         this._dropdown = $('<div>').addClass(styles.dropdown).css({
             left: `${left}px`,
-            top: `${targetOffset && targetOffset.top + (target.outerHeight() || 10)}px`,
+            top: `${top}px`,
             width: `${targetWidth}px`,
             'margin-bottom': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
             'margin-right': `${Math.max(theme.dropdownShadowWidth, 2)}px`,

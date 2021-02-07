@@ -85,9 +85,9 @@ export default class CredentialsDropdown {
             const footer = $('<div>').addClass(styles.footer).append(...footerItems);
             this._dropdown.append(footer);
         }
-        this._reposition();
         // Show the dropdown
         $(document.body).append(this._dropdown);
+        this._reposition();
         $(window).on('resize', this._RESIZE_HANDLER);
     }
 
@@ -159,15 +159,14 @@ export default class CredentialsDropdown {
         let left = (targetOffset ? targetOffset.left : 0) - Math.max(theme.dropdownShadowWidth, 2);
         if (targetWidth < minWidth) {
             left -= (minWidth - targetWidth) / 2.0;
-            const screenWidth = documentBody.outerWidth() || Number.MAX_VALUE;
             if (left < 0) {
                 left = -Math.max(theme.dropdownShadowWidth, 2);
-            } else if (left + minWidth > screenWidth) {
-                left = screenWidth - minWidth - Math.max(theme.dropdownShadowWidth, 2);
+            } else if (left + minWidth > screen.width) {
+                left = screen.width - minWidth - Math.max(theme.dropdownShadowWidth, 2);
             }
         }
         let top = targetOffset && targetOffset.top + (target.outerHeight() || 10) || 0;
-        if (documentBody.children().first().offsetParent().get(0) === document.body) {
+        if (this._dropdown.offsetParent().get(0) === document.body) {
             top -= parseFloat(documentBody.css('marginTop')) + parseFloat(documentBody.css('borderTopWidth'));
             left -= parseFloat(documentBody.css('marginLeft')) + parseFloat(documentBody.css('borderLeftWidth'));
         }

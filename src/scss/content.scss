@@ -68,6 +68,34 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
             line-height: 50px;
         }
 
+        .iframeInfo {
+            text-align: center;
+            line-height: 18px;
+            font-size: small;
+            padding: 5px;
+            max-height: 400px;
+            display: flex;
+            flex-direction: column;
+
+            .copyUrlIconLabel {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
+                width: 100%;
+                font-size: medium;
+            }
+
+            .copyUrlIcon {
+                position: unset;
+                padding: 0 0 0 5px;
+                cursor: pointer;
+                outline: none;
+                width: 42px;
+                height: 42px;
+            }
+        }
+
         .item {
             color: black;
             padding: 3px;

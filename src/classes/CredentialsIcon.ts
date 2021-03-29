@@ -40,7 +40,7 @@ export default class CredentialsIcon {
                 onClickCallback()
             });
         this.updateStyle();
-        _controlField.after(this._credentialsIcon);
+        _controlField.offsetParent().append(this._credentialsIcon);
     }
 
     /**

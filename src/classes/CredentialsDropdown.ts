@@ -163,17 +163,17 @@ export default class CredentialsDropdown {
         if (targetWidth < minWidth) {
             left -= (minWidth - targetWidth) / 2.0;
         }
-        if (left < 0) {
-            left = -Math.max(theme.dropdownShadowWidth, 2);
-        } else if (left + minWidth > bodyWidth) {
+        if (left < scrollX) {
+            left = scrollX - Math.max(theme.dropdownShadowWidth, 2);
+        } else if (left + scrollX + minWidth > bodyWidth) {
             left = bodyWidth - minWidth - Math.max(theme.dropdownShadowWidth, 2);
         }
         let top = (targetOffset?.top || 0) + (target.outerHeight() || 10);
         const dropdownHeight = this._dropdown.outerHeight(true) || 0;
-        if (top + dropdownHeight > bodyHeight) {
+        if (top - scrollY + dropdownHeight > bodyHeight) {
             const offset = dropdownHeight + (target.outerHeight() || 0);
-            if (bodyHeight - top >= top || top - offset < 0) {
-                top = bodyHeight - dropdownHeight;
+            if (bodyHeight - top >= top || top - offset < scrollY) {
+                top = scrollY + bodyHeight - dropdownHeight;
             } else {
                 top -= offset;
             }

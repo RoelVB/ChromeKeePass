@@ -7,6 +7,8 @@ import PageControl from "./PageControl";
 export default class CredentialsIcon {
     /** The KeePass icon in the control field. */
     private readonly _credentialsIcon: JQuery;
+    /** Control field resize observer. */
+    private readonly _resizeObserver: undefined | ResizeObserver = undefined;
 
     /**
      * Create and attach a new credentials icon to the control field.
@@ -16,31 +18,25 @@ export default class CredentialsIcon {
      */
     constructor(private readonly _pageControl: PageControl,
                 private _controlField: JQuery, onClickCallback: () => void) {
-        const fieldWidth = _controlField.outerWidth() || 48
-        const size = Math.min(fieldWidth, _controlField.outerHeight() || 48);
         _controlField.wrap($('<div>').addClass(styles.textBoxIconContainer).css({
             width: '100%',
             height: '100%',
         }));
-        const position = _controlField.position();
         // Create the username icon
         // noinspection HtmlRequiredAltAttribute,RequiredAttributes
         this._credentialsIcon = $('<img>')
             .attr('alt', 'Open the credentials dropdown').attr('title', 'Open the credentials dropdown')
-            .attr('tabindex', '0').addClass(styles.textBoxIcon).css({
-                height: `${size}px`,
-                width: `${size}px`,
-                left: `${position.left + parseFloat(_controlField.css('margin-left')) + fieldWidth - size}px`,
-                top: `${position.top + parseFloat(_controlField.css('margin-top'))}px`,
-                'min-height': `${size}px`,
-                'min-width': `${size}px`,
-                'border-radius': `${size / 2.0}px`,
-            }).on('click', (event) => {
+            .attr('tabindex', '0').addClass(styles.textBoxIcon).on('click', (event) => {
                 event.preventDefault();
                 onClickCallback()
             });
+        this._reposition();
         this.updateStyle();
         _controlField.offsetParent().append(this._credentialsIcon);
+        if (window.ResizeObserver) {
+            this._resizeObserver = new ResizeObserver(_ => this._reposition());
+            this._resizeObserver.observe(_controlField.get(0))
+        }
     }
 
     /**
@@ -61,7 +57,24 @@ export default class CredentialsIcon {
 
     /** Remove the icon from it's control field. */
     public remove() {
+        this._resizeObserver?.disconnect();
         this._credentialsIcon.remove();
         this._controlField.unwrap()
+    }
+
+    /** Update the position and size of the icon. */
+    private _reposition() {
+        const fieldWidth = this._controlField.outerWidth() || 48
+        const size = Math.min(fieldWidth, this._controlField.outerHeight() || 48);
+        const position = this._controlField.position();
+        this._credentialsIcon.css({
+            height: `${size}px`,
+            width: `${size}px`,
+            left: `${position.left + parseFloat(this._controlField.css('margin-left')) + fieldWidth - size}px`,
+            top: `${position.top + parseFloat(this._controlField.css('margin-top'))}px`,
+            'min-height': `${size}px`,
+            'min-width': `${size}px`,
+            'border-radius': `${size / 2.0}px`,
+        })
     }
 }

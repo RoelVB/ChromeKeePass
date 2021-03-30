@@ -20,6 +20,7 @@
         "@types/chrome": "^0.0.128",
         "@types/jquery": "^3.5.5",
         "@types/sjcl": "^1.0.29",
+        "@types/resize-observer-browser": "^0.1.5",
         "css-loader": "^0.28.11",
         "node-sass": "^5.0.0",
         "sass-loader": "^10.1.1",

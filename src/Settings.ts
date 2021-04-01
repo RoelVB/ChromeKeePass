@@ -26,17 +26,27 @@ export const defaultSettings: ISettings =
 }
 
 /** Async method for loading settings */
-export function loadSettings(): Promise<ISettings>
-{
-    return new Promise<ISettings>((resolve, reject)=>{
-        chrome.storage.sync.get(defaultSettings, (items)=>resolve(items as ISettings));
+export function loadSettings(): Promise<ISettings> {
+    return new Promise<ISettings>((resolve, reject) => {
+        chrome.storage.sync.get(defaultSettings, (items) => {
+            if (chrome.runtime.lastError !== undefined) {
+                reject();
+            } else {
+                resolve(items as ISettings);
+            }
+        });
     });
 }
 
 /** Async method for saving settings */
-export function saveSettings(settings: Partial<ISettings>): Promise<void>
-{
-    return new Promise<void>((resolve, reject)=>{
-        chrome.storage.sync.set(settings, resolve);
+export function saveSettings(settings: Partial<ISettings>): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        chrome.storage.sync.set(settings, () => {
+            if (chrome.runtime.lastError !== undefined) {
+                reject();
+            } else {
+                resolve();
+            }
+        });
     });
 }

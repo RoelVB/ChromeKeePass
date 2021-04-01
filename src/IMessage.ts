@@ -9,7 +9,7 @@ export enum RequestType
     testAssociate,
     /** Associate with KeePassHttp */
     associate,
-    /** Redetect the credetials fields */
+    /** Re-detect the credentials fields */
     redetectFields,
     /** Get extension commands */
     getCommands,

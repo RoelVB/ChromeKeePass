@@ -17,7 +17,7 @@ export default class PageControl
             this._settings = items as ISettings;
         });
 
-        chrome.runtime.onMessage.addListener((message: IMessage.Request, sender, sendResponse)=>{
+        chrome.runtime.onMessage.addListener((message: IMessage.Request, _sender, _sendResponse)=>{
             if(message.type === IMessage.RequestType.redetectFields)
                 this.detectFields();
         });
@@ -27,12 +27,12 @@ export default class PageControl
     public detectFields()
     {
         const fieldSets: FieldSet[] = [];
-        let passwordFields: JQuery<HTMLElement> = $('input[type="password"]');
+        let passwordFields: JQuery = $('input[type="password"]');
 
         if(passwordFields.length) // Found some password fields?
         {
             passwordFields.each((passwordIndex, passwordField)=>{ // Loop through password fields
-                let prevField: JQuery<HTMLElement>;
+                let prevField: JQuery;
 
                 $('input').each((inputIndex, input)=>{ // Loop through input fields to find the field before our password field
                     const inputType = $(input).attr('type') || 'text'; // Get input type, if none default to "text"
@@ -68,12 +68,12 @@ export default class PageControl
 
     private _attachEscapeEvent()
     {
-        if(!this._fieldSets || this._fieldSets.length === 0) return; // We're not going to listen to keypresses if we don't need them
+        if(!this._fieldSets || this._fieldSets.length === 0) return; // We're not going to listen to key presses if we don't need them
 
-        $(document).keyup((e: JQuery.Event<HTMLElement, null>)=>{
+        $(document).on('keyup', (e: JQuery.KeyUpEvent<Document>)=>{
             if(e.key == 'Escape')
             {
-                this._fieldSets.forEach((fieldSet)=>{ // Close dropdown for all fieldsets
+                this._fieldSets.forEach((fieldSet)=>{ // Close dropdown for all fieldSets
                     fieldSet.closeDropdown();
                 });
             }
@@ -86,9 +86,7 @@ export default class PageControl
         {
             Client.findCredentials().then((credentials)=>{
                 this._foundCredentials = credentials;
-
-                if(this._fieldSets instanceof Array)
-                    this._fieldSets.forEach((fieldSet)=>fieldSet.receivedCredentials());
+                this._fieldSets.forEach((fieldSet) => fieldSet.receivedCredentials());
             });
         }
     }

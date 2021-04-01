@@ -1,9 +1,10 @@
 import * as $ from 'jquery-slim';
 import Client from './classes/BackgroundClient';
-import { ISettings, loadSettings, saveSettings } from './Settings';
+import { loadSettings, saveSettings } from './Settings';
 
-$(document).ready(()=>{
+$(()=>{
     fillSettings();
+    // noinspection JSIgnoredPromiseFromCall
     getExtensionCommands();
 
     Client.testAssociate().then((association)=>{
@@ -11,7 +12,7 @@ $(document).ready(()=>{
             $('#connectionStatus').text(`Connected as '${association.Id}'`);
         else
         {
-            const associateButton = $('<button>').text('Connect').click(associate);
+            const associateButton = $('<button>').text('Connect').on('click', associate);
             $('#connectionStatus').text('Not connected ').append(associateButton);
         }
     }).catch((error)=>{
@@ -19,7 +20,7 @@ $(document).ready(()=>{
         $('#connectionStatus').text('Something went wrong... is KeePass running and is the KeePassHttp plugin installed?');
     });
 
-    $('#save').click(doSave);
+    $('#save').on('click', doSave);
 });
 
 function associate()
@@ -31,7 +32,7 @@ function associate()
             $('#connectionStatus').text(`Connected as '${association.Id}'`);
         else
         {
-            const associateButton = $('<button>').text('Connect').click(associate);
+            const associateButton = $('<button>').text('Connect').on('click', associate);
             $('#connectionStatus').text('Not connected ').append(associateButton);
         }
     }).catch((error)=>{
@@ -66,9 +67,10 @@ function doSave()
         autoComplete: $('#autoComplete').prop('checked'),
         keePassHost: $('#keePassHost').val() as string,
         keePassPort: parseInt($('#keePassPort').val() as any),
-    }).then(()=>{
-        $('#saveStatus').text('Options saved');
-        setTimeout(()=>$('#saveStatus').text(''), 1500);
+    }).then(() => {
+        const saveStatus = $('#saveStatus');
+        saveStatus.text('Options saved');
+        setTimeout(() => saveStatus.text(''), 1500);
     });
 }
 

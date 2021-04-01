@@ -1,8 +1,8 @@
 import * as $ from 'jquery-slim';
 import Client from './classes/BackgroundClient';
 
-$(document).ready(()=>{
-    $('#optionsIcon').click(()=>chrome.runtime.openOptionsPage());
+$(()=>{
+    $('#optionsIcon').on('click', ()=>chrome.runtime.openOptionsPage());
 
     Client.testAssociate().then((association)=>{
         if(association.Associated)

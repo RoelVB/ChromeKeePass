@@ -16,7 +16,7 @@ export default class BasicAuth
     /** This holds the method to resolve `_waitPopup()` */
     private _popupResolver?: (credential?: IMessage.Credential)=>void;
     /** The instance's nonce */
-    private _nonce: number;
+    private readonly _nonce: number;
     /** Found credentials */
     private _credentials?: IMessage.Credential[];
     private _settings: ISettings = defaultSettings;
@@ -110,7 +110,11 @@ export default class BasicAuth
                 height: 200,
                 width: 300,
             }, (window)=>{
-                resolve(window?.id);
+                if (window === undefined) {
+                    reject();
+                } else {
+                    resolve(window?.id);
+                }
             });
         });
     }
@@ -120,12 +124,12 @@ export default class BasicAuth
      */
     private _waitPopup(): Promise<IMessage.Credential | undefined>
     {
-        return new Promise<IMessage.Credential | undefined>((resolve, reject)=>{
+        return new Promise<IMessage.Credential | undefined>((resolve, _reject)=>{
             this._popupResolver = resolve;
         });
     }
 
-    private _onMessage(message: IMessage.BasicAuth, sender: chrome.runtime.MessageSender, sendResponse: (response: IMessage.BasicAuthResponse)=>void)
+    private _onMessage(message: IMessage.BasicAuth, _sender: chrome.runtime.MessageSender, sendResponse: (response: IMessage.BasicAuthResponse)=>void)
     {
         if(message.nonce == this._nonce) // This message is for us?
         {
@@ -139,7 +143,7 @@ export default class BasicAuth
     /**
      * Listen if our popup window gets closed
      */
-    private _onWindowRemoved(windowId: number, filters?: chrome.windows.WindowEventFilter | undefined)
+    private _onWindowRemoved(windowId: number, _filters?: chrome.windows.WindowEventFilter | undefined)
     {
         if(windowId == this._popupWindowId) // This is our window?
         {

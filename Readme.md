@@ -40,9 +40,11 @@ The goal of this project is to create a user-friendly KeePass integration. With 
 
 7. The encryption key (for secure communication between KeePass en ChromeKeePass) is stored inside your KeePass database under the entry 'KeePassHttp Settings'
 
-## Build instructions
+## Contribute to ChromeKeePass
 
-You can find [build instructions in this document](Documents/Manuals/Buildinstructions.md).
+- When contributing, always base you changes on the `dev` branch. The `master` branch contains the currently released version. Pull requests will be merged into the `dev` branch
+- Try to keep the coding style as consistant as possible
+- You can find build instructions [over here](Documents/Manuals/Buildinstructions.md)
 
 ## Donate
 

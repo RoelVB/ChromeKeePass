@@ -31,6 +31,7 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
     z-index: 999999;
 
     .content {
+        font-size: 14px;
         min-height: 30px;
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
         max-height: 200px;
@@ -60,6 +61,7 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
     }
 
     .footer {
+        display: block;
         height: 30px;
         line-height: 23px;
         font-size: 14px;

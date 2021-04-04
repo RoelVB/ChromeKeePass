@@ -50,8 +50,9 @@ export default class FieldSet
         this._controlField.on('click', this._onClick.bind(this)).on('keydown', this._onKeyPress.bind(this)).on('keyup', this._onKeyUp.bind(this));
 
         // Maybe we need to open the dropdown?
-        if(this._pageControl.settings.showDropdownOnFocus && this._controlField.is(':focus'))
-            this._openDropdown(this._controlField);
+        if (this._pageControl.settings.showDropdownOnDetectionFocus && this._controlField.is(':focus')) {
+            this._openDropdown(this._controlField, false);
+        }
 
         // Should we show the icon in the username field?
         if(this._pageControl.settings.showUsernameIcon)
@@ -95,16 +96,16 @@ export default class FieldSet
     }
 
     /** Event when the username field is clicked */
-    private _onClick(e: JQuery.ClickEvent)
-    {
-        if(this._onIcon) // Only continue if the cursor is on the icon
-        {
-            e.preventDefault();
-
-            if(this._dropdown)
+    private _onClick(event: JQuery.ClickEvent) {
+        if (this._onIcon) { // Only continue if the cursor is on the icon
+            event.preventDefault();
+            if (this._dropdown) {
                 this.closeDropdown();
-            else
+            } else {
                 this._openDropdown(this._controlField);
+            }
+        } else if (this._pageControl.settings.showDropdownOnClick && this._dropdown === undefined) {
+            this._openDropdown(this._controlField);
         }
     }
 
@@ -182,11 +183,15 @@ export default class FieldSet
 
     /**
      * Open the credentials dropdown under the `target`
-     * @param target 
+     * @param target The html element to open the target under.
+     * @param showWithOnlyOneChoice: Whether or not to show the dropdown if there is only one choice.
      */
-    private _openDropdown(target: JQuery)
+    private _openDropdown(target: JQuery, showWithOnlyOneChoice = true)
     {
         if(this._dropdown !== undefined) return; // Dropdown is already open
+        if (!showWithOnlyOneChoice && this._pageControl.credentials && this._pageControl.credentials.length === 1) {
+            return; // No need to display the dropdown menu if there is only one option
+        }
         if((new Date()).getTime() - (this._dropdownCloseTime || 0) < 1000) return; // The dropdown was closed less than a second ago, it doesn't make sense to open it again so quickly
         this._dropdownOpenTime = (new Date()).getTime();
 
@@ -199,20 +204,26 @@ export default class FieldSet
             width: `${target.outerWidth()}px`
         });
 
-        const footerItems: (JQuery<HTMLElement>|string)[] = [
-            $('<img>').addClass(styles.logo).attr('src', chrome.extension.getURL('images/icon48.png')),
-            'ChromeKeePass',
-            $('<img>').attr('src', chrome.extension.getURL('images/gear.png')).attr('title', 'Open settings').css({cursor: 'pointer'}).click(this._openOptionsWindow.bind(this)),
-            // $('<img>').attr('src', chrome.extension.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
-        ];
-        const footer = $('<div>').addClass(styles.footer).append(...footerItems);
-
         // Generate the content
         const content = $('<div>').addClass(styles.content);
         this._generateDropdownContent(content);
+        this._dropdown.append(content);
         
-        // Add the content en footer to the dropdown and show it
-        this._dropdown.append(content).append(footer);
+        if (this._pageControl.settings.theme.enableDropdownFooter) {
+            // Create the footer and add it to the dropdown
+            const footerItems: (JQuery | string)[] = [
+                $('<img>').addClass(styles.logo).attr('src', chrome.extension.getURL('images/icon48.png')),
+                'ChromeKeePass',
+                $('<img>').attr('src', chrome.extension.getURL('images/gear.png'))
+                    .attr('title', 'Open settings').css({cursor: 'pointer'})
+                    .on('click', FieldSet._openOptionsWindow.bind(this)),
+                // $('<img>').attr('src', chrome.extension.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
+            ];
+            const footer = $('<div>').addClass(styles.footer).append(...footerItems);
+            this._dropdown.append(footer);
+        }
+
+        // Show the dropdown
         $(document.body).append(this._dropdown);
     }
 

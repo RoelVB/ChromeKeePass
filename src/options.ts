@@ -48,10 +48,13 @@ function fillSettings()
     loadSettings().then((settings)=>{
         $('#showUsernameIcon').prop('checked', settings.showUsernameIcon);
         $('#showDropdownOnFocus').prop('checked', settings.showDropdownOnFocus);
+        $('#showDropdownOnDetectionFocus').prop('checked', settings.showDropdownOnDetectionFocus);
+        $('#showDropdownOnClick').prop('checked', settings.showDropdownOnClick);
         $('#autoFillSingleCredential').prop('checked', settings.autoFillSingleCredential);
         $('#autoComplete').prop('checked', settings.autoComplete);
         $('#keePassHost').val(settings.keePassHost);
         $('#keePassPort').val(settings.keePassPort);
+        $('#enableDropdownFooter').prop('checked', settings.theme.enableDropdownFooter);
     });
 }
 
@@ -63,10 +66,15 @@ function doSave()
     saveSettings({
         showUsernameIcon: $('#showUsernameIcon').prop('checked'),
         showDropdownOnFocus: $('#showDropdownOnFocus').prop('checked'),
+        showDropdownOnDetectionFocus: $('#showDropdownOnDetectionFocus').prop('checked'),
+        showDropdownOnClick: $('#showDropdownOnClick').prop('checked'),
         autoFillSingleCredential: $('#autoFillSingleCredential').prop('checked'),
         autoComplete: $('#autoComplete').prop('checked'),
         keePassHost: $('#keePassHost').val() as string,
         keePassPort: parseInt($('#keePassPort').val() as any),
+        theme: {
+            enableDropdownFooter: $('#enableDropdownFooter').prop('checked'),
+        },
     }).then(() => {
         const saveStatus = $('#saveStatus');
         saveStatus.text('Options saved');

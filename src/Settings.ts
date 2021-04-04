@@ -1,10 +1,19 @@
 
+export interface ITheme {
+    /** Show a footer in the credential dropdown list? */
+    enableDropdownFooter: boolean;
+}
+
 export interface ISettings
 {
     /** Show the ChromeKeePass icon in the username field? */
     showUsernameIcon: boolean;
     /** Show the dropdown when username field gets focus */
     showDropdownOnFocus: boolean;
+    /** Show the dropdown when username field has focus when it is detected */
+    showDropdownOnDetectionFocus: boolean;
+    /** Show the dropdown when username field is clicked */
+    showDropdownOnClick: boolean;
     /** Automatically fill credential field when there is only one credential found */
     autoFillSingleCredential: boolean;
     /** Show suggestions while typing in the username field */
@@ -13,16 +22,23 @@ export interface ISettings
     keePassHost: string;
     /** The port for KeePassHttp */
     keePassPort: number;
+    /** Settings determining the look of user interface elements */
+    theme: ITheme;
 }
 
 export const defaultSettings: ISettings = 
 {
     showUsernameIcon: true,
     showDropdownOnFocus: true,
+    showDropdownOnDetectionFocus: true,
+    showDropdownOnClick: false,
     autoFillSingleCredential: true,
     autoComplete: true,
     keePassHost: 'localhost',
     keePassPort: 19455,
+    theme: {
+        enableDropdownFooter: true,
+    }
 }
 
 /** Async method for loading settings */

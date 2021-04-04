@@ -4,5 +4,5 @@ import PageControl from './classes/PageControl';
 const pageControl = new PageControl();
 
 $(()=>{
-    pageControl.detectFields();
+    pageControl.detectFields(4);
 });

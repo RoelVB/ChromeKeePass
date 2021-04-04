@@ -10,6 +10,7 @@ export default class PageControl
     private _fieldSets: FieldSet[] = [];
     private _foundCredentials?: IMessage.Credential[];
     private _settings: ISettings = defaultSettings;
+    private _redetectionTimeout?: number;
 
     constructor()
     {
@@ -23,9 +24,20 @@ export default class PageControl
         });
     }
 
-    /** Try to detect credentials fields */
-    public detectFields()
+    /**
+     * Try to detect credentials fields
+     * @param retryLimit How many times are we going to retry to find fields (0 meaning only 1 try)
+     * @param retryDelay Delay between retries (in milliseconds)
+     */
+    public detectFields(retryLimit: number = 0, retryDelay: number = 1000)
     {
+        // Clear the re-detection time-out if there's one
+        if(this._redetectionTimeout)
+        {
+            window.clearTimeout(this._redetectionTimeout);
+            this._redetectionTimeout = undefined;
+        }
+
         const fieldSets: FieldSet[] = [];
         let passwordFields: JQuery = $('input[type="password"]');
 
@@ -60,10 +72,18 @@ export default class PageControl
             });
         }
 
-        // Remember the fields we've found
-        this._fieldSets = fieldSets;
-        this._findCredentials();
-        this._attachEscapeEvent();
+        if(fieldSets.length)
+        {
+            // Remember the fields we've found
+            this._fieldSets = fieldSets;
+            this._findCredentials();
+            this._attachEscapeEvent();
+        }
+        else if(retryLimit > 0) // We didn't find any fields, but have retries left?
+        {
+            // Schedule a retry
+            this._redetectionTimeout = window.setTimeout(()=>this.detectFields(--retryLimit), retryDelay);
+        }
     }
 
     private _attachEscapeEvent()

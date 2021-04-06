@@ -12,10 +12,6 @@ export default class FieldSet
 {
     /** Pointer to the dropdown */
     private _dropdown?: JQuery;
-    /** Timestamp from when the dropdown is closed, to prevent is from opening again directly after closing */
-    private _dropdownCloseTime?: number;
-    /** Timestamp from when the dropdown is opened, to prevent is from closing directly after opening */
-    private _dropdownOpenTime?: number;
     /** Pointers to the credentials shown in the dropdown */
     private _credentialItems?: JQuery[];
     /** Index of the credentials selected from `_credentialItems` */
@@ -29,7 +25,7 @@ export default class FieldSet
     /** Variable holding all icon styles (to easily remove all the styles at once) */
     private static allIconStyles = `${styles.green} ${styles.orange} ${styles.red}`;
     /** This is the field where gonna use ChromeKeePass's controls */
-    private readonly _controlField: JQuery = $('<input>'); // Input a dummy `<div>`, because TypeScript will complain the variable could be undefined
+    private readonly _controlField: JQuery;
     /** Used to remember the original title attribute from the username field (because it changes when the cursor hovers the ChromeKeePass icon) */
     private readonly _controlFieldTitle: string = '';
 
@@ -46,7 +42,7 @@ export default class FieldSet
         this._controlFieldTitle = this._controlField.attr('title') || '';
         this._controlField.attr('autocomplete', 'off');
 
-        this._controlField.on('mousemove', this._onMouseMove.bind(this)).on('mouseleave', this._activateIcon.bind(this, true)).on('focus', this._onFocus.bind(this));
+        this._controlField.on('mousemove', this._onMouseMove.bind(this)).on('mouseleave', this._activateIcon.bind(this, true)).on('focusin', this._onFocus.bind(this)).on('focusout', this._onFocusLost.bind(this));
         this._controlField.on('click', this._onClick.bind(this)).on('keydown', this._onKeyPress.bind(this)).on('keyup', this._onKeyUp.bind(this));
 
         // Maybe we need to open the dropdown?
@@ -89,10 +85,20 @@ export default class FieldSet
     }
 
     /** Event when the username field gets focussed */
-    private _onFocus(_event: JQuery.FocusEvent)
-    {
-        if(this._pageControl.settings.showDropdownOnFocus) // Show the dropdown when this happens?
-            this._openDropdown(this._controlField);
+    private _onFocus(_event: JQuery.FocusInEvent) {
+        // Show the dropdown on focus when enabled and whe either have more than one credential or no credentials.
+        if (this._pageControl.settings.showDropdownOnFocus) {
+            this._openDropdown(this._controlField, false);
+        }
+    }
+
+    /** Event when the username field loses focussed */
+    private _onFocusLost(_event: JQuery.FocusOutEvent) {
+        setTimeout(() => {
+            if (this._dropdown && !this._dropdown.is(':focus')) {
+                this.closeDropdown();
+            }
+        }, 100);
     }
 
     /** Event when the username field is clicked */
@@ -192,8 +198,6 @@ export default class FieldSet
         if (!showWithOnlyOneChoice && this._pageControl.credentials && this._pageControl.credentials.length === 1) {
             return; // No need to display the dropdown menu if there is only one option
         }
-        if((new Date()).getTime() - (this._dropdownCloseTime || 0) < 1000) return; // The dropdown was closed less than a second ago, it doesn't make sense to open it again so quickly
-        this._dropdownOpenTime = (new Date()).getTime();
 
         const targetOffset = target.offset();
 
@@ -211,11 +215,13 @@ export default class FieldSet
         
         if (this._pageControl.settings.theme.enableDropdownFooter) {
             // Create the footer and add it to the dropdown
+            // noinspection HtmlRequiredAltAttribute,RequiredAttributes
             const footerItems: (JQuery | string)[] = [
-                $('<img>').addClass(styles.logo).attr('src', chrome.extension.getURL('images/icon48.png')),
+                $('<img>').addClass(styles.logo).attr('src', chrome.extension.getURL('images/icon48.png'))
+                    .attr('alt', ''),
                 'ChromeKeePass',
                 $('<img>').attr('src', chrome.extension.getURL('images/gear.png'))
-                    .attr('title', 'Open settings').css({cursor: 'pointer'})
+                    .attr('alt', 'Open Settings').attr('title', 'Open settings').css({cursor: 'pointer'})
                     .on('click', FieldSet._openOptionsWindow.bind(this)),
                 // $('<img>').attr('src', chrome.extension.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
             ];
@@ -232,14 +238,11 @@ export default class FieldSet
     {
         if(this._dropdown)
         {
-            if((new Date()).getTime() - (this._dropdownOpenTime || 0) < 500) return; // The dropdown was opened less than 0.5 seconds ago, it doesn't make sense to close it again so quickly
-
             this._dropdown.remove();
             this._credentialItems = undefined;
             this._selectedCredential = undefined;
             this._selectedCredentialIndex = undefined;
             this._dropdown = undefined;
-            this._dropdownCloseTime = (new Date()).getTime();
         }
     }
 

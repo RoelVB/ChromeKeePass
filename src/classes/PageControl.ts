@@ -7,6 +7,7 @@ import Client from '../classes/BackgroundClient';
 
 export default class PageControl
 {
+    private _installedEscapeHandler = false;
     private _fieldSets: FieldSet[] = [];
     private _foundCredentials?: IMessage.Credential[];
     private _settings: ISettings = defaultSettings;
@@ -68,8 +69,10 @@ export default class PageControl
 
     private _attachEscapeEvent()
     {
-        if(!this._fieldSets || this._fieldSets.length === 0) return; // We're not going to listen to key presses if we don't need them
-
+        if(this._installedEscapeHandler || !this._fieldSets || this._fieldSets.length === 0) {
+            return; // We're not going to listen to key presses if we don't need them
+        }
+        this._installedEscapeHandler = true;
         $(document).on('keyup', (e: JQuery.KeyUpEvent<Document>)=>{
             if(e.key == 'Escape')
             {

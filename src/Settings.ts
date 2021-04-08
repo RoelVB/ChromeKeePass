@@ -38,7 +38,7 @@ export const defaultSettings: ISettings =
     autoComplete: true,
     keePassHost: 'localhost',
     keePassPort: 19455,
-    searchForInputsOnUpdate: false,
+    searchForInputsOnUpdate: true,
     theme: {
         enableDropdownFooter: true,
     }

@@ -9,6 +9,8 @@ export default class CredentialsIcon {
     private readonly _credentialsIcon: JQuery;
     /** Control field resize observer. */
     private readonly _resizeObserver: undefined | ResizeObserver = undefined;
+    /** Whether or not the control field was wrapped in an element. */
+    private readonly _isWrapped: boolean = false;
 
     /**
      * Create and attach a new credentials icon to the control field.
@@ -18,10 +20,6 @@ export default class CredentialsIcon {
      */
     constructor(private readonly _pageControl: PageControl,
                 private _controlField: JQuery, onClickCallback: () => void) {
-        _controlField.wrap($('<div>').addClass(styles.textBoxIconContainer).css({
-            width: '100%',
-            height: '100%',
-        }));
         // Create the username icon
         // noinspection HtmlRequiredAltAttribute,RequiredAttributes
         this._credentialsIcon = $('<img>')
@@ -33,6 +31,17 @@ export default class CredentialsIcon {
         this._reposition();
         this.updateStyle();
         _controlField.offsetParent().append(this._credentialsIcon);
+        if (this._credentialsIcon.get(0).offsetParent === null) {
+            // Some html elements don't display an additional child. Create our own offset parent in this case.
+            this._credentialsIcon.remove();
+            _controlField.wrap($('<div>').addClass(styles.textBoxIconContainer).css({
+                width: '100%',
+                height: '100%',
+            }));
+            this._isWrapped = true;
+            this._reposition();
+            _controlField.offsetParent().append(this._credentialsIcon);
+        }
         if (window.ResizeObserver) {
             this._resizeObserver = new ResizeObserver(_ => this._reposition());
             this._resizeObserver.observe(_controlField.get(0))
@@ -59,7 +68,9 @@ export default class CredentialsIcon {
     public remove() {
         this._resizeObserver?.disconnect();
         this._credentialsIcon.remove();
-        this._controlField.unwrap()
+        if (this._isWrapped) {
+            this._controlField.unwrap();
+        }
     }
 
     /** Update the position and size of the icon. */

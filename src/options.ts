@@ -51,6 +51,7 @@ function fillSettings()
         $('#showDropdownOnDetectionFocus').prop('checked', settings.showDropdownOnDetectionFocus);
         $('#showDropdownOnClick').prop('checked', settings.showDropdownOnClick);
         $('#autoFillSingleCredential').prop('checked', settings.autoFillSingleCredential);
+        $('#searchForInputsOnUpdate').prop('checked', settings.searchForInputsOnUpdate);
         $('#autoComplete').prop('checked', settings.autoComplete);
         $('#keePassHost').val(settings.keePassHost);
         $('#keePassPort').val(settings.keePassPort);
@@ -69,6 +70,7 @@ function doSave()
         showDropdownOnDetectionFocus: $('#showDropdownOnDetectionFocus').prop('checked'),
         showDropdownOnClick: $('#showDropdownOnClick').prop('checked'),
         autoFillSingleCredential: $('#autoFillSingleCredential').prop('checked'),
+        searchForInputsOnUpdate: $('#searchForInputsOnUpdate').prop('checked'),
         autoComplete: $('#autoComplete').prop('checked'),
         keePassHost: $('#keePassHost').val() as string,
         keePassPort: parseInt($('#keePassPort').val() as any),

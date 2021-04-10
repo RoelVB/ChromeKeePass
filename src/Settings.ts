@@ -18,10 +18,12 @@ export interface ISettings
     autoFillSingleCredential: boolean;
     /** Show suggestions while typing in the username field */
     autoComplete: boolean;
-    /** The host for KeePassHttp  */
+    /** The host for KeePassHttp */
     keePassHost: string;
     /** The port for KeePassHttp */
     keePassPort: number;
+    /** Listen for changes in the html document and search for new input fields */
+    searchForInputsOnUpdate: boolean;
     /** Settings determining the look of user interface elements */
     theme: ITheme;
 }
@@ -36,6 +38,7 @@ export const defaultSettings: ISettings =
     autoComplete: true,
     keePassHost: 'localhost',
     keePassPort: 19455,
+    searchForInputsOnUpdate: true,
     theme: {
         enableDropdownFooter: true,
     }

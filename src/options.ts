@@ -23,7 +23,10 @@ $(()=>{
     });
 
     $('#save').on('click', doSave);
-    $('#cancel').on('click', closeOptionDialog);
+    if (navigator.userAgent.indexOf('Edg/') !== -1) // Edge doesn't support closing
+        $('#cancel').remove();
+    else
+        $('#cancel').on('click', closeOptionDialog);
     $('#openShortcuts').on('click', openShortcuts);
 });
 

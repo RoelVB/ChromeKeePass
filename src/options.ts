@@ -12,7 +12,9 @@ $(()=>{
             $('#connectionStatus').text(`Connected as '${association.Id}'`);
         else
         {
-            const associateButton = $('<button>').text('Connect').on('click', associate);
+            const associateButton = $('<button>').text('Connect').on('click', associate).css({
+                'margin-left': '10px'
+            });
             $('#connectionStatus').text('Not connected ').append(associateButton);
         }
     }).catch((error)=>{

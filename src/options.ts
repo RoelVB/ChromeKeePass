@@ -12,7 +12,9 @@ $(()=>{
             $('#connectionStatus').text(`Connected as '${association.Id}'`);
         else
         {
-            const associateButton = $('<button>').text('Connect').on('click', associate);
+            const associateButton = $('<button>').text('Connect').on('click', associate).css({
+                'margin-left': '10px'
+            });
             $('#connectionStatus').text('Not connected ').append(associateButton);
         }
     }).catch((error)=>{
@@ -21,6 +23,11 @@ $(()=>{
     });
 
     $('#save').on('click', doSave);
+    if (navigator.userAgent.indexOf('Edg/') !== -1) // Edge doesn't support closing
+        $('#cancel').remove();
+    else
+        $('#cancel').on('click', closeOptionDialog);
+    $('#openShortcuts').on('click', openShortcuts);
 });
 
 function associate()
@@ -85,6 +92,22 @@ function doSave()
 }
 
 /**
+ * Close the options dialog.
+ */
+function closeOptionDialog() {
+    window.close();
+}
+
+/**
+ * Open the Chrome shortcut manager in a new tab.
+ */
+function openShortcuts() {
+    chrome.tabs.create({
+        url: 'chrome://extensions/shortcuts'
+    })
+}
+
+/**
  * Get extension commands/shortcuts
  */
 async function getExtensionCommands()
@@ -93,7 +116,8 @@ async function getExtensionCommands()
     $('#shortcuts').empty();
 
     commands.forEach((command)=>{
-        if(command.description)
-            $('#shortcuts').append($('<div>').text(`${command.description}: ${command.shortcut}`));
+        if(command.description) {
+            $('#shortcuts').append($('<div>').text(`${command.description}: ${command.shortcut || '<Unassigned>'}`));
+        }
     });
 }

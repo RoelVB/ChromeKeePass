@@ -31,7 +31,8 @@ export default class CredentialsIcon {
         this._reposition();
         this.updateStyle();
         _controlField.offsetParent().append(this._credentialsIcon);
-        if (this._credentialsIcon.get(0).offsetParent === null) {
+        const icon = this._credentialsIcon.get(0);
+        if (icon.offsetParent === null && icon.parentElement !== document.documentElement) {
             // Some html elements don't display an additional child. Create our own offset parent in this case.
             this._credentialsIcon.remove();
             _controlField.wrap($('<div>').addClass(styles.textBoxIconContainer).css({

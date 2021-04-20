@@ -1,5 +1,6 @@
 :root {
-    --accent-color: #1a73e8;
+    --accent-color-rgb: 26, 115, 232;
+    --accent-color: rgb(var(--accent-color-rgb));
 }
 
 body {
@@ -33,7 +34,7 @@ body {
 #save-footer {
     padding: 10px 10px 10px 10px;
     border-radius: 4px;
-    border-top: solid rgba(0,0,0,0.2);
+    border-top: solid rgba(0, 0, 0, 0.2);
     border-width: 1px;
     background: white;
     display: flex;
@@ -54,7 +55,7 @@ body {
 
 .group-container {
     background: white;
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
     transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 4px;
     margin: 2px;
@@ -118,7 +119,7 @@ button {
 
 button:hover {
     border-color: #d2e3fc;
-    background-color: #1a73e8e6;
+    background-color: rgba(var(--accent-color-rgb), 0.9);
 }
 
 input[type=checkbox] {
@@ -180,6 +181,96 @@ input[type=text]:focus, input[type=number]:focus {
     border: none;
     border-bottom: 2px solid var(--accent-color);
     caret-color: var(--accent-color);
+}
+
+input[type=color] {
+    border: 0;
+    background: transparent;
+}
+
+.range-input {
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    min-width: 200px;
+}
+
+.range-input .labels {
+    user-select: none;
+    margin: -4px 16px 0 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.range-input .labels span {
+    font-size: 12px;
+}
+
+.range-input input[type=range] {
+    --percent: 0%;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    cursor: default;
+    height: 32px;
+    outline: none;
+    padding: 0 16px;
+    margin: 0;
+    user-select: none;
+    visibility: hidden;
+}
+
+.range-input input[type=range]:focus {
+    outline: none;
+}
+
+.range-input input[type=range]::-webkit-slider-container {
+    visibility: visible;
+    transition: 0.3s;
+    border-top-color: rgba(var(--accent-color-rgb), .24);
+    margin-top: 16px;
+    border-top-style: solid;
+    border-top-width: 2px;
+}
+
+.range-input input[type=range]::-webkit-slider-runnable-track {
+    visibility: visible;
+    transition: 0.3s;
+    border: none;
+    margin-top: -16px;
+    height: 2px;
+    background: -webkit-linear-gradient(left, var(--accent-color) var(--percent), transparent var(--percent));
+}
+
+.range-input input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    visibility: visible;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .4);
+    height: 10px;
+    width: 10px;
+    outline: none;
+    margin-top: -4px;
+}
+
+.range-input .value-bubble-container {
+    position: relative;
+    width: 0;
+    height: 0
+}
+
+.range-input .value-bubble {
+    visibility: hidden;
+    background: var(--accent-color);
+    border-radius: 0.75em;
+    bottom: -3px;
+    width: fit-content;
+    color: white;
+    font-size: 12px;
+    padding: 0 0.67em;
+    transition: opacity 80ms ease-in-out;
+    position: absolute;
 }
 
 #option-container::-webkit-scrollbar {

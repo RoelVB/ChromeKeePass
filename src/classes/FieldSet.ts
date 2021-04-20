@@ -71,7 +71,7 @@ export default class FieldSet
                 else
                     this._controlField.removeClass(FieldSet.allIconStyles).addClass(styles.orange);
             }
-            
+
             if(this._dropdown) // Is the dropdown open?
                 this._generateDropdownContent(this._dropdown.find(`.${styles.content}`));
 
@@ -146,7 +146,7 @@ export default class FieldSet
         if(this._oldUsernameValue !== newValue) // The entered value changed?
         {
             this._oldUsernameValue = newValue;
-            
+
             if(this._pageControl.settings.autoComplete) // Is autocomplete enabled?
             {
                 if(this._dropdown === undefined) // The dropdown is not there
@@ -200,20 +200,28 @@ export default class FieldSet
         }
 
         const targetOffset = target.offset();
-
+        const theme = this._pageControl.settings.theme;
         // Create the dropdown
         this._dropdown = $('<div>').addClass(styles.dropdown).css({
-            left: `${targetOffset && targetOffset.left}px`, 
-            top: `${targetOffset && targetOffset.top + (target.outerHeight() || 10)}px`, 
-            width: `${target.outerWidth()}px`
+            left: `${(targetOffset ? targetOffset.left : 0) - Math.max(theme.dropdownShadowWidth, 2)}px`,
+            top: `${targetOffset && targetOffset.top + (target.outerHeight() || 10)}px`,
+            width: `${target.outerWidth()}px`,
+            'margin-bottom': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
+            'margin-right': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
+            'margin-left': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
+            'border-width': `${theme.dropdownBorderWidth}px`,
+            'box-shadow': `0 ${theme.dropdownShadowWidth}px ${theme.dropdownShadowWidth}px 0 rgba(0,0,0,0.2)`,
         });
+        let style = this._dropdown.get(0).style;
+        style.setProperty('--dropdown-select-background-start', theme.dropdownSelectedItemColorStart);
+        style.setProperty('--dropdown-select-background-end', theme.dropdownSelectedItemColorEnd);
 
         // Generate the content
         const content = $('<div>').addClass(styles.content);
         this._generateDropdownContent(content);
         this._dropdown.append(content);
-        
-        if (this._pageControl.settings.theme.enableDropdownFooter) {
+
+        if (theme.enableDropdownFooter) {
             // Create the footer and add it to the dropdown
             // noinspection HtmlRequiredAltAttribute,RequiredAttributes
             const footerItems: (JQuery | string)[] = [
@@ -267,7 +275,7 @@ export default class FieldSet
             else // No filter
                 credentials = this._pageControl.credentials;
         }
-        
+
         if(credentials.length)
         {
             const items: JQuery[] = [];
@@ -313,7 +321,7 @@ export default class FieldSet
     {
         if(this._dropdown === undefined) // The dropdown is not there
             this._openDropdown(this._controlField); // Try opening the dropdown
-        
+
         if(this._credentialItems && this._credentialItems.length) // There is something available?
         {
             if(this._selectedCredentialIndex !== undefined) // There's something selected?
@@ -340,7 +348,7 @@ export default class FieldSet
     private _enterSelection()
     {
         if(!this._dropdown) return; // We don't want to do this when the dropdown isn't open
-        
+
         if(this._selectedCredential)
         {
             this._inputCredential(this._selectedCredential);

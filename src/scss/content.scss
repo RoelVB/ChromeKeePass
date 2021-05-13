@@ -26,11 +26,16 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
 .dropdown {
     position: absolute;
     border: 1px solid grey;
+    border-radius: 4px;
+    margin: 2px;
     background-color: white;
     min-width: 225px;
     z-index: 999999;
+    --dropdown-select-background-start: $lighterLightPurple;
+    --dropdown-select-background-end: $lighterDarkPurple;
 
     .content {
+        font-size: 14px;
         min-height: 30px;
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
         max-height: 200px;
@@ -54,12 +59,25 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
             }
         }
 
+        .item:first-child {
+            -webkit-border-radius: 4px 4px 0 0;
+            -moz-border-radius: 4px 4px 0 0;
+        }
+
+        .item:last-child {
+            border-bottom: 0;
+            -webkit-border-radius: 0 0 4px 4px;
+            -moz-border-radius: 0 0 4px 4px;
+        }
+
         .item.selected, .item:hover {
-            background-image: linear-gradient(to right, $lighterLightPurple, $lighterDarkPurple);
+            background-image: linear-gradient(
+                            to right, var(--dropdown-select-background-start), var(--dropdown-select-background-end));
         }
     }
 
     .footer {
+        display: block;
         height: 30px;
         line-height: 23px;
         font-size: 14px;
@@ -68,7 +86,7 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
         padding: 3px;
         font-weight: bold;
         color: $lightPurple;
-        text-shadow: 0px 0px 2px black;
+        text-shadow: 0 0 2px black;
         box-sizing: border-box;
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 

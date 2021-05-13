@@ -3,7 +3,7 @@
 
     "name": "ChromeKeePass",
     "description": "Chrome extension for automatically entering credentials from KeePass/KeeWeb",
-    "version": "1.2",
+    "version": "1.3",
 
     "commands": {
         "redetect_fields": {
@@ -36,8 +36,7 @@
     },
 
     "options_ui": {
-        "page": "html/options.html",
-        "chrome_style": true
+        "page": "html/options.html"
     },
 
     "icons": {
@@ -58,5 +57,5 @@
         "webRequestBlocking"
     ],
 
-    "minimum_chrome_version": "49"
+    "minimum_chrome_version": "51"
   }

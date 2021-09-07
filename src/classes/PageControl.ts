@@ -54,39 +54,52 @@ export default class PageControl
      * Try to detect new credentials fields
      * @param passwordFields A list of changed or added password fields.
      */
-    public detectNewFields(passwordFields: JQuery) {
-        passwordFields.each((passwordIndex, passwordField) => { // Loop through password fields
-            if (!this._fieldSets.some((fieldSet) => fieldSet.passwordField.index() !== passwordIndex)) {
-                let fieldSet = this._createFieldSet(passwordField);
-                if (fieldSet !== undefined) {
+    public detectNewFields(passwordFields: NodeListOf<Element>)
+    {
+        for(const passwordField of passwordFields)
+        {
+            if(passwordField instanceof HTMLElement)
+            {
+                const fieldSet = this._createFieldSet(passwordField);
+                if(fieldSet)
                     this._fieldSets.push(fieldSet);
-                }
             }
-        });
+        }
+
         this._findCredentials();
         this._attachEscapeEvent();
     }
 
-    private _createFieldSet(passwordField: HTMLElement): FieldSet | undefined {
+    /**
+     * Create a fieldset for the `passwordField`. This method will also look for an username field
+     * @param passwordField The password field we're going to use
+     */
+    private _createFieldSet(passwordField: HTMLElement): FieldSet | undefined
+    {
         let prevField: JQuery;
-        let fieldSet: FieldSet | undefined = undefined;
+        let fieldSet: FieldSet | undefined;
+        let $passwordField = $(passwordField);
+
         $('input').each((inputIndex, input) => { // Loop through input fields to find the field before our password field
-            const inputType = $(input).attr('type') || 'text'; // Get input type, if none default to "text"
-            if (inputType != 'password') { // We didn't reach our password field?
-                if ($(input).is(':visible') &&
-                    (inputType === 'text' || inputType === 'email' || inputType === 'tel')) {
-                    prevField = $(input); // Is this a possible username field?
-                }
-            } else if ($(input).is($(passwordField))) { // Found our password field?
-                if (prevField) { // Is there a previous field? Than this should be our username field
-                    fieldSet = new FieldSet(this, $(passwordField), prevField);
-                } else if ($(input).is(':visible')) {
-                    // We didn't find the username field. Check if it's actually visible
-                    fieldSet = new FieldSet(this, $(passwordField));
-                } // Else we didn't find a visible username of password field
+            const $input = $(input);
+
+            const inputType = $input.attr('type') || 'text'; // Get input type, if none default to "text"
+            if (inputType != 'password') // We didn't reach our password field?
+            {
+                if ($input.is(':visible') && (inputType === 'text' || inputType === 'email' || inputType === 'tel'))
+                    prevField = $input; // Is this a possible username field?
+            }
+            else if ($input.is($passwordField))  // Found our password field?
+            {
+                if (prevField) // Is there a previous field? Than this should be our username field
+                    fieldSet = new FieldSet(this, $passwordField, prevField);
+                else if ($input.is(':visible')) // We didn't find the username field. Check if password field is actually visible
+                    fieldSet = new FieldSet(this, $passwordField);
+                // Else we didn't find a visible username of password field
                 return false; // Break the each() loop
             }
         });
+        
         return fieldSet;
     }
 

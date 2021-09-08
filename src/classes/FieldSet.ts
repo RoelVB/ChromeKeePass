@@ -68,7 +68,7 @@ export default class FieldSet
                 else
                     this._controlField.removeClass(FieldSet.allIconStyles).addClass(styles.orange);
             }
-            if (this._pageControl.dropdown.isOpen()) { // Is the dropdown open?
+            if (this._pageControl.dropdown.isOpen) { // Is the dropdown open?
                 this._changeCredentials();
             }
             // Do we already have to fill the fields?
@@ -115,7 +115,7 @@ export default class FieldSet
 
     /** Enter the selected credentials into the fields */
     public enterSelection() {
-        if (!this._selectedCredential || !this._pageControl.dropdown.isOpen()) {
+        if (!this._selectedCredential || !this._pageControl.dropdown.isOpen) {
             return; // We don't want to do this if we have no selection or the dropdown isn't open
         }
         this._inputCredential(this._selectedCredential);
@@ -154,7 +154,7 @@ export default class FieldSet
     private _onClick(event: JQuery.ClickEvent) {
         if (this._onIcon) { // Only continue if the cursor is on the icon
             event.preventDefault();
-            if (this._pageControl.dropdown.isOpen()) {
+            if (this._pageControl.dropdown.isOpen) {
                 this._pageControl.dropdown.close();
             } else {
                 this._pageControl.dropdown.open(this);
@@ -196,7 +196,7 @@ export default class FieldSet
             if(this._pageControl.settings.autoComplete) // Is autocomplete enabled?
             {
                 this._pageControl.dropdown.open(this); // Try opening the dropdown
-                if (this._pageControl.dropdown.isOpen()) { // The dropdown is open?
+                if (this._pageControl.dropdown.isOpen) { // The dropdown is open?
                     this._changeCredentials(newValue)
                 }
             }

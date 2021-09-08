@@ -24,7 +24,7 @@ export default class CredentialsDropdown {
     /**
      * @return Whether or not the dropdown is currently opened.
      */
-    public isOpen(): boolean {
+    public get isOpen(): boolean {
         return this._dropdown !== undefined;
     }
 
@@ -40,7 +40,7 @@ export default class CredentialsDropdown {
      * @param fieldSet The field set to open the credential drawer for.
      */
     public open(fieldSet: FieldSet) {
-        if (this.isOpen()) {
+        if (this.isOpen) {
             if (fieldSet === this._fieldSet) {
                 return; // Dropdown is already open
             }

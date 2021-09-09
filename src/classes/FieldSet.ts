@@ -239,12 +239,6 @@ export default class FieldSet
     private _changeCredentials(filter?: string) {
         const credentials = this.getCredentials(filter);
         this._pageControl.dropdown.setCredentials(credentials);
-        if (credentials.length === 1) {
-            this._pageControl.dropdown.open(this)
-            this._pageControl.dropdown.selectNextCredential(); // Select it
-        } else if (!credentials.length) { // No credentials available
-            this.selectCredential(undefined)
-        }
     }
 
     /** Input a credential into the fields */

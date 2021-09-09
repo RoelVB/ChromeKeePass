@@ -160,8 +160,13 @@ export default class CredentialsDropdown {
             });
             this._credentialItems = items;
             container.empty().append(items);
+
+            if(items.length === 1) // Is there only one item?
+                this.selectNextCredential(); // Select it
+
         } else { // No credentials available
             this._credentialItems = undefined;
+            this._fieldSet?.selectCredential(undefined);
             container.empty().append($('<div>').addClass(styles.noResults).text('No credentials found'));
         }
     }

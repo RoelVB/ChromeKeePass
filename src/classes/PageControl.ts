@@ -4,13 +4,16 @@ import FieldSet from './FieldSet';
 import * as IMessage from '../IMessage';
 import { ISettings, defaultSettings } from '../Settings';
 import Client from '../classes/BackgroundClient';
+import CredentialsDropdown from "./CredentialsDropdown";
 
 export default class PageControl
 {
     private _installedEscapeHandler = false;
-    private _fieldSets: FieldSet[] = [];
+    private _fieldSets = new Map<HTMLElement, FieldSet>();
     private _foundCredentials?: IMessage.Credential[];
     private _settings: ISettings = defaultSettings;
+    /** The dropdown that allows the user to choose credentials */
+    private readonly _dropdown: CredentialsDropdown;
 
     constructor()
     {
@@ -22,26 +25,21 @@ export default class PageControl
             if(message.type === IMessage.RequestType.redetectFields)
                 this.detectFields();
         });
+        this._dropdown = new CredentialsDropdown(this);
     }
 
     /** Try to detect credentials fields */
     public detectFields()
     {
-        const fieldSets: FieldSet[] = [];
         let passwordFields: JQuery = $('input[type="password"]');
 
         if(passwordFields.length) // Found some password fields?
         {
             passwordFields.each((passwordIndex, passwordField)=>{ // Loop through password fields
-                let fieldSet = this._createFieldSet(passwordField);
-                if (fieldSet !== undefined) {
-                    fieldSets.push(fieldSet);
-                }
+                this._createFieldSet(passwordField);
             });
         }
 
-        // Remember the fields we've found
-        this._fieldSets = fieldSets;
         this._findCredentials();
         this._attachEscapeEvent();
     }
@@ -55,11 +53,7 @@ export default class PageControl
         for(const passwordField of passwordFields)
         {
             if(passwordField instanceof HTMLElement)
-            {
-                const fieldSet = this._createFieldSet(passwordField);
-                if(fieldSet)
-                    this._fieldSets.push(fieldSet);
-            }
+                this._createFieldSet(passwordField);
         }
 
         this._findCredentials();
@@ -70,11 +64,11 @@ export default class PageControl
      * Create a fieldset for the `passwordField`. This method will also look for an username field
      * @param passwordField The password field we're going to use
      */
-    private _createFieldSet(passwordField: HTMLElement): FieldSet | undefined
+    private _createFieldSet(passwordField: HTMLElement)
     {
-        let prevField: JQuery;
-        let fieldSet: FieldSet | undefined;
+        let prevField: JQuery<HTMLElement> | undefined;
         let $passwordField = $(passwordField);
+        let controlField: JQuery<HTMLElement> | undefined;
 
         $('input').each((inputIndex, input) => { // Loop through input fields to find the field before our password field
             const $input = $(input);
@@ -88,36 +82,34 @@ export default class PageControl
             else if ($input.is($passwordField))  // Found our password field?
             {
                 if (prevField) // Is there a previous field? Than this should be our username field
-                    fieldSet = new FieldSet(this, $passwordField, prevField);
+                    controlField = prevField;
                 else if ($input.is(':visible')) // We didn't find the username field. Check if password field is actually visible
-                    fieldSet = new FieldSet(this, $passwordField);
+                    controlField = $passwordField;
                 // Else we didn't find a visible username of password field
                 return false; // Break the each() loop
             }
         });
         
-        return fieldSet;
+        if(controlField && !this._fieldSets.has(controlField[0])) // Only create a FieldSet once for every field
+            this._fieldSets.set(controlField[0], new FieldSet(this, $passwordField, prevField));
     }
 
     private _attachEscapeEvent()
     {
-        if(this._installedEscapeHandler || !this._fieldSets || this._fieldSets.length === 0) {
+        if(this._installedEscapeHandler || !this._fieldSets || this._fieldSets.size === 0) {
             return; // We're not going to listen to key presses if we don't need them
         }
         this._installedEscapeHandler = true;
         $(document).on('keyup', (e: JQuery.KeyUpEvent<Document>)=>{
-            if(e.key == 'Escape')
-            {
-                this._fieldSets.forEach((fieldSet)=>{ // Close dropdown for all fieldSets
-                    fieldSet.closeDropdown();
-                });
+            if(e.key == 'Escape') {
+                this._dropdown.close();
             }
         });
     }
 
     private _findCredentials()
     {
-        if(this._fieldSets.length) // We should only look for credentials if we found input fields for it
+        if(this._fieldSets.size) // We should only look for credentials if we found input fields for it
         {
             Client.findCredentials().then((credentials)=>{
                 this._foundCredentials = credentials;
@@ -134,5 +126,9 @@ export default class PageControl
     get settings(): ISettings
     {
         return this._settings;
+    }
+
+    get dropdown(): CredentialsDropdown {
+        return this._dropdown;
     }
 }

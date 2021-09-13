@@ -42,7 +42,6 @@ $(()=>{
         }
     });
     rangeInputs.on('input', (event) => {
-        console.log('On Value')
         onRangeValueChange(event.delegateTarget);
     });
     setTimeout(() => {
@@ -66,7 +65,6 @@ function onRangeValueChange(rangeInput: HTMLElement) {
     let valueBubble = rangeInput.querySelector<HTMLElement>('.value-bubble');
     if (valueBubble) {
         valueBubble.textContent = `${value}`;
-        console.log(`parent: ${input.offsetWidth}, bubble: ${valueBubble.offsetWidth}`);
         const knobSize = 10;
         const padding = 16;
         valueBubble.style.marginLeft = `${padding + knobSize / 2 + (input.offsetWidth - (

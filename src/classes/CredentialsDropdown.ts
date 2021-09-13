@@ -64,6 +64,7 @@ export default class CredentialsDropdown {
         let style = this._dropdown.get(0).style;
         style.setProperty('--dropdown-select-background-start', theme.dropdownSelectedItemColorStart);
         style.setProperty('--dropdown-select-background-end', theme.dropdownSelectedItemColorEnd);
+        style.setProperty('--scrollbar-color', theme.dropdownScrollbarColor);
 
         // Generate the content
         const content = $('<div>').addClass(styles.content);
@@ -151,7 +152,8 @@ export default class CredentialsDropdown {
             const items: JQuery[] = [];
             credentials.forEach((credential) => {
                 items.push(
-                    $('<div>').data('credential', credential).addClass(styles.item).attr('tabindex', '0').append(
+                    $('<div>').data('credential', credential).addClass(styles.item).attr('tabindex', '0').css(
+                        {'padding': `${this._pageControl.settings.theme.dropdownItemPadding}px`}).append(
                         $('<div>').addClass(styles.primaryText).text(credential.title)
                     ).append(
                         $('<div>').text(credential.username)

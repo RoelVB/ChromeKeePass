@@ -30,7 +30,7 @@ export default class FieldSet
      * (because it changes when the cursor hovers the ChromeKeePass icon)
      */
     private _controlFieldTitle: string = '';
-    /** A static list of listener functions that are attached to the control filed */
+    /** A list of listener functions that are attached to the control field. So we can detach and re-attach them */
     private readonly _LISTENER_FUNCTIONS: Record<
         keyof JQuery.TypeToTriggeredEventMap<HTMLElement, undefined, FieldSet, HTMLElement>,
         JQuery.TypeEventHandler<any, any, any, any, any>> = {};
@@ -259,9 +259,11 @@ export default class FieldSet
      * @param newControlField The new control field.
      */
     private _setControlField(newControlField?: JQuery) {
-        if (newControlField === this._controlField) {
+        if (newControlField === this._controlField) { // The controlField didn't change?
             return;
         }
+
+        // If we already have a controlField, detach listeners and remove the dropdown
         if (this._controlField) {
             for (let callbackName in this._LISTENER_FUNCTIONS) {
                 // noinspection JSUnfilteredForInLoop
@@ -270,14 +272,17 @@ export default class FieldSet
             this._pageControl.dropdown.close();
             this._controlField.removeClass(FieldSet.allIconStyles).removeClass(styles.textboxIcon)
         }
+
+        // Setup the controlField
         this._controlField = newControlField;
         if (this._controlField) {
             const inputType = this._controlField.attr('type');
-            // See https://stackoverflow.com/questions/15738259/disabling-chrome-autofill
+            // Disable Autofill on controlField. See https://stackoverflow.com/questions/15738259/disabling-chrome-autofill
             const isAutofillField = inputType === 'email' || inputType === 'tel' || inputType === 'password'
                 || this._controlField.attr('name')?.toLowerCase()?.includes('email')
                 || this._controlField.attr('id')?.toLowerCase()?.includes('email');
             this._controlField.attr('autocomplete', isAutofillField ? 'chrome-off' : 'off');
+            // Attach listeners
             for (let callbackName in this._LISTENER_FUNCTIONS) {
                 // noinspection JSUnfilteredForInLoop
                 this._controlField.on(callbackName, this._LISTENER_FUNCTIONS[callbackName]);

@@ -47,6 +47,9 @@ export default class CredentialsDropdown {
             this.close();
         }
         const target = fieldSet.controlField;
+        if (target === undefined) {
+            return;
+        }
         const targetOffset = target.offset();
         const theme = this._pageControl.settings.theme;
         // Create the dropdown

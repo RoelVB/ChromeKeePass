@@ -67,31 +67,27 @@ export default class PageControl
     private _createFieldSet(passwordField: HTMLElement)
     {
         let prevField: JQuery<HTMLElement> | undefined;
+        let prevVisibleField: JQuery<HTMLElement> | undefined;
         let $passwordField = $(passwordField);
-        let controlField: JQuery<HTMLElement> | undefined;
-
         $('input').each((inputIndex, input) => { // Loop through input fields to find the field before our password field
             const $input = $(input);
-
             const inputType = $input.attr('type') || 'text'; // Get input type, if none default to "text"
-            if (inputType != 'password') // We didn't reach our password field?
-            {
-                if ($input.is(':visible') && (inputType === 'text' || inputType === 'email' || inputType === 'tel'))
-                    prevField = $input; // Is this a possible username field?
-            }
-            else if ($input.is($passwordField))  // Found our password field?
-            {
-                if (prevField) // Is there a previous field? Than this should be our username field
-                    controlField = prevField;
-                else if ($input.is(':visible')) // We didn't find the username field. Check if password field is actually visible
+            if (inputType === 'text' || inputType === 'email' || inputType === 'tel') { // We didn't reach our password field?
+                prevField = $input; // Is this a possible username field?
+                if ($input.is(':visible')) {
+                    prevVisibleField = $input;
+                }
+            } else if (inputType === 'password' && $input.is($(passwordField))) { // Found our password field?
+                let controlField = $input.is(':visible') ? prevVisibleField : prevField;
+                if (!controlField && $input.is(':visible')) {
+                    // We didn't find the username field. Check if password field is actually visible
                     controlField = $passwordField;
-                // Else we didn't find a visible username of password field
+                } // Else we didn't find a visible username of password field
+                if(controlField && !this._fieldSets.has(controlField[0])) // Only create a FieldSet once for every field
+                    this._fieldSets.set(controlField[0], new FieldSet(this, $passwordField, controlField));
                 return false; // Break the each() loop
             }
         });
-        
-        if(controlField && !this._fieldSets.has(controlField[0])) // Only create a FieldSet once for every field
-            this._fieldSets.set(controlField[0], new FieldSet(this, $passwordField, prevField));
     }
 
     private _attachEscapeEvent()

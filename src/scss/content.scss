@@ -24,6 +24,7 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
 }
 
 .dropdown {
+    all: revert;
     position: absolute;
     border: 1px solid grey;
     border-radius: 4px;
@@ -31,6 +32,8 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
     background-color: white;
     min-width: 225px;
     z-index: 999999;
+    text-align: start;
+    line-height: normal;
     --dropdown-select-background-start: $lighterLightPurple;
     --dropdown-select-background-end: $lighterDarkPurple;
     --scrollbar-color: $darkPurple;

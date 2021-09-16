@@ -14,6 +14,8 @@ export default class CredentialsDropdown {
     private _credentialItems?: JQuery[];
     /** The field set that the drawer is opened for. */
     private _fieldSet?: FieldSet;
+    /** Window resize handler. */
+    private readonly _RESIZE_HANDLER = (_event: JQuery.ResizeEvent) => this._reposition();
 
     /**
      * @param _pageControl The current page controller.
@@ -46,17 +48,11 @@ export default class CredentialsDropdown {
             }
             this.close();
         }
-        const target = fieldSet.controlField;
-        if (target === undefined) {
-            return;
-        }
-        const targetOffset = target.offset();
         const theme = this._pageControl.settings.theme;
         // Create the dropdown
         this._dropdown = $('<div>').addClass(styles.dropdown).css({
-            left: `${(targetOffset ? targetOffset.left : 0) - Math.max(theme.dropdownShadowWidth, 2)}px`,
-            top: `${targetOffset && targetOffset.top + (target.outerHeight() || 10)}px`,
-            width: `${target.outerWidth()}px`,
+            left: `0px`,
+            top: `0px`,
             'margin-bottom': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
             'margin-right': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
             'margin-left': `${Math.max(theme.dropdownShadowWidth, 2)}px`,
@@ -89,14 +85,16 @@ export default class CredentialsDropdown {
             const footer = $('<div>').addClass(styles.footer).append(...footerItems);
             this._dropdown.append(footer);
         }
-
         // Show the dropdown
         $(document.body).append(this._dropdown);
+        this._reposition();
+        $(window).on('resize', this._RESIZE_HANDLER);
     }
 
     /** Close the dropdown. */
     public close() {
         if (this._dropdown) {
+            $(window).off('resize', this._RESIZE_HANDLER);
             this._dropdown.remove();
             this._credentialItems = undefined;
             this._fieldSet?.selectCredential(undefined);
@@ -142,6 +140,53 @@ export default class CredentialsDropdown {
             block: "nearest"
         });
         this._fieldSet?.selectCredential(this._credentialItems[selectedIndex].data('credential'));
+    }
+
+    /** Recalculate the position of the dropdown. */
+    private _reposition() {
+        if (this._dropdown === undefined || this._fieldSet === undefined) {
+            return;
+        }
+        const target = this._fieldSet.controlField;
+        if (target === undefined) {
+            return;
+        }
+        const documentBody = $(document.body);
+        const bodyIsOffsetParent = this._dropdown.offsetParent().get(0) === document.body;
+        const bodyWidth = Math.max(documentBody.outerWidth(bodyIsOffsetParent) || 0, window.innerWidth);
+        const bodyHeight = Math.max(documentBody.outerHeight(bodyIsOffsetParent) || 0, window.innerHeight);
+        const targetOffset = target.offset();
+        const theme = this._pageControl.settings.theme;
+        const minWidth = 225;
+        const targetWidth = target.outerWidth() || minWidth;
+        let left = (targetOffset?.left || 0) - Math.max(theme.dropdownShadowWidth, 2);
+        if (targetWidth < minWidth) {
+            left -= (minWidth - targetWidth) / 2.0;
+        }
+        if (left < scrollX) {
+            left = scrollX - Math.max(theme.dropdownShadowWidth, 2);
+        } else if (left + scrollX + minWidth > bodyWidth) {
+            left = bodyWidth - minWidth - Math.max(theme.dropdownShadowWidth, 2);
+        }
+        let top = (targetOffset?.top || 0) + (target.outerHeight() || 10);
+        const dropdownHeight = this._dropdown.outerHeight(true) || 0;
+        if (top - scrollY + dropdownHeight > bodyHeight) {
+            const offset = dropdownHeight + (target.outerHeight() || 0);
+            if (bodyHeight - top >= top || top - offset < scrollY) {
+                top = scrollY + bodyHeight - dropdownHeight;
+            } else {
+                top -= offset;
+            }
+        }
+        if (bodyIsOffsetParent) {
+            top -= parseFloat(documentBody.css('marginTop')) + parseFloat(documentBody.css('borderTopWidth'));
+            left -= parseFloat(documentBody.css('marginLeft')) + parseFloat(documentBody.css('borderLeftWidth'));
+        }
+        this._dropdown.css({
+            left: `${left}px`,
+            top: `${top}px`,
+            width: `${targetWidth}px`,
+        });
     }
 
     /**

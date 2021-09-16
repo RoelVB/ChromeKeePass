@@ -50,12 +50,14 @@ export default class PageControl
                 const inputType = input.type || 'text'; // Get input type, if none default to "text"
                 if ((inputType === 'text' || inputType === 'email' || inputType === 'tel') &&
                     $passwordField.is(':visible') == isPasswordFieldVisible) {
-                    this._fieldSets.set(input, new FieldSet(this, $passwordField, $(input)));
                     foundFieldSet = true;
+                    if (!this._fieldSets.has(input)) {
+                        this._fieldSets.set(input, new FieldSet(this, $passwordField, $(input)));
+                    }
                     break;
                 }
             }
-            if (!foundFieldSet && isPasswordFieldVisible) {
+            if (!foundFieldSet && isPasswordFieldVisible && !this._fieldSets.has(passwordField)) {
                 this._fieldSets.set(passwordField, new FieldSet(this, $passwordField, $(passwordField)));
             }
         }

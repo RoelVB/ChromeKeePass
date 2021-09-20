@@ -5,6 +5,8 @@ import Client from "./BackgroundClient";
 import FieldSet from "./FieldSet";
 import PageControl from "./PageControl";
 
+const copyIcon = require('../assets/copy_to_clipboard.svg')
+
 
 /** A dropdown that displays the available credentials and allows to choose between them. */
 export default class CredentialsDropdown {
@@ -177,17 +179,18 @@ export default class CredentialsDropdown {
                 const iframeInfo = $('<div>').addClass(styles.iframeInfo);
                 iframeInfo.append($('<div>').text(
                     'This input is part of a website that is embedded into the current website. ' +
-                    'Passwords are searched for the url of the embedded website.'));
-                // noinspection HtmlRequiredAltAttribute,RequiredAttributes
-                const copyToClipboardIcon = $('<img>')
-                    .attr('alt', 'Copy url').attr('title', 'Copy url')
-                    .attr('src', chrome.extension.getURL('images/copy_to_clipboard.svg'))
-                    .attr('tabindex', '0').addClass(styles.copyUrlIcon);
-                iframeInfo.append($('<div>').append($('<label>').addClass(styles.copyUrlIconLabel).text(
-                    'Copy url').append(copyToClipboardIcon.on('click', (event) => {
-                    event.preventDefault();
-                    this._copyIframeUrl(copyToClipboardIcon)
-                }))));
+                    'Your passwords should be registered with the following URL:'));
+
+                const copyToClipboardIcon = $('<div>').addClass(styles.copyIcon).html(copyIcon)
+                    .attr('title', 'Copy to clipboard').attr('tabindex', '0')
+                    .on('click', (event)=>{
+                        event.preventDefault();
+                        this._copyIframeUrl(copyToClipboardIcon);
+                    });
+                iframeInfo.append($('<div>').attr('class', styles.inputWrapper)
+                    .append($('<input>').attr('readonly', 'readonly').val(self.location.origin))
+                    .append(copyToClipboardIcon)
+                );
                 container.append(iframeInfo);
             }
         }
@@ -206,12 +209,12 @@ export default class CredentialsDropdown {
     private _copyIframeUrl(icon: JQuery) {
         const $temp = $("<input type='url'>");
         $(document.body).append($temp);
-        $temp.val(window.location.href).trigger('select');
+        $temp.val(window.location.origin).trigger('select');
         const success = document.execCommand('copy');
         $temp.remove();
         if (success) {
-            icon.attr('src', chrome.extension.getURL('images/copy_to_clipboard_success.svg'));
-            setTimeout(() => icon.attr('src', chrome.extension.getURL('images/copy_to_clipboard.svg')), 3000);
+            icon.addClass(styles.success);
+            setTimeout(() => icon.removeClass(styles.success), 3000);
         }
         this._fieldSet?.controlField?.trigger('focus');
     }

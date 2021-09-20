@@ -82,7 +82,9 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
                 input {
                     padding: 5px;
                     width: 100%;
-                    height: 30px
+                    height: 30px;
+                    border-width: 1px;
+                    box-sizing: border-box;
                 }
         
                 .copyIcon {

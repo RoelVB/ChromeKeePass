@@ -181,15 +181,16 @@ export default class CredentialsDropdown {
                     'This input is part of a website that is embedded into the current website. ' +
                     'Your passwords should be registered with the following URL:'));
 
+                const urlInput = $('<input>').attr('readonly', 'readonly').attr('type', 'url')
+                    .val(self.location.origin);
                 const copyToClipboardIcon = $('<div>').addClass(styles.copyIcon).html(copyIcon)
                     .attr('title', 'Copy to clipboard').attr('tabindex', '0')
                     .on('click', (event)=>{
                         event.preventDefault();
-                        this._copyIframeUrl(copyToClipboardIcon);
+                        this._copyIframeUrl(copyToClipboardIcon, urlInput);
                     });
                 iframeInfo.append($('<div>').attr('class', styles.inputWrapper)
-                    .append($('<input>').attr('readonly', 'readonly').val(self.location.origin))
-                    .append(copyToClipboardIcon)
+                    .append(urlInput).append(copyToClipboardIcon)
                 );
                 container.append(iframeInfo);
             }
@@ -205,13 +206,11 @@ export default class CredentialsDropdown {
     /**
      * Copy the url of the current iframe into the clipboard.
      * @param icon The icon that was clicked.
+     * @param urlInput The input element that contains the url of the current iframe.
      */
-    private _copyIframeUrl(icon: JQuery) {
-        const $temp = $("<input type='url'>");
-        $(document.body).append($temp);
-        $temp.val(window.location.origin).trigger('select');
+    private _copyIframeUrl(icon: JQuery, urlInput: JQuery) {
+        urlInput.trigger('select');
         const success = document.execCommand('copy');
-        $temp.remove();
         if (success) {
             icon.addClass(styles.success);
             setTimeout(() => icon.removeClass(styles.success), 3000);

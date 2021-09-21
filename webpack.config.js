@@ -45,6 +45,10 @@ module.exports = {
                 test: /\.ts$/,
                 loader: 'ts-loader'
             },
+            {
+                test: /\.svg$/,
+                loader: 'svg-inline-loader',
+            },
         ],
     },
     resolve: {

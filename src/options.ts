@@ -42,7 +42,6 @@ $(()=>{
         }
     });
     rangeInputs.on('input', (event) => {
-        console.log('On Value')
         onRangeValueChange(event.delegateTarget);
     });
     setTimeout(() => {
@@ -51,7 +50,7 @@ $(()=>{
 });
 
 /**
- * Handle the value cahnge of a range input.
+ * Handle the value change of a range input.
  *
  * @param rangeInput The range input element that changed.
  */
@@ -66,7 +65,6 @@ function onRangeValueChange(rangeInput: HTMLElement) {
     let valueBubble = rangeInput.querySelector<HTMLElement>('.value-bubble');
     if (valueBubble) {
         valueBubble.textContent = `${value}`;
-        console.log(`parent: ${input.offsetWidth}, bubble: ${valueBubble.offsetWidth}`);
         const knobSize = 10;
         const padding = 16;
         valueBubble.style.marginLeft = `${padding + knobSize / 2 + (input.offsetWidth - (
@@ -111,6 +109,8 @@ function fillSettings()
         $('#dropdownSelectedItemColorEnd').val(settings.theme.dropdownSelectedItemColorEnd);
         $('#dropdownBorderWidth').val(settings.theme.dropdownBorderWidth);
         $('#dropdownShadowWidth').val(settings.theme.dropdownShadowWidth);
+        $('#dropdownItemPadding').val(settings.theme.dropdownItemPadding);
+        $('#dropdownScrollbarColor').val(settings.theme.dropdownScrollbarColor);
     });
 }
 
@@ -135,6 +135,8 @@ function doSave()
             dropdownSelectedItemColorEnd: $('#dropdownSelectedItemColorEnd').val() as string,
             dropdownBorderWidth: $('#dropdownBorderWidth').val() as number,
             dropdownShadowWidth: $('#dropdownShadowWidth').val() as number,
+            dropdownItemPadding: $('#dropdownItemPadding').val() as number,
+            dropdownScrollbarColor: $('#dropdownScrollbarColor').val() as string,
         },
     }).then(() => {
         const saveStatus = $('#saveStatus');

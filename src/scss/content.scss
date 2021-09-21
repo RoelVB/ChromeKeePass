@@ -68,6 +68,42 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
             line-height: 50px;
         }
 
+        .iframeInfo {
+            text-align: center;
+            line-height: 18px;
+            font-size: small;
+            padding: 5px;
+            max-height: 400px;
+
+            .inputWrapper {
+                display: flex;
+                align-items: center;
+
+                input {
+                    padding: 5px;
+                    width: 100%;
+                    height: 30px;
+                    border-width: 1px;
+                    box-sizing: border-box;
+                }
+        
+                .copyIcon {
+                    cursor: pointer;
+                    right: 2px;
+                    width: 28px;
+                    height: 28px;
+
+                    &:hover svg path {
+                        fill: $darkPurple;
+                    }
+
+                    &.success svg path {
+                        fill: #00AA00;
+                    }
+                }
+            }
+        }
+
         .item {
             color: black;
             padding: 3px;

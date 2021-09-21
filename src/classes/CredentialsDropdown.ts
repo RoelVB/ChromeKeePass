@@ -5,6 +5,8 @@ import Client from "./BackgroundClient";
 import FieldSet from "./FieldSet";
 import PageControl from "./PageControl";
 
+const copyIcon = require('../assets/copy_to_clipboard.svg')
+
 
 /** A dropdown that displays the available credentials and allows to choose between them. */
 export default class CredentialsDropdown {
@@ -218,6 +220,25 @@ export default class CredentialsDropdown {
             this._credentialItems = undefined;
             this._fieldSet?.selectCredential(undefined);
             container.empty().append($('<div>').addClass(styles.noResults).text('No credentials found'));
+            if (self != top) {
+                const iframeInfo = $('<div>').addClass(styles.iframeInfo);
+                iframeInfo.append($('<div>').text(
+                    'This input is part of a website that is embedded into the current website. ' +
+                    'Your passwords should be registered with the following URL:'));
+
+                const urlInput = $('<input>').attr('readonly', 'readonly').attr('type', 'url')
+                    .val(self.location.origin);
+                const copyToClipboardIcon = $('<div>').addClass(styles.copyIcon).html(copyIcon)
+                    .attr('title', 'Copy to clipboard').attr('tabindex', '0')
+                    .on('click', (event)=>{
+                        event.preventDefault();
+                        this._copyIframeUrl(copyToClipboardIcon, urlInput);
+                    });
+                iframeInfo.append($('<div>').attr('class', styles.inputWrapper)
+                    .append(urlInput).append(copyToClipboardIcon)
+                );
+                container.append(iframeInfo);
+            }
         }
     }
 
@@ -225,6 +246,21 @@ export default class CredentialsDropdown {
     private _openOptionsWindow() {
         Client.openOptions();
         this.close();
+    }
+
+    /**
+     * Copy the url of the current iframe into the clipboard.
+     * @param icon The icon that was clicked.
+     * @param urlInput The input element that contains the url of the current iframe.
+     */
+    private _copyIframeUrl(icon: JQuery, urlInput: JQuery) {
+        urlInput.trigger('select');
+        const success = document.execCommand('copy');
+        if (success) {
+            icon.addClass(styles.success);
+            setTimeout(() => icon.removeClass(styles.success), 3000);
+        }
+        this._fieldSet?.controlField?.trigger('focus');
     }
 
     /** Handle a click on a credential field. */

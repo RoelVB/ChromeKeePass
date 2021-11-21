@@ -78,7 +78,7 @@ export default class PageControl
                     prevVisibleField = $input;
                 }
             } else if (inputType === 'password' && $input.is($(passwordField))) { // Found our password field?
-                let controlField = $input.is(':visible') ? prevVisibleField : prevField;
+                let controlField = $input.is(':visible') ? prevField : prevVisibleField; // When the passwordfield is visible, we don't care if the usernamefield is visible, otherwise we need a visible usernamefield
                 if (!controlField && $input.is(':visible')) {
                     // We didn't find the username field. Check if password field is actually visible
                     controlField = $passwordField;

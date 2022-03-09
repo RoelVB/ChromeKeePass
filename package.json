@@ -22,7 +22,7 @@
         "@types/jquery": "^3.5.5",
         "@types/sjcl": "^1.0.29",
         "css-loader": "^0.28.11",
-        "node-sass": "^5.0.0",
+        "node-sass": "^7.0.0",
         "sass-loader": "^10.1.1",
         "style-loader": "^0.20.3",
         "svg-inline-loader": "^0.8.2",

@@ -13,6 +13,7 @@
         "watch": "./node_modules/.bin/webpack --mode \"development\" -w"
     },
     "dependencies": {
+        "async-mutex": "^0.3.2",
         "jquery-slim": "^3.0.0",
         "sjcl-all": "^1.0.1"
     },

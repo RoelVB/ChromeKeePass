@@ -75,8 +75,8 @@ export class KeePassHTTP
     /** Load association key */
     private _loadKey()
     {
-        this._loadingKeyMutex.runExclusive(()=>{
-            return new Promise<void>((resolve, reject)=>{
+        this._loadingKeyMutex.runExclusive(async ()=>{
+            await new Promise<void>((resolve, reject)=>{
                 KeePassHTTP._id = localStorage.getItem('KeePassHttpId');
                 KeePassHTTP._key = localStorage.getItem('KeePassHttpKey');
                 if(KeePassHTTP._id && KeePassHTTP._key) // Found key using the old method?
@@ -84,6 +84,7 @@ export class KeePassHTTP
                     this._saveKey();
                     localStorage.removeItem('KeePassHttpId');
                     localStorage.removeItem('KeePassHttpKey');
+                    resolve();
                 }
                 else
                 {

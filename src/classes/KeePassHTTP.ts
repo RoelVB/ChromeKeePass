@@ -93,8 +93,8 @@ export class KeePassHTTP
                             reject(chrome.runtime.lastError);
                         else
                         {
-                            KeePassHTTP._id = res.KeePassHttp.Id;
-                            KeePassHTTP._key = res.KeePassHttp.Key;
+                            KeePassHTTP._id = res.KeePassHttp?.Id;
+                            KeePassHTTP._key = res.KeePassHttp?.Key;
                             resolve();
                         }
                     });

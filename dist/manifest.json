@@ -3,7 +3,7 @@
 
     "name": "ChromeKeePass",
     "description": "Chrome extension for automatically entering credentials from KeePass/KeeWeb",
-    "version": "1.4.4",
+    "version": "1.4.6",
 
     "commands": {
         "redetect_fields": {
@@ -51,7 +51,6 @@
     "permissions": [
         "storage",
         "<all_urls>",
-        "webNavigation",
         "contextMenus",
         "webRequest",
         "webRequestBlocking"

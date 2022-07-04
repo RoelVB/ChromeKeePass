@@ -214,6 +214,7 @@ export class KeePassHTTP
         
         const request: RequestInit = {
             method: 'POST',
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(body),
         };
 

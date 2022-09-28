@@ -14,3 +14,19 @@ export function getActiveTab(): Promise<chrome.tabs.Tab | undefined>
         });
     });
 }
+
+/** Check if an element is visible on the page */
+export function isElementVisible(el: HTMLElement): boolean
+{
+    return window.getComputedStyle(el).display !== 'none' // Not CSS hidden
+            && el.offsetHeight > 0 && el.offsetWidth > 0; // More than 0 pixels in height and width
+}
+
+/** Callback when a page is loaded. Also fires if this event is attached after the page is loaded */
+export function onDocumentReady(cb: ()=>void)
+{
+    if(document.readyState !== 'loading')
+        cb();
+    else
+        document.addEventListener('DOMContentLoaded', cb);
+}

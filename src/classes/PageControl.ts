@@ -1,5 +1,4 @@
-import * as $ from 'jquery-slim';
-
+import { isElementVisible } from './Constants';
 import FieldSet from './FieldSet';
 import * as IMessage from '../IMessage';
 import { ISettings, defaultSettings } from '../Settings';
@@ -31,11 +30,11 @@ export default class PageControl
     /** Try to detect credentials fields */
     public detectFields()
     {
-        let passwordFields: JQuery = $('input[type="password"]');
+        let passwordFields = document.querySelectorAll<HTMLInputElement>('input[type="password"]');
 
         if(passwordFields.length) // Found some password fields?
         {
-            passwordFields.each((passwordIndex, passwordField)=>{ // Loop through password fields
+            passwordFields.forEach((passwordField, passwordIndex)=>{ // Loop through password fields
                 this._createFieldSet(passwordField);
             });
         }
@@ -50,9 +49,11 @@ export default class PageControl
      */
     public detectNewFields(passwordFields: NodeListOf<Element>)
     {
+        console.log('[CKP]: detectNewFields', passwordFields);
+
         for(const passwordField of passwordFields)
         {
-            if(passwordField instanceof HTMLElement)
+            if(passwordField instanceof HTMLInputElement)
                 this._createFieldSet(passwordField);
         }
 
@@ -64,30 +65,32 @@ export default class PageControl
      * Create a fieldset for the `passwordField`. This method will also look for an username field
      * @param passwordField The password field we're going to use
      */
-    private _createFieldSet(passwordField: HTMLElement)
+    private _createFieldSet(passwordField: HTMLInputElement)
     {
-        let prevField: JQuery<HTMLElement> | undefined;
-        let prevVisibleField: JQuery<HTMLElement> | undefined;
-        let $passwordField = $(passwordField);
-        $('input').each((inputIndex, input) => { // Loop through input fields to find the field before our password field
-            const $input = $(input);
-            const inputType = $input.attr('type') || 'text'; // Get input type, if none default to "text"
-            if (inputType === 'text' || inputType === 'email' || inputType === 'tel') { // We didn't reach our password field?
-                prevField = $input; // Is this a possible username field?
-                if ($input.is(':visible')) {
-                    prevVisibleField = $input;
-                }
-            } else if (inputType === 'password' && $input.is($(passwordField))) { // Found our password field?
-                let controlField = $input.is(':visible') ? prevField : prevVisibleField; // When the passwordfield is visible, we don't care if the usernamefield is visible, otherwise we need a visible usernamefield
-                if (!controlField && $input.is(':visible')) {
-                    // We didn't find the username field. Check if password field is actually visible
-                    controlField = $passwordField;
-                } // Else we didn't find a visible username of password field
-                if(controlField && !this._fieldSets.has(controlField[0])) // Only create a FieldSet once for every field
-                    this._fieldSets.set(controlField[0], new FieldSet(this, $passwordField, controlField));
-                return false; // Break the each() loop
+        let prevField: HTMLInputElement | undefined;
+        let prevVisibleField: HTMLInputElement | undefined;
+
+        for(const input of document.querySelectorAll<HTMLInputElement>('input')) // Loop through input fields to find the field before our password field
+        {
+            const inputType = input.getAttribute('type') || 'text'; // Get input type, if none default to "text"
+            if (inputType === 'text' || inputType === 'email' || inputType === 'tel')  // We didn't reach our password field?
+            {
+                prevField = input; // Is this a possible username field?
+                if (isElementVisible(input)) // Field is visible?
+                    prevVisibleField = input;
             }
-        });
+            else if (inputType === 'password' && input === passwordField) // Found our password field?
+            {
+                let controlField = isElementVisible(input) ? prevField : prevVisibleField; // When the passwordfield is visible, we don't care if the usernamefield is visible, otherwise we need a visible usernamefield
+                if (!controlField && isElementVisible(input)) // We didn't find the username field. Check if password field is actually visible
+                    controlField = passwordField;
+
+                if(controlField && !this._fieldSets.has(controlField)) // Only create a FieldSet once for every field
+                    this._fieldSets.set(controlField, new FieldSet(this, passwordField, controlField));
+
+                break;
+            }
+        }
     }
 
     private _attachEscapeEvent()
@@ -95,11 +98,11 @@ export default class PageControl
         if(this._installedEscapeHandler || !this._fieldSets || this._fieldSets.size === 0) {
             return; // We're not going to listen to key presses if we don't need them
         }
+
         this._installedEscapeHandler = true;
-        $(document).on('keyup', (e: JQuery.KeyUpEvent<Document>)=>{
-            if(e.key == 'Escape') {
+        document.addEventListener('keyup', ev=>{
+            if(ev.key === 'Escape')
                 this._dropdown.close();
-            }
         });
     }
 

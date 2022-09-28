@@ -1,4 +1,4 @@
-import * as $ from 'jquery-slim';
+import { isElementVisible } from './Constants';
 import * as styles from '../scss/content.scss';
 
 import PageControl from './PageControl';
@@ -19,21 +19,19 @@ export default class FieldSet
     /** Did the click start on the KeePass icon? */
     private _iconOwnsClick: boolean = false;
     /** Variable holding all icon styles (to easily remove all the styles at once) */
-    private static allIconStyles = `${styles.green} ${styles.orange} ${styles.red}`;
+    private static allIconStyles = [styles.green, styles.orange, styles.red];
     /**
      * This is the field where gonna use ChromeKeePass's controls.
      * Might me undefined, if neither the username nor the password field is visible.
      */
-    private _controlField?: JQuery;
+    private _controlField?: HTMLInputElement;
     /**
      * Used to remember the original title attribute from the username field
      * (because it changes when the cursor hovers the ChromeKeePass icon)
      */
     private _controlFieldTitle: string = '';
     /** A list of listener functions that are attached to the control field. So we can detach and re-attach them */
-    private readonly _LISTENER_FUNCTIONS: Record<
-        keyof JQuery.TypeToTriggeredEventMap<HTMLElement, undefined, FieldSet, HTMLElement>,
-        JQuery.TypeEventHandler<any, any, any, any, any>> = {};
+    private readonly _LISTENER_FUNCTIONS: Partial<Record<keyof HTMLElementEventMap, (this: HTMLInputElement, ev: any) => any>> = {};
 
     /**
      * Append ChromeKeePass to the fields
@@ -41,7 +39,8 @@ export default class FieldSet
      * @param passwordField Pointer to the password field
      * @param usernameField Pointer to the username field
      */
-    constructor(private _pageControl: PageControl, public readonly passwordField: JQuery, public readonly usernameField?: JQuery) {
+    constructor(private _pageControl: PageControl, public readonly passwordField: HTMLInputElement, public readonly usernameField?: HTMLInputElement)
+    {
         this._addListenerFunction('mousemove', this._onMouseMove.bind(this));
         this._addListenerFunction('mousedown', this._onMouseDown.bind(this));
         this._addListenerFunction('mouseleave', this._activateIcon.bind(this, true));
@@ -54,10 +53,10 @@ export default class FieldSet
         const observer = new IntersectionObserver((_entries, _observer) => {
             this._chooseControlField();
         }, {root: document.documentElement});
-        if (this.usernameField) {
-            observer.observe(this.usernameField.get(0));
-        }
-        observer.observe(this.passwordField.get(0));
+        // Attach observer to the input fields
+        if(this.usernameField) observer.observe(this.usernameField);
+        observer.observe(this.passwordField);
+
         this._chooseControlField();
 
         // Do we already have credentials?
@@ -72,10 +71,15 @@ export default class FieldSet
         {
             if(this._pageControl.settings.showUsernameIcon) // Do we have to change the icon?
             {
-                if (this._pageControl.credentials.length) {
-                    this._controlField?.removeClass(FieldSet.allIconStyles).addClass(styles.green);
-                } else {
-                    this._controlField?.removeClass(FieldSet.allIconStyles).addClass(styles.orange);
+                if (this._pageControl.credentials.length)
+                {
+                    this._controlField?.classList.remove(...FieldSet.allIconStyles);
+                    this._controlField?.classList.add(styles.green);
+                }
+                else
+                {
+                    this._controlField?.classList.remove(...FieldSet.allIconStyles);
+                    this._controlField?.classList.add(styles.orange);
                 }
             }
             if (this._pageControl.dropdown.isOpen) { // Is the dropdown open?
@@ -85,8 +89,11 @@ export default class FieldSet
             if(this._pageControl.settings.autoFillSingleCredential && this._pageControl.credentials.length === 1)
                 this._inputCredential(this._pageControl.credentials[0]);
 
-        } else if (this._pageControl.settings.showUsernameIcon) {
-            this._controlField?.removeClass(FieldSet.allIconStyles).addClass(styles.red);
+        }
+        else if (this._pageControl.settings.showUsernameIcon)
+        {
+            this._controlField?.classList.remove(...FieldSet.allIconStyles);
+            this._controlField?.classList.add(styles.red);
         }
     }
 
@@ -119,7 +126,7 @@ export default class FieldSet
     /**
      * @return The field that has the ChromeKeePass icon and should display the dropdown.
      */
-    public get controlField(): JQuery | undefined {
+    public get controlField(): HTMLInputElement | undefined {
         return this._controlField;
     }
 
@@ -134,7 +141,7 @@ export default class FieldSet
     }
 
     /** Event when the username field gets focussed */
-    private _onFocus(_event: JQuery.FocusInEvent) {
+    private _onFocus(ev: FocusEvent) {
         // Show the dropdown on focus when enabled and whe either have more than one credential or no credentials.
         if (this._pageControl.settings.showDropdownOnFocus && !this._iconOwnsClick
             && this._pageControl.credentials && this._pageControl.credentials.length === 1) {
@@ -145,25 +152,25 @@ export default class FieldSet
     /**
      * Event when the username field loses focus.
      *
-     * @param event The focus lost event.
+     * @param ev The focus lost event.
      */
-    private _onFocusLost(event: JQuery.FocusOutEvent) {
-        if (!this._pageControl.dropdown.hasGainedFocus(event)) {
+    private _onFocusLost(ev: FocusEvent) {
+        if (!this._pageControl.dropdown.hasGainedFocus(ev)) {
             this._pageControl.dropdown.close();
         }
     }
 
     /** Event when the mouse is clicked on the username field */
-    private _onMouseDown(_event: JQuery.MouseDownEvent) {
+    private _onMouseDown(ev: MouseEvent) {
         if (this._onIcon) {
             this._iconOwnsClick = true;
         }
     }
 
     /** Event when the username field is clicked */
-    private _onClick(event: JQuery.ClickEvent) {
+    private _onClick(ev: MouseEvent) {
         if (this._onIcon) { // Only continue if the cursor is on the icon
-            event.preventDefault();
+            ev.preventDefault();
             if (this._pageControl.dropdown.isOpen) {
                 this._pageControl.dropdown.close();
             } else {
@@ -176,13 +183,13 @@ export default class FieldSet
     }
 
     /** Event when a key is pressed while in the username field */
-    private _onKeyPress(event: JQuery.KeyDownEvent) {
-        switch (event.key) {
+    private _onKeyPress(ev: KeyboardEvent) {
+        switch (ev.key) {
             case 'ArrowUp':
             case 'ArrowDown':
-                event.preventDefault(); // Else this action will move the cursor
+                ev.preventDefault(); // Else this action will move the cursor
                 this._pageControl.dropdown.open(this)
-                this._pageControl.dropdown.selectNextCredential(event.key === 'ArrowUp');
+                this._pageControl.dropdown.selectNextCredential(ev.key === 'ArrowUp');
                 break;
             case 'Enter':
                 this.enterSelection();
@@ -195,9 +202,9 @@ export default class FieldSet
     }
 
     /** Event when a key was pressed in the username field */
-    private _onKeyUp(e: JQuery.KeyUpEvent)
+    private _onKeyUp(ev: KeyboardEvent)
     {
-        const newValue: string = $(e.target).val() as string;
+        const newValue: string = (ev.target as HTMLInputElement).value ?? (ev.target as HTMLInputElement).defaultValue;
 
         if(this._oldUsernameValue !== newValue) // The entered value changed?
         {
@@ -214,17 +221,17 @@ export default class FieldSet
     }
 
     /** Event when te mouse is moving over the username field */
-    private _onMouseMove(e: JQuery.MouseMoveEvent)
+    private _onMouseMove(ev: MouseEvent)
     {
         if (this._controlField === undefined) {
             return;
         }
-        const target = $(e.target);
-        const targetOffset = target.offset();
-        const targetWidth = target.width();
-        const cursorPosX: number | undefined = targetOffset && e.pageX-targetOffset.left - parseInt(target.css('padding-left')) - parseInt(target.css('padding-right'));
+        const target = ev.target as HTMLInputElement;
+        const targetOffset = target.getBoundingClientRect();
+        const targetWidth = target.clientWidth;
+        const cursorPosX: number | undefined = ev.pageX-targetOffset.left - parseInt(window.getComputedStyle(target).paddingLeft) - parseInt(window.getComputedStyle(target).paddingRight);
 
-        if(cursorPosX && targetWidth && cursorPosX >= targetWidth-(this._controlField.outerHeight() || 20))
+        if(cursorPosX && targetWidth && cursorPosX >= targetWidth-(this._controlField.offsetHeight || 20))
             this._activateIcon();
         else
             this._activateIcon(true);
@@ -233,14 +240,14 @@ export default class FieldSet
     /**
      * Choose a control field from the username and password field.
      */
-    private _chooseControlField() {
-        if (this.usernameField?.is(':visible')) {
+    private _chooseControlField()
+    {
+        if (this.usernameField && isElementVisible(this.usernameField))
             this._setControlField(this.usernameField);
-        } else if (this.passwordField.is(':visible')) {
+        else if (this.passwordField && isElementVisible(this.passwordField))
             this._setControlField(this.passwordField);
-        } else {
+        else
             this._setControlField(); // We don't have a control field right now
-        }
     }
 
     /**
@@ -249,8 +256,8 @@ export default class FieldSet
      * @param event The event name.
      * @param handler The event handler.
      */
-    private _addListenerFunction<TType extends string>(
-        event: TType, handler: JQuery.TypeEventHandler<HTMLElement, undefined, HTMLElement, HTMLElement, TType>) {
+    private _addListenerFunction<K extends keyof HTMLElementEventMap>(event: K, handler: (this: HTMLInputElement, ev: HTMLElementEventMap[K]) => any)
+    {
         this._LISTENER_FUNCTIONS[event] = handler;
     }
 
@@ -258,45 +265,42 @@ export default class FieldSet
      * Update the current control field.
      * @param newControlField The new control field.
      */
-    private _setControlField(newControlField?: JQuery) {
-        if (newControlField === this._controlField) { // The controlField didn't change?
+    private _setControlField(newControlField?: HTMLInputElement)
+    {
+        if (newControlField === this._controlField) // The controlField didn't change?
             return;
-        }
 
         // If we already have a controlField, detach listeners and remove the dropdown
-        if (this._controlField) {
-            for (let callbackName in this._LISTENER_FUNCTIONS) {
-                // noinspection JSUnfilteredForInLoop
-                this._controlField.off(callbackName, this._LISTENER_FUNCTIONS[callbackName]);
-            }
+        if (this._controlField)
+        {
+            for (const callbackName in this._LISTENER_FUNCTIONS)
+                this._controlField.removeEventListener(callbackName, this._LISTENER_FUNCTIONS[callbackName as keyof HTMLElementEventMap]!);
+
             this._pageControl.dropdown.close();
-            this._controlField.removeClass(FieldSet.allIconStyles).removeClass(styles.textboxIcon)
+            this._controlField.classList.remove(...FieldSet.allIconStyles, styles.textboxIcon);
         }
 
         // Setup the controlField
         this._controlField = newControlField;
-        if (this._controlField) {
-            const inputType = this._controlField.attr('type');
+        if (this._controlField)
+        {
             // Disable Autofill on controlField. See https://stackoverflow.com/questions/15738259/disabling-chrome-autofill
-            const isAutofillField = inputType === 'email' || inputType === 'tel' || inputType === 'password'
-                || this._controlField.attr('name')?.toLowerCase()?.includes('email')
-                || this._controlField.attr('id')?.toLowerCase()?.includes('email');
-            this._controlField.attr('autocomplete', isAutofillField ? 'chrome-off' : 'off');
+            const inputType = this._controlField.getAttribute('type');
+            const isAutofillField = inputType === 'email' || inputType === 'tel' || inputType === 'password' || this._controlField.getAttribute('name')?.toLowerCase()?.includes('email') || this._controlField.getAttribute('id')?.toLowerCase()?.includes('email');
+            this._controlField.setAttribute('autocomplete', isAutofillField ? 'chrome-off' : 'off');
+
             // Attach listeners
-            for (let callbackName in this._LISTENER_FUNCTIONS) {
-                // noinspection JSUnfilteredForInLoop
-                this._controlField.on(callbackName, this._LISTENER_FUNCTIONS[callbackName]);
-            }
+            for (let callbackName in this._LISTENER_FUNCTIONS)
+                this._controlField.addEventListener(callbackName, this._LISTENER_FUNCTIONS[callbackName as keyof HTMLElementEventMap]!);
+
             // Maybe we need to open the dropdown?
-            if (this._pageControl.settings.showDropdownOnDetectionFocus && this._controlField.is(':focus')
-                && this._pageControl.credentials && this._pageControl.credentials.length === 1) {
+            if (this._pageControl.settings.showDropdownOnDetectionFocus && document.activeElement === this._controlField && this._pageControl.credentials?.length)
                 this._pageControl.dropdown.open(this);
-            }
+
             // Should we show the icon in the username field?
-            if (this._pageControl.settings.showUsernameIcon) {
-                this._controlField.addClass(styles.textboxIcon).addClass(
-                    this._pageControl.credentials?.length ? styles.green : styles.orange);
-            }
+            if (this._pageControl.settings.showUsernameIcon)
+                this._controlField.classList.add(styles.textboxIcon, this._pageControl.credentials?.length ? styles.green : styles.orange);
+            
         }
     }
 
@@ -307,13 +311,19 @@ export default class FieldSet
     private _activateIcon(deactivate?: boolean)
     {
         if(deactivate && !this._onIcon) return; // We don't have to deactivate when the cursor isn't on the icon
+        if(!this._controlField) return; // We have nothing to do here without a controlfield
 
         this._onIcon = !deactivate;
-        if(deactivate) {
-            this._controlField?.css({cursor: ''}).attr('title', this._controlFieldTitle);
-        } else {
-            this._controlFieldTitle = this._controlField?.attr('title') || '';
-            this._controlField?.css({cursor: 'pointer'}).attr('title', 'Open ChromeKeePass options');
+        if(deactivate)
+        {
+            this._controlField.style.cursor = '';
+            this._controlField.setAttribute('title', this._controlFieldTitle);
+        }
+        else
+        {
+            this._controlFieldTitle = this._controlField.getAttribute('title') || '';
+            this._controlField.style.cursor = 'pointer';
+            this._controlField.setAttribute('title', 'Open ChromeKeePass options');
         }
     }
 
@@ -331,12 +341,14 @@ export default class FieldSet
     {
         if(this.usernameField)
         {
-            this.usernameField.val(credential.username);
-            this.usernameField[0].dispatchEvent(new Event('input', {bubbles: true}));
-            this.usernameField[0].dispatchEvent(new Event('change', {bubbles: true}));
+            this.usernameField.value = credential.username;
+            this.usernameField.defaultValue = credential.username;
+            this.usernameField.dispatchEvent(new Event('input', {bubbles: true}));
+            this.usernameField.dispatchEvent(new Event('change', {bubbles: true}));
         }
-        this.passwordField.val(credential.password);
-        this.passwordField[0].dispatchEvent(new Event('input', {bubbles: true}));
-        this.passwordField[0].dispatchEvent(new Event('change', {bubbles: true}));
+        this.passwordField.value = credential.password;
+        this.passwordField.defaultValue = credential.password;
+        this.passwordField.dispatchEvent(new Event('input', {bubbles: true}));
+        this.passwordField.dispatchEvent(new Event('change', {bubbles: true}));
     }
 }

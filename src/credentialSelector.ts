@@ -1,21 +1,21 @@
-import * as $ from 'jquery-slim';
+import { onDocumentReady } from './classes/Constants';
 import * as IMessage from './IMessage';
 
-$(()=>{
+onDocumentReady(()=>{
     new CredentialSelector();
 });
 
 class CredentialSelector
 {
     private readonly _nonce: number;
-    private _credentialsList: JQuery;
+    private _credentialsList: HTMLDivElement;
 
     constructor()
     {
         const params = new URLSearchParams(location.search);
 
         this._nonce = parseInt(params.get('nonce')!);    
-        this._credentialsList = $('#credentialsList');
+        this._credentialsList = document.getElementById('credentialsList') as HTMLDivElement;
         
         this._fetchCredentials();
     }
@@ -29,20 +29,26 @@ class CredentialSelector
         } as IMessage.BasicAuth,
         (response: IMessage.BasicAuthResponse)=>{
             if(response.credentials === undefined)
-                this._credentialsList.text('No credentials found');
+                this._credentialsList.textContent = 'No credentials found';
             else
             {
-                if(response.url) $('#title').text(`Select credentials for: ${response.url}`);
+                if(response.url) document.getElementById('title')!.textContent = `Select credentials for: ${response.url}`;
 
-                this._credentialsList.empty();
+                this._credentialsList.innerHTML = '';
                 response.credentials.forEach((credential)=>{
-                    this._credentialsList.append(
-                        $('<div>').addClass('credentialItem').append(
-                            $('<div>').css({fontWeight: 'bold'}).text(credential.title)
-                        ).append(
-                            $('<div>').text(credential.username)
-                        ).on('click', this._onClickCredential.bind(this, credential))
-                    );
+                    const title = document.createElement('div');
+                    title.style.fontWeight = 'bold';
+                    title.textContent = credential.title;
+
+                    const username = document.createElement('div');
+                    username.textContent = credential.username;
+
+                    const item = document.createElement('div');
+                    item.classList.add('credentialItem');
+                    item.append(title, username);
+                    item.addEventListener('click', this._onClickCredential.bind(this, credential));
+
+                    this._credentialsList.append(item);
                 });
             }
         });

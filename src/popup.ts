@@ -1,15 +1,15 @@
-import * as $ from 'jquery-slim';
 import Client from './classes/BackgroundClient';
+import { onDocumentReady } from './classes/Constants';
 
-$(()=>{
-    $('#optionsIcon').on('click', ()=>chrome.runtime.openOptionsPage());
+onDocumentReady(()=>{
+    document.getElementById('optionsIcon')?.addEventListener('click', ()=>chrome.runtime.openOptionsPage());
 
     Client.testAssociate().then((association)=>{
         if(association.Associated)
-            $('#connectionStatus').text('Connected');
+            document.getElementById('connectionStatus')!.textContent  = 'Connected';
         else
-            $('#connectionStatus').text('Disconnected');
+        document.getElementById('connectionStatus')!.textContent = 'Disconnected';
     }).catch(()=>{
-        $('#connectionStatus').text('Disconnected');
+        document.getElementById('connectionStatus')!.textContent  = 'Disconnected';
     });
 });

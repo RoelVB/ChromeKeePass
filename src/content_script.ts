@@ -1,9 +1,8 @@
-import * as $ from 'jquery-slim';
-
+import { onDocumentReady } from './classes/Constants';
 import PageControl from './classes/PageControl';
 const pageControl = new PageControl();
 
-$(()=>{
+onDocumentReady(()=>{
     pageControl.detectFields();
     
     if(pageControl.settings.searchForInputsOnUpdate) // Should the MutationObserver be enabled?

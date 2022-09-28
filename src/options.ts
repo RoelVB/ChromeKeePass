@@ -1,51 +1,43 @@
-import * as $ from 'jquery-slim';
 import Client from './classes/BackgroundClient';
+import { onDocumentReady } from './classes/Constants';
 import { loadSettings, saveSettings } from './Settings';
 
-$(()=>{
+onDocumentReady(()=>{
     fillSettings();
-    // noinspection JSIgnoredPromiseFromCall
     getExtensionCommands();
 
     Client.testAssociate().then((association)=>{
+        const connectionStatus = document.getElementById('connectionStatus')!;
+
         if(association.Associated)
-            $('#connectionStatus').text(`Connected as '${association.Id}'`);
+            connectionStatus.textContent = `Connected as '${association.Id}'`;
         else
         {
-            const associateButton = $('<button>').text('Connect').on('click', associate).css({
-                'margin-left': '10px'
-            });
-            $('#connectionStatus').text('Not connected ').append(associateButton);
+            const associateButton = document.createElement('button');
+            associateButton.textContent = 'Connect';
+            associateButton.style.marginLeft = '10px';
+            associateButton.addEventListener('click', associate);
+
+            connectionStatus.textContent = 'Not connected';
+            connectionStatus.append(associateButton);
         }
     }).catch((error)=>{
         console.error(error);
-        $('#connectionStatus').text('Something went wrong... is KeePass running and is the KeePassHttp plugin installed?');
+        document.getElementById('connectionStatus')!.textContent = 'Something went wrong... is KeePass running and is the KeePassHttp plugin installed?';
     });
 
-    $('#save').on('click', doSave);
-    if (navigator.userAgent.indexOf('Edg/') !== -1) // Edge doesn't support closing
-        $('#cancel').remove();
-    else
-        $('#cancel').on('click', closeOptionDialog);
-    $('#openShortcuts').on('click', openShortcuts);
-    const rangeInputs = $('.range-input');
-    rangeInputs.on('mouseover', (event) => {
-        let valueBubble = event.delegateTarget.querySelector<HTMLElement>('.value-bubble');
-        if (valueBubble) {
-            valueBubble.style.visibility = 'visible';
-        }
+    document.getElementById('save')?.addEventListener('click', doSave);
+    document.getElementById('openShortcuts')?.addEventListener('click', openShortcuts);
+
+    const rangeInputs = document.querySelectorAll<HTMLElement>('.range-input');
+    rangeInputs.forEach(rangeInput=>{
+        rangeInput.addEventListener('input', ev=>{
+            onRangeValueChange(ev.currentTarget as HTMLElement);
+        });
     });
-    rangeInputs.on('mouseout', (event) => {
-        let valueBubble = event.delegateTarget.querySelector<HTMLElement>('.value-bubble');
-        if (valueBubble) {
-            valueBubble.style.visibility = 'hidden';
-        }
-    });
-    rangeInputs.on('input', (event) => {
-        onRangeValueChange(event.delegateTarget);
-    });
+
     setTimeout(() => {
-        rangeInputs.each((_index, input) => onRangeValueChange(input));
+        rangeInputs.forEach(rangeInput=>onRangeValueChange(rangeInput));
     }, 100);
 });
 
@@ -74,18 +66,22 @@ function onRangeValueChange(rangeInput: HTMLElement) {
 
 function associate()
 {
-    $('#connectionStatus').text('Waiting for confirmation... (check if a KeePass window opened)');
+    const connectionStatus = document.getElementById('connectionStatus')!;
+    connectionStatus.textContent = 'Waiting for confirmation... (check if a KeePass window opened)';
 
     Client.associate().then((association)=>{
         if(association.Associated)
-            $('#connectionStatus').text(`Connected as '${association.Id}'`);
+            connectionStatus. textContent = `Connected as '${association.Id}'`;
         else
         {
-            const associateButton = $('<button>').text('Connect').on('click', associate);
-            $('#connectionStatus').text('Not connected ').append(associateButton);
+            const associateButton = document.createElement('button');
+            associateButton.textContent = 'Connect';
+            associateButton.addEventListener('click', associate);
+            connectionStatus.textContent = 'Not connected ';
+            connectionStatus.append(associateButton);
         }
     }).catch((error)=>{
-        $('#connectionStatus').text(error);
+        connectionStatus.textContent = error;
     });
 }
 
@@ -95,22 +91,22 @@ function associate()
 function fillSettings()
 {
     loadSettings().then((settings)=>{
-        $('#showUsernameIcon').prop('checked', settings.showUsernameIcon);
-        $('#showDropdownOnFocus').prop('checked', settings.showDropdownOnFocus);
-        $('#showDropdownOnDetectionFocus').prop('checked', settings.showDropdownOnDetectionFocus);
-        $('#showDropdownOnClick').prop('checked', settings.showDropdownOnClick);
-        $('#autoFillSingleCredential').prop('checked', settings.autoFillSingleCredential);
-        $('#searchForInputsOnUpdate').prop('checked', settings.searchForInputsOnUpdate);
-        $('#autoComplete').prop('checked', settings.autoComplete);
-        $('#keePassHost').val(settings.keePassHost);
-        $('#keePassPort').val(settings.keePassPort);
-        $('#enableDropdownFooter').prop('checked', settings.theme.enableDropdownFooter);
-        $('#dropdownSelectedItemColorStart').val(settings.theme.dropdownSelectedItemColorStart);
-        $('#dropdownSelectedItemColorEnd').val(settings.theme.dropdownSelectedItemColorEnd);
-        $('#dropdownBorderWidth').val(settings.theme.dropdownBorderWidth);
-        $('#dropdownShadowWidth').val(settings.theme.dropdownShadowWidth);
-        $('#dropdownItemPadding').val(settings.theme.dropdownItemPadding);
-        $('#dropdownScrollbarColor').val(settings.theme.dropdownScrollbarColor);
+        document.querySelector<HTMLInputElement>('#showUsernameIcon')!.checked = settings.showUsernameIcon;
+        document.querySelector<HTMLInputElement>('#showDropdownOnFocus')!.checked = settings.showDropdownOnFocus;
+        document.querySelector<HTMLInputElement>('#showDropdownOnDetectionFocus')!.checked = settings.showDropdownOnDetectionFocus;
+        document.querySelector<HTMLInputElement>('#showDropdownOnClick')!.checked = settings.showDropdownOnClick;
+        document.querySelector<HTMLInputElement>('#autoFillSingleCredential')!.checked = settings.autoFillSingleCredential;
+        document.querySelector<HTMLInputElement>('#searchForInputsOnUpdate')!.checked = settings.searchForInputsOnUpdate;
+        document.querySelector<HTMLInputElement>('#autoComplete')!.checked = settings.autoComplete;
+        document.querySelector<HTMLInputElement>('#keePassHost')!.value  = settings.keePassHost;
+        document.querySelector<HTMLInputElement>('#keePassPort')!.value = String(settings.keePassPort);
+        document.querySelector<HTMLInputElement>('#enableDropdownFooter')!.checked = settings.theme.enableDropdownFooter;
+        document.querySelector<HTMLInputElement>('#dropdownSelectedItemColorStart')!.value = settings.theme.dropdownSelectedItemColorStart;
+        document.querySelector<HTMLInputElement>('#dropdownSelectedItemColorEnd')!.value = settings.theme.dropdownSelectedItemColorEnd;
+        document.querySelector<HTMLInputElement>('#dropdownBorderWidth')!.value = String(settings.theme.dropdownBorderWidth);
+        document.querySelector<HTMLInputElement>('#dropdownShadowWidth')!.value = String(settings.theme.dropdownShadowWidth);
+        document.querySelector<HTMLInputElement>('#dropdownItemPadding')!.value = String(settings.theme.dropdownItemPadding);
+        document.querySelector<HTMLInputElement>('#dropdownScrollbarColor')!.value = String(settings.theme.dropdownScrollbarColor);
     });
 }
 
@@ -120,36 +116,29 @@ function fillSettings()
 function doSave()
 {
     saveSettings({
-        showUsernameIcon: $('#showUsernameIcon').prop('checked'),
-        showDropdownOnFocus: $('#showDropdownOnFocus').prop('checked'),
-        showDropdownOnDetectionFocus: $('#showDropdownOnDetectionFocus').prop('checked'),
-        showDropdownOnClick: $('#showDropdownOnClick').prop('checked'),
-        autoFillSingleCredential: $('#autoFillSingleCredential').prop('checked'),
-        searchForInputsOnUpdate: $('#searchForInputsOnUpdate').prop('checked'),
-        autoComplete: $('#autoComplete').prop('checked'),
-        keePassHost: $('#keePassHost').val() as string,
-        keePassPort: parseInt($('#keePassPort').val() as any),
+        showUsernameIcon: document.querySelector<HTMLInputElement>('#showUsernameIcon')?.checked,
+        showDropdownOnFocus: document.querySelector<HTMLInputElement>('#showDropdownOnFocus')?.checked,
+        showDropdownOnDetectionFocus: document.querySelector<HTMLInputElement>('#showDropdownOnDetectionFocus')?.checked,
+        showDropdownOnClick: document.querySelector<HTMLInputElement>('#showDropdownOnClick')?.checked,
+        autoFillSingleCredential: document.querySelector<HTMLInputElement>('#autoFillSingleCredential')?.checked,
+        searchForInputsOnUpdate: document.querySelector<HTMLInputElement>('#searchForInputsOnUpdate')?.checked,
+        autoComplete: document.querySelector<HTMLInputElement>('#autoComplete')?.checked,
+        keePassHost: document.querySelector<HTMLInputElement>('#keePassHost')?.value,
+        keePassPort: parseInt(document.querySelector<HTMLInputElement>('#keePassPort')?.value as any),
         theme: {
-            enableDropdownFooter: $('#enableDropdownFooter').prop('checked'),
-            dropdownSelectedItemColorStart: $('#dropdownSelectedItemColorStart').val() as string,
-            dropdownSelectedItemColorEnd: $('#dropdownSelectedItemColorEnd').val() as string,
-            dropdownBorderWidth: $('#dropdownBorderWidth').val() as number,
-            dropdownShadowWidth: $('#dropdownShadowWidth').val() as number,
-            dropdownItemPadding: $('#dropdownItemPadding').val() as number,
-            dropdownScrollbarColor: $('#dropdownScrollbarColor').val() as string,
+            enableDropdownFooter: document.querySelector<HTMLInputElement>('#enableDropdownFooter')?.checked!,
+            dropdownSelectedItemColorStart: document.querySelector<HTMLInputElement>('#dropdownSelectedItemColorStart')?.value!,
+            dropdownSelectedItemColorEnd: document.querySelector<HTMLInputElement>('#dropdownSelectedItemColorEnd')?.value!,
+            dropdownBorderWidth: parseInt(document.querySelector<HTMLInputElement>('#dropdownBorderWidth')?.value as any),
+            dropdownShadowWidth: parseInt(document.querySelector<HTMLInputElement>('#dropdownShadowWidth')?.value as any),
+            dropdownItemPadding: parseInt(document.querySelector<HTMLInputElement>('#dropdownItemPadding')?.value as any),
+            dropdownScrollbarColor: document.querySelector<HTMLInputElement>('#dropdownScrollbarColor')?.value!,
         },
     }).then(() => {
-        const saveStatus = $('#saveStatus');
-        saveStatus.text('Options saved');
-        setTimeout(() => saveStatus.text(''), 1500);
+        const saveStatus = document.getElementById('saveStatus')!;
+        saveStatus.textContent = 'Options saved';
+        setTimeout(() => saveStatus.textContent = '', 1500);
     });
-}
-
-/**
- * Close the options dialog.
- */
-function closeOptionDialog() {
-    window.close();
 }
 
 /**
@@ -167,11 +156,13 @@ function openShortcuts() {
 async function getExtensionCommands()
 {
     const commands = await Client.getExtensionCommands();
-    $('#shortcuts').empty();
+    document.getElementById('shortcuts')!.innerHTML = '';
 
     commands.forEach((command)=>{
         if(command.description) {
-            $('#shortcuts').append($('<div>').text(`${command.description}: ${command.shortcut || '<Unassigned>'}`));
+            const shortcut = document.createElement('div');
+            shortcut.textContent = `${command.description}: ${command.shortcut || '<Unassigned>'}`;
+            document.getElementById('shortcuts')!.append(shortcut);
         }
     });
 }

@@ -83,8 +83,15 @@ export default class PageControl
                     // We didn't find the username field. Check if password field is actually visible
                     controlField = $passwordField;
                 } // Else we didn't find a visible username of password field
-                if(controlField && !this._fieldSets.has(controlField[0])) // Only create a FieldSet once for every field
-                    this._fieldSets.set(controlField[0], new FieldSet(this, $passwordField, controlField));
+
+                if(controlField)
+                {
+                    if(this._fieldSets.has(controlField[0])) // We already have a fieldset for this controlfield?
+                        this._fieldSets.get(controlField[0])!.passwordField = $passwordField; // Set the passwordfield again, it might have changed (This happens for Dropbox, see issue #86)
+                    else
+                        this._fieldSets.set(controlField[0], new FieldSet(this, $passwordField, controlField));
+                }
+
                 return false; // Break the each() loop
             }
         });

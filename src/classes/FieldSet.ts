@@ -41,7 +41,7 @@ export default class FieldSet
      * @param passwordField Pointer to the password field
      * @param usernameField Pointer to the username field
      */
-    constructor(private _pageControl: PageControl, public readonly passwordField: JQuery, public readonly usernameField?: JQuery) {
+    constructor(private _pageControl: PageControl, public passwordField: JQuery, public readonly usernameField?: JQuery) {
         this._addListenerFunction('mousemove', this._onMouseMove.bind(this));
         this._addListenerFunction('mousedown', this._onMouseDown.bind(this));
         this._addListenerFunction('mouseleave', this._activateIcon.bind(this, true));

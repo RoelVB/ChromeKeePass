@@ -8,9 +8,9 @@
         "url": "https://github.com/RoelVB/ChromeKeePass.git"
     },
     "scripts": {
-        "dev": "./node_modules/.bin/webpack --mode \"development\"",
-        "prod": "./node_modules/.bin/webpack --mode \"production\"",
-        "watch": "./node_modules/.bin/webpack --mode \"development\" -w"
+        "dev": ".\"/node_modules/.bin/webpack\" --mode \"development\"",
+        "prod": ".\"/node_modules/.bin/webpack\" --mode \"production\"",
+        "watch": ".\"/node_modules/.bin/webpack\" --mode \"development\" -w"
     },
     "dependencies": {
         "async-mutex": "^0.3.2",

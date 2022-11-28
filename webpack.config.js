@@ -1,4 +1,5 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     entry: {
@@ -8,6 +9,7 @@ module.exports = {
         options: './src/options.ts',
         credentialSelector: './src/credentialSelector.ts',
     },
+    plugins: [new MiniCssExtractPlugin()],
     output: {
         path: path.resolve(__dirname, 'dist/js'),
         filename: '[name].js',
@@ -25,20 +27,18 @@ module.exports = {
                             transform: './styleTransform.js',
                         },
                     },
+                    '@teamsupercell/typings-for-css-modules-loader',
+                    process.env.npm_lifecycle_event === 'prod' ? MiniCssExtractPlugin.loader : null,
                     {
-                        loader: 'typings-for-css-modules-loader',
+                        loader: 'css-loader',
                         options: {
-                            namedExport: true,
                             modules: true,
-                            sass: true,
                             url: false,
-                            root: '',
-                            sourceMap: process.env.npm_lifecycle_event!=='prod',
-                            minimize: process.env.npm_lifecycle_event==='prod',
-                        },
+                            sourceMap: process.env.npm_lifecycle_event !== 'prod',
+                        }
                     },
                     'sass-loader',
-                ],
+                ].filter(loader => loader !== null),
             },
             {
                 exclude: /node_modules/,
@@ -57,7 +57,7 @@ module.exports = {
             'crypto': false
         },
     },
-    devtool: process.env.npm_lifecycle_event!=='prod'?'inline-source-map':undefined,
+    devtool: process.env.npm_lifecycle_event !== 'prod' ? 'inline-source-map' : undefined,
     performance: {
         hints: false,
     },

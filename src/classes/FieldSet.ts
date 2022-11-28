@@ -55,9 +55,9 @@ export default class FieldSet
             this._chooseControlField();
         }, {root: document.documentElement});
         if (this.usernameField) {
-            observer.observe(this.usernameField.get(0));
+            observer.observe(this.usernameField.get(0)!);
         }
-        observer.observe(this.passwordField.get(0));
+        observer.observe(this.passwordField.get(0)!);
         this._chooseControlField();
 
         // Do we already have credentials?

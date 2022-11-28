@@ -62,7 +62,7 @@ export default class CredentialsDropdown {
             'box-shadow': `0 ${theme.dropdownShadowWidth}px ${theme.dropdownShadowWidth}px 0 rgba(0,0,0,0.2)`,
         });
         this._fieldSet = fieldSet;
-        let style = this._dropdown.get(0).style;
+        let style = this._dropdown.get(0)!.style;
         style.setProperty('--dropdown-select-background-start', theme.dropdownSelectedItemColorStart);
         style.setProperty('--dropdown-select-background-end', theme.dropdownSelectedItemColorEnd);
         style.setProperty('--scrollbar-color', theme.dropdownScrollbarColor);
@@ -137,7 +137,7 @@ export default class CredentialsDropdown {
             }
         }
         this._credentialItems[selectedIndex].addClass(styles.selected);
-        this._credentialItems[selectedIndex].get(0).scrollIntoView({
+        this._credentialItems[selectedIndex].get(0)?.scrollIntoView({
             behavior: "auto",
             block: "nearest"
         });
@@ -227,7 +227,7 @@ export default class CredentialsDropdown {
                     'Your passwords should be registered with the following URL:'));
 
                 const urlInput = $('<input>').attr('readonly', 'readonly').attr('type', 'url')
-                    .val(self.location.origin);
+                    .val(self.location.origin) as JQuery<HTMLInputElement>;
                 const copyToClipboardIcon = $('<div>').addClass(styles.copyIcon).html(copyIcon)
                     .attr('title', 'Copy to clipboard').attr('tabindex', '0')
                     .on('click', (event)=>{

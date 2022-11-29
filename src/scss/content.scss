@@ -34,9 +34,9 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
     z-index: 999999;
     text-align: start;
     line-height: normal;
-    --dropdown-select-background-start: $lighterLightPurple;
-    --dropdown-select-background-end: $lighterDarkPurple;
-    --scrollbar-color: $darkPurple;
+    --dropdown-select-background-start: #{$lighterLightPurple};
+    --dropdown-select-background-end: #{$lighterDarkPurple};
+    --scrollbar-color: #{$darkPurple};
 
     ::-webkit-scrollbar {
         height: 4px;

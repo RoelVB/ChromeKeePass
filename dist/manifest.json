@@ -28,7 +28,7 @@
         "scripts": ["js/background.js"]
     },
 
-    "browser_action": {
+    "action": {
         "default_popup": "html/popup.html",
         "default_icon": {
             "128": "images/icon128.png",

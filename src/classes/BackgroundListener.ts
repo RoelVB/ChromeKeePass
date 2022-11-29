@@ -16,7 +16,7 @@ export default class BackgroundListener
     private _onMessage(message: IMessage.Request, sender: chrome.runtime.MessageSender, sendResponse: (response: IMessage.Response)=>void)
     {
         let responsePromise: Promise<IMessage.Response> | undefined;
-        
+
         switch(message.type)
         {
             case IMessage.RequestType.openOptions:
@@ -130,9 +130,9 @@ export default class BackgroundListener
     private static _setErrorIcon(clear?: boolean)
     {
         if(clear)
-            chrome.browserAction.setIcon({path: 'images/icon48.png'});
+            chrome.action.setIcon({path: 'images/icon48.png'});
         else
-            chrome.browserAction.setIcon({path: 'images/icon48_red.png'});
+            chrome.action.setIcon({path: 'images/icon48_red.png'});
     }
 
 }

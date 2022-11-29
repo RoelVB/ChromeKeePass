@@ -270,7 +270,7 @@ export default class FieldSet
                 this._controlField.off(callbackName, this._LISTENER_FUNCTIONS[callbackName]);
             }
             this._pageControl.dropdown.close();
-            this._controlField.removeClass(FieldSet.allIconStyles).removeClass(styles.textboxIcon)
+            this._controlField.removeClass(FieldSet.allIconStyles).removeClass(styles.textBoxIcon)
         }
 
         // Setup the controlField
@@ -294,7 +294,7 @@ export default class FieldSet
             }
             // Should we show the icon in the username field?
             if (this._pageControl.settings.showUsernameIcon) {
-                this._controlField.addClass(styles.textboxIcon).addClass(
+                this._controlField.addClass(styles.textBoxIcon).addClass(
                     this._pageControl.credentials?.length ? styles.green : styles.orange);
             }
         }

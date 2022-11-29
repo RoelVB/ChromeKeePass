@@ -76,13 +76,13 @@ export default class CredentialsDropdown {
             // Create the footer and add it to the dropdown
             // noinspection HtmlRequiredAltAttribute,RequiredAttributes
             const footerItems: (JQuery | string)[] = [
-                $('<img>').addClass(styles.logo).attr('src', chrome.extension.getURL('images/icon48.png'))
+                $('<img>').addClass(styles.logo).attr('src', chrome.runtime.getURL('images/icon48.png'))
                     .attr('alt', ''),
                 'ChromeKeePass',
-                $('<img>').attr('src', chrome.extension.getURL('images/gear.png')).attr('tabindex', '0')
+                $('<img>').attr('src', chrome.runtime.getURL('images/gear.png')).attr('tabindex', '0')
                     .attr('alt', 'Open Settings').attr('title', 'Open settings').css({cursor: 'pointer'})
                     .on('click', this._openOptionsWindow.bind(this)).on('focusout', this._onItemFocusLost.bind(this)),
-                // $('<img>').attr('src', chrome.extension.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
+                // $('<img>').attr('src', chrome.runtime.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
             ];
             const footer = $('<div>').addClass(styles.footer).append(...footerItems);
             this._dropdown.append(footer);

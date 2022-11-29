@@ -22,7 +22,7 @@ export default class PageControl
         });
 
         chrome.runtime.onMessage.addListener((message: IMessage.Request, _sender, _sendResponse)=>{
-            if(message.type === IMessage.RequestType.redetectFields)
+            if(message.type === IMessage.RequestType.reDetectFields)
                 this.detectFields();
         });
         this._dropdown = new CredentialsDropdown(this);

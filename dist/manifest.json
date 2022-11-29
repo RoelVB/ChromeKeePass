@@ -6,12 +6,12 @@
     "version": "1.4.7",
 
     "commands": {
-        "redetect_fields": {
+        "re_detect_fields": {
             "suggested_key": {
                 "default": "Ctrl+Shift+Z",
                 "mac": "Command+Shift+Z"
             },
-            "description": "Redetect credential fields"
+            "description": "Re-detect credential fields"
         }
     },
 

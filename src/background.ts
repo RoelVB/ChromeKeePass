@@ -13,7 +13,7 @@ chrome.contextMenus.create({
     contexts: ['all'],
 }, ()=>{
     chrome.contextMenus.create({
-        title: 'Redetect fields',
+        title: 'Re-detect fields',
         onclick: (info, tab) => sendReDetect(tab),
         parentId: 'ChromeKeePassRoot',
         contexts: ['all'],
@@ -52,7 +52,7 @@ chrome.webRequest.onAuthRequired.addListener(async (details, callback)=>{
 
 /** Listen for commands */
 chrome.commands.onCommand.addListener(async (command)=>{
-    if(command === 'redetect_fields')
+    if(command === 're_detect_fields')
     {
         const activeTab = await C.getActiveTab();
         if (activeTab) {

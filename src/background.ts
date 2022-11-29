@@ -25,6 +25,7 @@ chrome.contextMenus.create({
  * The implementation below corrects the `Origin`-header.
  */
 loadSettings().then((settings)=>{
+    // noinspection HttpUrlsUsage
     chrome.webRequest.onBeforeSendHeaders.addListener((details)=>{
         if(details.requestHeaders)
         {
@@ -36,7 +37,7 @@ loadSettings().then((settings)=>{
                     break;
                 }
             }
-    
+
             return {requestHeaders: details.requestHeaders};
         }
     },

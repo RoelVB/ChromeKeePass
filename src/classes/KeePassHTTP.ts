@@ -222,6 +222,7 @@ export class KeePassHTTP
         const settings = await loadSettings();
 
         // Send the request to KeePass
+        // noinspection HttpUrlsUsage
         const response = await fetch(`http://${settings.keePassHost}:${settings.keePassPort}`, request);
         if(response.ok)
         {

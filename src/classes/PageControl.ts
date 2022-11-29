@@ -1,4 +1,4 @@
-import * as $ from 'jquery-slim';
+import $ from 'jquery-slim';
 
 import FieldSet from './FieldSet';
 import * as IMessage from '../IMessage';

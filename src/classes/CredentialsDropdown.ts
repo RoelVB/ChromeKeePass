@@ -1,5 +1,5 @@
-import * as $ from 'jquery-slim';
-import * as styles from "../scss/content.scss";
+import $ from 'jquery-slim';
+import styles from '../scss/content.scss';
 import * as IMessage from "../IMessage";
 import Client from "./BackgroundClient";
 import FieldSet from "./FieldSet";

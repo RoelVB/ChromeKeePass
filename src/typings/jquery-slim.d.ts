@@ -3,6 +3,6 @@
  */
 
 declare module 'jquery-slim' {
-    import * as jquery from 'jquery';
-    export = jquery;
+    import $ from 'jquery';
+    export = $;
 }

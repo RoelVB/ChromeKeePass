@@ -1,5 +1,7 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const devMode = process.env.npm_lifecycle_event !== 'prod';
 
 module.exports = {
     entry: {
@@ -20,25 +22,18 @@ module.exports = {
                 exclude: /node_modules/,
                 test: /\.scss$/,
                 use: [
-                    {
-                        loader: 'style-loader',
-                        options: {
-                            convertToAbsoluteUrls: false,
-                            transform: './styleTransform.js',
-                        },
-                    },
+                    MiniCssExtractPlugin.loader,
                     '@teamsupercell/typings-for-css-modules-loader',
-                    process.env.npm_lifecycle_event === 'prod' ? MiniCssExtractPlugin.loader : null,
                     {
                         loader: 'css-loader',
                         options: {
                             modules: true,
                             url: false,
-                            sourceMap: process.env.npm_lifecycle_event !== 'prod',
+                            sourceMap: devMode,
                         }
                     },
                     'sass-loader',
-                ].filter(loader => loader !== null),
+                ],
             },
             {
                 exclude: /node_modules/,
@@ -57,7 +52,7 @@ module.exports = {
             'crypto': false
         },
     },
-    devtool: process.env.npm_lifecycle_event !== 'prod' ? 'inline-source-map' : undefined,
+    devtool: devMode ? 'inline-source-map' : undefined,
     performance: {
         hints: false,
     },
@@ -68,5 +63,11 @@ module.exports = {
         chunkOrigins: false,
         modules: false,
         entrypoints: false,
+    },
+    optimization: {
+        minimizer: [
+            `...`,
+            new CssMinimizerPlugin(),
+        ],
     },
 };

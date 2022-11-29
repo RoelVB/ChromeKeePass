@@ -13,24 +13,25 @@
         "watch": ".\"/node_modules/.bin/webpack\" --mode \"development\" -w"
     },
     "dependencies": {
-        "async-mutex": "^0.3.2",
+        "async-mutex": "^0.4.0",
         "jquery-slim": "^3.0.0",
         "sjcl-all": "^1.0.1"
     },
     "devDependencies": {
         "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
-        "@types/chrome": "^0.0.128",
+        "@types/chrome": "^0.0.203",
         "@types/jquery": "^3.5.5",
         "@types/sjcl": "^1.0.29",
         "css-loader": "^6.7.2",
+        "css-minimizer-webpack-plugin": "^4.2.2",
         "mini-css-extract-plugin": "^2.7.0",
         "node-sass": "^8.0.0",
-        "sass-loader": "^10.1.1",
-        "style-loader": "^0.20.3",
+        "sass-loader": "^13.2.0",
+        "style-loader": "^3.3.1",
         "svg-inline-loader": "^0.8.2",
-        "ts-loader": "^8.0.14",
+        "ts-loader": "^9.4.1",
         "typescript": "^4.1.3",
         "webpack": "^5.15.0",
-        "webpack-cli": "^4.4.0"
+        "webpack-cli": "^5.0.0"
     }
 }

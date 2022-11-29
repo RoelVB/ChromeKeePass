@@ -5,6 +5,7 @@
     "strict": true,
     "sourceMap": true,
     "rootDir": "src",
+    "esModuleInterop": true,
     "outDir": "dist/js"
   }
 }

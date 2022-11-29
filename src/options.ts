@@ -1,4 +1,4 @@
-import * as $ from 'jquery-slim';
+import $ from 'jquery-slim';
 import Client from './classes/BackgroundClient';
 import { loadSettings, saveSettings } from './Settings';
 

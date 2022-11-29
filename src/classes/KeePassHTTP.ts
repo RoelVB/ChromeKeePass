@@ -2,6 +2,7 @@ import * as sjcl from 'sjcl-all';
 import { Mutex } from 'async-mutex';
 import * as IMessage from '../IMessage';
 import { loadSettings } from '../Settings';
+import { Buffer } from 'buffer';
 
 export interface IRequestBody
 {
@@ -269,11 +270,9 @@ export class KeePassHTTP
      */
     private static _generateNonce(): string
     {
-        let key = '';
-        for(let i=0; i<16; i++)
-            key += String.fromCharCode(Math.floor(Math.random()*256)); // Random char from char 0 to 255
-
-        return btoa(key);
+        const buffer = new Uint8Array(16);
+        self.crypto.getRandomValues(buffer);
+        return Buffer.from(buffer).toString('base64');
     }
 
     /**
@@ -281,13 +280,11 @@ export class KeePassHTTP
      */
     private static _generateSharedKey(): string
     {
-        let key = '';
-        for(let i=0; i<32; i++)
-            key += String.fromCharCode(Math.floor(Math.random()*256)); // Random char from char 0 to 255
-
-        return btoa(key);
+        const buffer = new Uint8Array(32);
+        self.crypto.getRandomValues(buffer);
+        return Buffer.from(buffer).toString('base64');
     }
-    
+
 }
 
 const KeePassHTTPInstance = new KeePassHTTP();

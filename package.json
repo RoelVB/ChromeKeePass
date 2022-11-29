@@ -22,6 +22,7 @@
         "@types/chrome": "^0.0.203",
         "@types/jquery": "^3.5.5",
         "@types/sjcl": "^1.0.29",
+        "buffer": "^6.0.3",
         "css-loader": "^6.7.2",
         "css-minimizer-webpack-plugin": "^4.2.2",
         "mini-css-extract-plugin": "^2.7.0",

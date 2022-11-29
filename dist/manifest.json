@@ -46,7 +46,10 @@
     },
 
     "web_accessible_resources": [
-        "images/*"
+        {
+            "resources": [ "images/*" ],
+            "matches": [ "<all_urls>" ]
+        }
     ],
 
     "permissions": [

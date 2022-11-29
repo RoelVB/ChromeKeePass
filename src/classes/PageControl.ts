@@ -61,7 +61,7 @@ export default class PageControl
     }
 
     /**
-     * Create a fieldset for the `passwordField`. This method will also look for an username field
+     * Create a fieldset for the `passwordField`. This method will also look for a username field
      * @param passwordField The password field we're going to use
      */
     private _createFieldSet(passwordField: HTMLElement)
@@ -78,7 +78,7 @@ export default class PageControl
                     prevVisibleField = $input;
                 }
             } else if (inputType === 'password' && $input.is($(passwordField))) { // Found our password field?
-                let controlField = $input.is(':visible') ? prevField : prevVisibleField; // When the passwordfield is visible, we don't care if the usernamefield is visible, otherwise we need a visible usernamefield
+                let controlField = $input.is(':visible') ? prevField : prevVisibleField; // When the password field is visible, we don't care if the username field is visible, otherwise we need a visible username field
                 if (!controlField && $input.is(':visible')) {
                     // We didn't find the username field. Check if password field is actually visible
                     controlField = $passwordField;
@@ -86,13 +86,13 @@ export default class PageControl
 
                 if(controlField)
                 {
-                    if(this._fieldSets.has(controlField[0])) // We already have a fieldset for this controlfield?
-                        this._fieldSets.get(controlField[0])!.passwordField = $passwordField; // Set the passwordfield again, it might have changed (This happens for Dropbox, see issue #86)
+                    if(this._fieldSets.has(controlField[0])) // We already have a fieldset for this control field?
+                        this._fieldSets.get(controlField[0])!.passwordField = $passwordField; // Set the password field again, it might have changed (This happens for Dropbox, see issue #86)
                     else
                         this._fieldSets.set(controlField[0], new FieldSet(this, $passwordField, controlField));
                 }
 
-                return false; // Break the each() loop
+                return false; // Break the `each()` loop
             }
         });
     }

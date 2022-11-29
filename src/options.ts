@@ -146,7 +146,7 @@ function doSave()
 }
 
 /**
- * Close the options dialog.
+ * Close the "Options" dialog.
  */
 function closeOptionDialog() {
     window.close();

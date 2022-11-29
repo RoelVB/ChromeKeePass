@@ -21,8 +21,8 @@ export default class FieldSet
     /** Variable holding all icon styles (to easily remove all the styles at once) */
     private static allIconStyles = `${styles.green} ${styles.orange} ${styles.red}`;
     /**
-     * This is the field where gonna use ChromeKeePass's controls.
-     * Might me undefined, if neither the username nor the password field is visible.
+     * This is the field where going to use ChromeKeePass's controls.
+     * Might be undefined, if neither the username nor the password field is visible.
      */
     private _controlField?: JQuery;
     /**
@@ -273,7 +273,7 @@ export default class FieldSet
             this._controlField.removeClass(FieldSet.allIconStyles).removeClass(styles.textBoxIcon)
         }
 
-        // Setup the controlField
+        // Set up the controlField
         this._controlField = newControlField;
         if (this._controlField) {
             const inputType = this._controlField.attr('type');

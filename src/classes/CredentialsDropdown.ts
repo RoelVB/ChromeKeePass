@@ -40,7 +40,7 @@ export default class CredentialsDropdown {
     }
 
     /**
-     * Open the credentials dropdown.
+     * Open the "Credentials" dropdown.
      * @param fieldSet The field set to open the credential drawer for.
      */
     public open(fieldSet: FieldSet) {

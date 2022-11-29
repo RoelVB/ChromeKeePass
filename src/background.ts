@@ -14,7 +14,7 @@ chrome.contextMenus.create({
 }, ()=>{
     chrome.contextMenus.create({
         title: 'Redetect fields',
-        onclick: sendRedetect,
+        onclick: (info, tab) => sendReDetect(tab),
         parentId: 'ChromeKeePassRoot',
         contexts: ['all'],
     });
@@ -55,19 +55,18 @@ chrome.commands.onCommand.addListener(async (command)=>{
     if(command === 'redetect_fields')
     {
         const activeTab = await C.getActiveTab();
-        chrome.tabs.sendMessage(activeTab?.id as number, {
-            type: IMessage.RequestType.redetectFields,
-        } as IMessage.Request);
+        if (activeTab) {
+            sendReDetect(activeTab);
+        }
     }
 });
 
 
-function sendRedetect(info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab)
-{
+function sendReDetect(tab: chrome.tabs.Tab) {
     // Send re-detect command to active tab
     chrome.tabs.sendMessage(tab.id as number, {
-        type: IMessage.RequestType.redetectFields,
-    } as IMessage.Request);
+        type: IMessage.RequestType.reDetectFields,
+    } as IMessage.Request).catch((reason) => console.error(`Failed to send re-detect to tab ${tab.id}: ${reason}`));
 }
 
 

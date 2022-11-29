@@ -158,7 +158,7 @@ function closeOptionDialog() {
 function openShortcuts() {
     chrome.tabs.create({
         url: 'chrome://extensions/shortcuts'
-    })
+    }).catch((reason) => console.error(`Failed to open shortcuts: ${reason}`));
 }
 
 /**

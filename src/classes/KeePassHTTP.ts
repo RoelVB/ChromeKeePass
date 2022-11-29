@@ -100,7 +100,7 @@ export class KeePassHTTP
                     });
                 }
             });
-        });
+        }).catch((reason) => console.error(`Failed to load the key: ${reason}`));
     }
 
     /** Save the association key */
@@ -137,11 +137,11 @@ export class KeePassHTTP
             KeePassHTTP._fetchJson({
                 RequestType: 'associate',
                 Key: KeePassHTTP._key,
-            }).then((json)=>{
-                if(json.Success) // Successfully associated?
+            }).then(async (json) => {
+                if (json.Success) // Successfully associated?
                 {
                     KeePassHTTP._id = json.Id;
-                    this._saveKey();
+                    await this._saveKey();
                     resolve(true);
                 }
                 else

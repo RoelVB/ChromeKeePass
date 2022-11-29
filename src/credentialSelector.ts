@@ -54,6 +54,6 @@ class CredentialSelector
             nonce: this._nonce,
             command: 'selectCredential',
             credential,
-        } as IMessage.BasicAuth);
+        } as IMessage.BasicAuth).catch((reason) => console.error(`Failed to select credentials: ${reason}`));
     }
 }

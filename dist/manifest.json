@@ -1,5 +1,5 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
 
     "name": "ChromeKeePass",
     "description": "Chrome extension for automatically entering credentials from KeePass/KeeWeb",

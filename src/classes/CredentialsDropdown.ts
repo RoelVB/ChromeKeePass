@@ -253,8 +253,16 @@ export default class CredentialsDropdown {
      * @param icon The icon that was clicked.
      * @param urlInput The input element that contains the url of the current iframe.
      */
-    private _copyIframeUrl(icon: JQuery, urlInput: JQuery) {
+    private _copyIframeUrl(icon: JQuery, urlInput: JQuery<HTMLInputElement>) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(urlInput.get(0)!.value).then(() => {
+                icon.addClass(styles.success);
+                setTimeout(() => icon.removeClass(styles.success), 3000);
+            });
+            return;
+        }
         urlInput.trigger('select');
+        // noinspection JSDeprecatedSymbols
         const success = document.execCommand('copy');
         if (success) {
             icon.addClass(styles.success);

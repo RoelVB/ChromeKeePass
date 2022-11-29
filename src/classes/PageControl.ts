@@ -66,8 +66,8 @@ export default class PageControl
      */
     private _createFieldSet(passwordField: HTMLElement)
     {
-        let prevField: JQuery<HTMLElement> | undefined;
-        let prevVisibleField: JQuery<HTMLElement> | undefined;
+        let prevField: JQuery | undefined;
+        let prevVisibleField: JQuery | undefined;
         let $passwordField = $(passwordField);
         $('input').each((inputIndex, input) => { // Loop through input fields to find the field before our password field
             const $input = $(input);

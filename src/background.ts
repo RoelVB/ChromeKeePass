@@ -1,7 +1,5 @@
 import BackgroundListener from './classes/BackgroundListener';
 import BasicAuth from './classes/BasicAuth';
-import {loadSettings} from './Settings';
-import RequestHeaderModifier from "./classes/RequestHeaderModifier";
 import ContextMenu from "./classes/ContextMenu";
 import CommandHandler from "./classes/CommandHandler";
 
@@ -9,7 +7,6 @@ import CommandHandler from "./classes/CommandHandler";
 chrome.contextMenus.onClicked.addListener(ContextMenu.handleClick);
 chrome.runtime.onInstalled.addListener(() => {
     ContextMenu.register();
-    loadSettings().then(RequestHeaderModifier.register);
 });
 
 /** Catch basic authentication requests */

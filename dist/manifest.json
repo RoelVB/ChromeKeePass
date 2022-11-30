@@ -56,7 +56,6 @@
     "permissions": [
         "storage",
         "contextMenus",
-        "declarativeNetRequest",
         "webRequest",
         "webRequestAuthProvider"
     ],

@@ -65,27 +65,11 @@ export const defaultSettings: ISettings =
 
 /** Async method for loading settings */
 export function loadSettings(): Promise<ISettings> {
-    return new Promise<ISettings>((resolve, reject) => {
-        chrome.storage.sync.get(defaultSettings, (items) => {
-            if (chrome.runtime.lastError !== undefined) {
-                reject();
-            } else {
-                resolve(items as ISettings);
-            }
-        });
-    });
+    return chrome.storage.sync.get(defaultSettings) as Promise<ISettings>;
 }
 
 /** Async method for saving settings */
 export async function saveSettings(settings: ISettings): Promise<void> {
     await RequestHeaderModifier.register(settings);
-    return new Promise<void>((resolve, reject) => {
-        chrome.storage.sync.set(settings, () => {
-            if (chrome.runtime.lastError !== undefined) {
-                reject();
-            } else {
-                resolve();
-            }
-        });
-    });
+    await chrome.storage.sync.set(settings);
 }

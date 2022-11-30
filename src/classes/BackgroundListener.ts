@@ -130,9 +130,9 @@ export default class BackgroundListener
     private static _setErrorIcon(clear?: boolean)
     {
         if(clear)
-            chrome.action.setIcon({path: 'images/icon48.png'});
+            chrome.action.setIcon({path: '../images/icon48.png'});
         else
-            chrome.action.setIcon({path: 'images/icon48_red.png'});
+            chrome.action.setIcon({path: '../images/icon48_red.png'});
     }
 
 }

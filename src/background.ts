@@ -2,47 +2,31 @@ import BackgroundListener from './classes/BackgroundListener';
 import BasicAuth from './classes/BasicAuth';
 import * as IMessage from './IMessage';
 import * as C from './classes/Constants';
-import { loadSettings } from './Settings';
+import {loadSettings} from './Settings';
+import RequestHeaderModifier from "./classes/RequestHeaderModifier";
+
 
 /**
- * Create the contextMenu
+ * Create the context menu.
  */
-chrome.contextMenus.create({
-    id: 'ChromeKeePassRoot',
-    title: 'ChromeKeePass',
-    contexts: ['all'],
-}, ()=>{
+function registerContextMenu() {
     chrome.contextMenus.create({
-        title: 'Re-detect fields',
-        onclick: (info, tab) => sendReDetect(tab),
-        parentId: 'ChromeKeePassRoot',
+        id: 'ChromeKeePassRoot',
+        title: 'ChromeKeePass',
         contexts: ['all'],
+    }, () => {
+        chrome.contextMenus.create({
+            title: 'Re-detect fields',
+            onclick: (info, tab) => sendReDetect(tab),
+            parentId: 'ChromeKeePassRoot',
+            contexts: ['all'],
+        });
     });
-});
+}
 
-/**
- * This is because Chrome doesn't send the right `Origin`-header in `Fetch` requests. Because of this, KeeWebHttp denies the request.
- * The implementation below corrects the `Origin`-header.
- */
-loadSettings().then((settings)=>{
-    // noinspection HttpUrlsUsage
-    chrome.webRequest.onBeforeSendHeaders.addListener((details)=>{
-        if(details.requestHeaders)
-        {
-            for(const key in details.requestHeaders)
-            {
-                if(details.requestHeaders[key].name === 'Origin') // Found the `Origin`-header
-                {
-                    details.requestHeaders[key].value = `chrome-extension://${chrome.runtime.id}`;
-                    break;
-                }
-            }
-
-            return {requestHeaders: details.requestHeaders};
-        }
-    },
-    {urls: [`http://${settings.keePassHost}:${settings.keePassPort}/*`]},
-    ['blocking', 'requestHeaders']);
+chrome.runtime.onInstalled.addListener(() => {
+    registerContextMenu();
+    loadSettings().then(RequestHeaderModifier.register);
 });
 
 /** Catch basic authentication requests */

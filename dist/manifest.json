@@ -56,8 +56,12 @@
         "storage",
         "<all_urls>",
         "contextMenus",
+        "declarativeNetRequest",
         "webRequest",
-        "webRequestBlocking"
+        "webRequestAuthProvider"
+    ],
+    "host_permissions": [
+        "<all_urls>"
     ],
 
     "minimum_chrome_version": "51"

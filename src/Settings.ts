@@ -1,3 +1,4 @@
+import RequestHeaderModifier from "./classes/RequestHeaderModifier";
 
 export interface ITheme {
     /** Show a footer in the credential dropdown list? */
@@ -40,7 +41,7 @@ export interface ISettings
     theme: ITheme;
 }
 
-export const defaultSettings: ISettings = 
+export const defaultSettings: ISettings =
 {
     showUsernameIcon: true,
     showDropdownOnFocus: true,
@@ -76,7 +77,8 @@ export function loadSettings(): Promise<ISettings> {
 }
 
 /** Async method for saving settings */
-export function saveSettings(settings: Partial<ISettings>): Promise<void> {
+export async function saveSettings(settings: ISettings): Promise<void> {
+    await RequestHeaderModifier.register(settings);
     return new Promise<void>((resolve, reject) => {
         chrome.storage.sync.set(settings, () => {
             if (chrome.runtime.lastError !== undefined) {

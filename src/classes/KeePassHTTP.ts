@@ -102,25 +102,18 @@ export class KeePassHTTP
         return KeePassHTTP._id || '';
     }
 
-    public associate(): Promise<boolean>
+    public async associate(): Promise<boolean>
     {
-        return new Promise<boolean>((resolve, reject)=>{
-            KeePassHTTP._key = KeePassHTTP._generateSharedKey();
-
-            KeePassHTTP._fetchJson({
-                RequestType: 'associate',
-                Key: KeePassHTTP._key,
-            }).then(async (json) => {
-                if (json.Success) // Successfully associated?
-                {
-                    KeePassHTTP._id = json.Id;
-                    await this._saveKey();
-                    resolve(true);
-                }
-                else
-                    resolve(false);
-            }).catch(reject);
+        KeePassHTTP._key = KeePassHTTP._generateSharedKey();
+        const json = await KeePassHTTP._fetchJson({
+            RequestType: 'associate',
+            Key: KeePassHTTP._key,
         });
+        if (json.Success) {
+            KeePassHTTP._id = json.Id;
+            await this._saveKey();
+        }
+        return json.Success;
     }
 
     /**
@@ -129,42 +122,27 @@ export class KeePassHTTP
     public async testAssociate(): Promise<boolean>
     {
         await this._loadingKeyMutex.waitForUnlock();
-
-        return new Promise<boolean>((resolve, reject)=>{
-            KeePassHTTP._fetchJson({RequestType: 'test-associate'}).then((json)=>{
-                if(json.Id) KeePassHTTP._id = json.Id;
-
-                resolve(json.Success);
-            }).catch(reject);
-        });
+        const json = await KeePassHTTP._fetchJson({RequestType: 'test-associate'});
+        if (json.Id) {
+            KeePassHTTP._id = json.Id;
+        }
+        return json.Success;
     }
 
     /**
      * fetch credentials using KeePassHttp
      */
-    public getLogins(url: string): Promise<IMessage.Credential[]>
+    public async getLogins(url: string): Promise<IMessage.Credential[]>
     {
-        return new Promise<IMessage.Credential[]>((resolve, reject)=>{
-            KeePassHTTP._fetchJson({RequestType: 'get-logins', Url: url}).then((json)=>{
-                if(json.Entries && json.Nonce)
-                {
-                    const output: IMessage.Credential[] = [];
-
-                    json.Entries.forEach((entry)=>{
-                        output.push({
-                            title: KeePassHTTP._decryptData(entry.Name, json.Nonce as string),
-                            username: KeePassHTTP._decryptData(entry.Login, json.Nonce as string),
-                            password: KeePassHTTP._decryptData(entry.Password, json.Nonce as string),
-                        });
-                    });
-
-                    resolve(output);
-                }
-                else
-                    reject('We received an invalid response');
-
-            }).catch(reject);
-        });
+        const json = await KeePassHTTP._fetchJson({RequestType: 'get-logins', Url: url});
+        if (!(json.Entries && json.Nonce)) {
+            throw 'We received an invalid response';
+        }
+        return json.Entries.map((entry) => ({
+            title: KeePassHTTP._decryptData(entry.Name, json.Nonce as string),
+            username: KeePassHTTP._decryptData(entry.Login, json.Nonce as string),
+            password: KeePassHTTP._decryptData(entry.Password, json.Nonce as string),
+        }));
     }
 
     /**

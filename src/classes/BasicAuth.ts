@@ -101,23 +101,18 @@ export default class BasicAuth
     /**
      * Create a popup for credential selection
      */
-    private _createPopup(): Promise<number | undefined>
-    {
-        return new Promise<number | undefined>((resolve, reject)=>{
-            chrome.windows.create({
-                url: `html/credentialSelector.html?nonce=${this._nonce}`,
-                focused: true,
-                type: 'popup',
-                height: 200,
-                width: 300,
-            }, (window)=>{
-                if (window === undefined) {
-                    reject();
-                } else {
-                    resolve(window?.id);
-                }
-            });
+    private async _createPopup(): Promise<number | undefined> {
+        const window = await chrome.windows.create({
+            url: `html/credentialSelector.html?nonce=${this._nonce}`,
+            focused: true,
+            type: 'popup',
+            height: 200,
+            width: 300,
         });
+        if (window === undefined) {
+            throw undefined;
+        }
+        return window.id;
     }
 
     /**

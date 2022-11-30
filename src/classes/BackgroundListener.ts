@@ -49,78 +49,70 @@ export default class BackgroundListener
      * We got a credentials request
      * @param url URL the user wants credentials for
      */
-    private _findCredentials(url: string): Promise<IMessage.Credential[]>
+    private async _findCredentials(url: string): Promise<IMessage.Credential[]>
     {
-        return new Promise<IMessage.Credential[]>((resolve, reject)=>{
-            console.log('get credentials for ', url);
-            if(url)
-            {
-                KeePassHTTP.getLogins(url).then((result)=>{
-                    BackgroundListener._setErrorIcon(true);
-                    resolve(result);
-                }).catch((error)=>{
-                    BackgroundListener._setErrorIcon();
-                    reject(error);
-                });
-            }
-            else
-                resolve([]); // We didn't get a URL
-        });
+        console.log('get credentials for ', url);
+        if (!url) {
+            return []; // We didn't get a URL
+        }
+        let result;
+        try {
+            result = await KeePassHTTP.getLogins(url);
+        } catch(error) {
+            BackgroundListener._setErrorIcon();
+            throw error;
+        }
+        BackgroundListener._setErrorIcon(true);
+        return result;
     }
 
     /** Associate with KeePassHttp */
-    private _associate(): Promise<IMessage.Association>
+    private async _associate(): Promise<IMessage.Association>
     {
-        return new Promise<IMessage.Association>((resolve)=>{
-            KeePassHTTP.associate().then((associated)=>{
-                BackgroundListener._setErrorIcon(true);
-                resolve({
-                    Id: KeePassHTTP.id,
-                    Associated: associated,
-                });
-
-            }).catch((error)=>{
-                console.error(error);
-                BackgroundListener._setErrorIcon();
-                resolve({
-                    Id: KeePassHTTP.id,
-                    Associated: false,
-                    Error: 'Something went wrong... did you accept the connection within KeePass?',
-                });
-            });
-        });
+        let associated;
+        try {
+            associated = await KeePassHTTP.associate();
+        } catch (error) {
+            console.error(error);
+            BackgroundListener._setErrorIcon();
+            return {
+                Id: KeePassHTTP.id,
+                Associated: false,
+                Error: 'Something went wrong... did you accept the connection within KeePass?',
+            };
+        }
+        BackgroundListener._setErrorIcon(true);
+        return {
+            Id: KeePassHTTP.id,
+            Associated: associated,
+        };
     }
 
     /** Test the association with KeePassHttp */
-    private _testAssociate(): Promise<IMessage.Association>
+    private async _testAssociate(): Promise<IMessage.Association>
     {
-        return new Promise<IMessage.Association>((resolve)=>{
-            KeePassHTTP.testAssociate().then((associated)=>{
-                BackgroundListener._setErrorIcon(associated);
-                resolve({
-                    Id: KeePassHTTP.id,
-                    Associated: associated,
-                });
-
-            }).catch((error)=>{
-                console.error(error);
-                BackgroundListener._setErrorIcon();
-                resolve({
-                    Id: KeePassHTTP.id,
-                    Associated: false,
-                    Error: 'Something went wrong... is KeePass running and is the KeePassHttp plugin installed?',
-                });
-            });
-        });
+        let associated;
+        try {
+            associated = await KeePassHTTP.testAssociate();
+        } catch (error) {
+            console.error(error);
+            BackgroundListener._setErrorIcon();
+            return {
+                Id: KeePassHTTP.id,
+                Associated: false,
+                Error: 'Something went wrong... is KeePass running and is the KeePassHttp plugin installed?',
+            };
+        }
+        BackgroundListener._setErrorIcon(associated);
+        return {
+            Id: KeePassHTTP.id,
+            Associated: associated,
+        };
     }
 
     private _getExtensionCommands(): Promise<chrome.commands.Command[]>
     {
-        return new Promise<chrome.commands.Command[]>((resolve, _reject)=>{
-            chrome.commands.getAll((commands)=>{
-                resolve(commands);
-            });
-        });
+        return chrome.commands.getAll();
     }
 
     /**

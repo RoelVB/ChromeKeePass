@@ -11,15 +11,8 @@ export default class BackgroundClient
      */
     public static associate(): Promise<IMessage.Association>
     {
-        return new Promise<IMessage.Association>((resolve, reject)=>{
-            chrome.runtime.sendMessage({
-                type: IMessage.RequestType.associate,
-            } as IMessage.Request, (response: IMessage.Association)=>{
-                if(response.Error) // We got an error?
-                    reject(response.Error);
-                else // No error
-                    resolve(response);
-            });
+        return chrome.runtime.sendMessage({
+            type: IMessage.RequestType.associate,
         });
     }
 
@@ -28,15 +21,8 @@ export default class BackgroundClient
      */
     public static testAssociate(): Promise<IMessage.Association>
     {
-        return new Promise<IMessage.Association>((resolve, reject)=>{
-            chrome.runtime.sendMessage({
-                type: IMessage.RequestType.testAssociate,
-            } as IMessage.Request, (response: IMessage.Association)=>{
-                if(response.Error) // We got an error?
-                    reject(response.Error);
-                else // No error
-                    resolve(response);
-            });
+        return chrome.runtime.sendMessage({
+            type: IMessage.RequestType.testAssociate,
         });
     }
 
@@ -45,12 +31,8 @@ export default class BackgroundClient
      */
     public static findCredentials(): Promise<IMessage.Credential[]>
     {
-        return new Promise<IMessage.Credential[]>((resolve)=>{
-            chrome.runtime.sendMessage({
-                type: IMessage.RequestType.findCredentials,
-            } as IMessage.Request, (response)=>{
-                resolve(response);
-            });
+        return chrome.runtime.sendMessage({
+            type: IMessage.RequestType.findCredentials,
         });
     }
 
@@ -61,7 +43,7 @@ export default class BackgroundClient
     {
         chrome.runtime.sendMessage({
             type: IMessage.RequestType.openOptions,
-        } as IMessage.Request).catch((reason) => console.error(`Failed to send open the options: ${reason}`));
+        }).catch((reason) => console.error(`Failed to send open the options: ${reason}`));
     }
 
     /**
@@ -69,12 +51,8 @@ export default class BackgroundClient
      */
     public static getExtensionCommands(): Promise<chrome.commands.Command[]>
     {
-        return new Promise<chrome.commands.Command[]>((resolve)=>{
-            chrome.runtime.sendMessage({
-                type: IMessage.RequestType.getCommands,
-            } as IMessage.Request, (response)=>{
-                resolve(response);
-            });
+        return chrome.runtime.sendMessage({
+            type: IMessage.RequestType.getCommands,
         });
     }
 

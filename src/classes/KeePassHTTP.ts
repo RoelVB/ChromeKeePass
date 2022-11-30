@@ -77,36 +77,20 @@ export class KeePassHTTP
     private _loadKey()
     {
         this._loadingKeyMutex.runExclusive(async ()=>{
-            await new Promise<void>((resolve, reject)=>{
-                chrome.storage.local.get('KeePassHttp', res=>{
-                    if(chrome.runtime.lastError)
-                        reject(chrome.runtime.lastError);
-                    else
-                    {
-                        KeePassHTTP._id = res.KeePassHttp?.Id;
-                        KeePassHTTP._key = res.KeePassHttp?.Key;
-                        resolve();
-                    }
-                });
-            });
+            const res = await chrome.storage.local.get('KeePassHttp');
+            KeePassHTTP._id = res.KeePassHttp?.Id;
+            KeePassHTTP._key = res.KeePassHttp?.Key;
         }).catch((reason) => console.error(`Failed to load the key: ${reason}`));
     }
 
     /** Save the association key */
-    private _saveKey()
+    private _saveKey(): Promise<void>
     {
-        return new Promise<void>((resolve, reject)=>{
-            chrome.storage.local.set({
-                KeePassHttp: {
-                    Id: KeePassHTTP._id,
-                    Key: KeePassHTTP._key
-                },
-            }, ()=>{
-                if(chrome.runtime.lastError)
-                    reject(chrome.runtime.lastError);
-                else
-                    resolve();
-            });
+        return chrome.storage.local.set({
+            KeePassHttp: {
+                Id: KeePassHTTP._id,
+                Key: KeePassHTTP._key
+            },
         });
     }
 

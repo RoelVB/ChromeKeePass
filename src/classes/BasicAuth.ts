@@ -78,7 +78,8 @@ export default class BasicAuth
                         chrome.runtime.onMessage.removeListener(messageListener);
 
                         // Close the popup window if it's still open
-                        if(this._popupWindowId !== undefined) chrome.windows.remove(this._popupWindowId);
+                        if(this._popupWindowId !== undefined) chrome.windows.remove(this._popupWindowId).catch(
+                            (reason) => console.warn(`Failed to close the popup window: ${reason}`));
 
                         if(selectedCredential !== undefined) // Credentials selected?
                         {

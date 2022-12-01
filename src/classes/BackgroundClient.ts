@@ -5,7 +5,7 @@ import * as IMessage from '../IMessage';
  */
 export default class BackgroundClient
 {
-    
+
     /**
      * Associate with KeePassHttp
      */
@@ -61,7 +61,7 @@ export default class BackgroundClient
     {
         chrome.runtime.sendMessage({
             type: IMessage.RequestType.openOptions,
-        } as IMessage.Request);
+        } as IMessage.Request).catch((reason) => console.error(`Failed to send open the options: ${reason}`));
     }
 
     /**

@@ -2,3 +2,4 @@
 /dist/js
 *.scss.d.ts
 *.zip
+.idea

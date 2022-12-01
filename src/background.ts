@@ -13,8 +13,8 @@ chrome.contextMenus.create({
     contexts: ['all'],
 }, ()=>{
     chrome.contextMenus.create({
-        title: 'Redetect fields',
-        onclick: sendRedetect,
+        title: 'Re-detect fields',
+        onclick: (info, tab) => sendReDetect(tab),
         parentId: 'ChromeKeePassRoot',
         contexts: ['all'],
     });
@@ -25,6 +25,7 @@ chrome.contextMenus.create({
  * The implementation below corrects the `Origin`-header.
  */
 loadSettings().then((settings)=>{
+    // noinspection HttpUrlsUsage
     chrome.webRequest.onBeforeSendHeaders.addListener((details)=>{
         if(details.requestHeaders)
         {
@@ -36,7 +37,7 @@ loadSettings().then((settings)=>{
                     break;
                 }
             }
-    
+
             return {requestHeaders: details.requestHeaders};
         }
     },
@@ -52,22 +53,21 @@ chrome.webRequest.onAuthRequired.addListener(async (details, callback)=>{
 
 /** Listen for commands */
 chrome.commands.onCommand.addListener(async (command)=>{
-    if(command === 'redetect_fields')
+    if(command === 're_detect_fields')
     {
         const activeTab = await C.getActiveTab();
-        chrome.tabs.sendMessage(activeTab?.id as number, {
-            type: IMessage.RequestType.redetectFields,
-        } as IMessage.Request);
+        if (activeTab) {
+            sendReDetect(activeTab);
+        }
     }
 });
 
 
-function sendRedetect(info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab)
-{
+function sendReDetect(tab: chrome.tabs.Tab) {
     // Send re-detect command to active tab
     chrome.tabs.sendMessage(tab.id as number, {
-        type: IMessage.RequestType.redetectFields,
-    } as IMessage.Request);
+        type: IMessage.RequestType.reDetectFields,
+    } as IMessage.Request).catch((reason) => console.error(`Failed to send re-detect to tab ${tab.id}: ${reason}`));
 }
 
 

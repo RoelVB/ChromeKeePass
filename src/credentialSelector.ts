@@ -1,4 +1,4 @@
-import * as $ from 'jquery-slim';
+import $ from 'jquery-slim';
 import * as IMessage from './IMessage';
 
 $(()=>{
@@ -14,9 +14,9 @@ class CredentialSelector
     {
         const params = new URLSearchParams(location.search);
 
-        this._nonce = parseInt(params.get('nonce')!);    
+        this._nonce = parseInt(params.get('nonce')!);
         this._credentialsList = $('#credentialsList');
-        
+
         this._fetchCredentials();
     }
 
@@ -54,6 +54,6 @@ class CredentialSelector
             nonce: this._nonce,
             command: 'selectCredential',
             credential,
-        } as IMessage.BasicAuth);
+        } as IMessage.BasicAuth).catch((reason) => console.error(`Failed to select credentials: ${reason}`));
     }
 }

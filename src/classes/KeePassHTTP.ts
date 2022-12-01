@@ -2,6 +2,7 @@ import * as sjcl from 'sjcl-all';
 import { Mutex } from 'async-mutex';
 import * as IMessage from '../IMessage';
 import { loadSettings } from '../Settings';
+import { Buffer } from 'buffer';
 
 export interface IRequestBody
 {
@@ -100,7 +101,7 @@ export class KeePassHTTP
                     });
                 }
             });
-        });
+        }).catch((reason) => console.error(`Failed to load the key: ${reason}`));
     }
 
     /** Save the association key */
@@ -122,7 +123,7 @@ export class KeePassHTTP
     }
 
     /**
-     * Get the Id used associating with KeePass. Will return an empty string when not associated
+     * Get the id used associating with KeePass. Will return an empty string when not associated.
      */
     get id(): string
     {
@@ -137,11 +138,11 @@ export class KeePassHTTP
             KeePassHTTP._fetchJson({
                 RequestType: 'associate',
                 Key: KeePassHTTP._key,
-            }).then((json)=>{
-                if(json.Success) // Successfully associated?
+            }).then(async (json) => {
+                if (json.Success) // Successfully associated?
                 {
                     KeePassHTTP._id = json.Id;
-                    this._saveKey();
+                    await this._saveKey();
                     resolve(true);
                 }
                 else
@@ -205,13 +206,13 @@ export class KeePassHTTP
             body = Object.assign({}, body, {
                 Nonce: nonce, // Add the Nonce to the request
                 Verifier: KeePassHTTP._encryptData(nonce, nonce), // Add the Verifier to the request
-                Id: KeePassHTTP._id?KeePassHTTP._id:'', // Add the Id, if we have one
+                Id: KeePassHTTP._id?KeePassHTTP._id:'', // Add the id, if we have one
             } as IRequestBody);
 
             if(body.Url) body.Url = KeePassHTTP._encryptData(body.Url, nonce);
             if(body.SubmitUrl) body.SubmitUrl = KeePassHTTP._encryptData(body.SubmitUrl, nonce);
-        }        
-        
+        }
+
         const request: RequestInit = {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -222,6 +223,7 @@ export class KeePassHTTP
         const settings = await loadSettings();
 
         // Send the request to KeePass
+        // noinspection HttpUrlsUsage
         const response = await fetch(`http://${settings.keePassHost}:${settings.keePassPort}`, request);
         if(response.ok)
         {
@@ -245,12 +247,12 @@ export class KeePassHTTP
             sjcl.codec.utf8String.toBits(data),
             sjcl.codec.base64.toBits(nonce)
         );
-        
+
         return sjcl.codec.base64.fromBits(encrypted);
     }
 
     /**
-     * Decrypt the data we want to received from KeePassHttp
+     * Decrypt the data we want to receive from KeePassHttp
      */
     private static _decryptData(data: string, nonce: string)
     {
@@ -259,7 +261,7 @@ export class KeePassHTTP
             sjcl.codec.base64.toBits(data),
             sjcl.codec.base64.toBits(nonce)
         );
-        
+
         return sjcl.codec.utf8String.fromBits(decrypted);
     }
 
@@ -268,11 +270,9 @@ export class KeePassHTTP
      */
     private static _generateNonce(): string
     {
-        let key = '';
-        for(let i=0; i<16; i++)
-            key += String.fromCharCode(Math.floor(Math.random()*256)); // Random char from char 0 to 255
-
-        return btoa(key);
+        const buffer = new Uint8Array(16);
+        self.crypto.getRandomValues(buffer);
+        return Buffer.from(buffer).toString('base64');
     }
 
     /**
@@ -280,13 +280,11 @@ export class KeePassHTTP
      */
     private static _generateSharedKey(): string
     {
-        let key = '';
-        for(let i=0; i<32; i++)
-            key += String.fromCharCode(Math.floor(Math.random()*256)); // Random char from char 0 to 255
-
-        return btoa(key);
+        const buffer = new Uint8Array(32);
+        self.crypto.getRandomValues(buffer);
+        return Buffer.from(buffer).toString('base64');
     }
-    
+
 }
 
 const KeePassHTTPInstance = new KeePassHTTP();

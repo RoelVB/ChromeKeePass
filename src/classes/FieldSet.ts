@@ -1,5 +1,5 @@
-import * as $ from 'jquery-slim';
-import * as styles from '../scss/content.scss';
+import $ from 'jquery-slim';
+import styles from '../scss/content.scss';
 
 import PageControl from './PageControl';
 import * as IMessage from '../IMessage';
@@ -21,8 +21,8 @@ export default class FieldSet
     /** Variable holding all icon styles (to easily remove all the styles at once) */
     private static allIconStyles = `${styles.green} ${styles.orange} ${styles.red}`;
     /**
-     * This is the field where gonna use ChromeKeePass's controls.
-     * Might me undefined, if neither the username nor the password field is visible.
+     * This is the field where going to use ChromeKeePass's controls.
+     * Might be undefined, if neither the username nor the password field is visible.
      */
     private _controlField?: JQuery;
     /**
@@ -55,9 +55,9 @@ export default class FieldSet
             this._chooseControlField();
         }, {root: document.documentElement});
         if (this.usernameField) {
-            observer.observe(this.usernameField.get(0));
+            observer.observe(this.usernameField.get(0)!);
         }
-        observer.observe(this.passwordField.get(0));
+        observer.observe(this.passwordField.get(0)!);
         this._chooseControlField();
 
         // Do we already have credentials?
@@ -270,10 +270,10 @@ export default class FieldSet
                 this._controlField.off(callbackName, this._LISTENER_FUNCTIONS[callbackName]);
             }
             this._pageControl.dropdown.close();
-            this._controlField.removeClass(FieldSet.allIconStyles).removeClass(styles.textboxIcon)
+            this._controlField.removeClass(FieldSet.allIconStyles).removeClass(styles.textBoxIcon)
         }
 
-        // Setup the controlField
+        // Set up the controlField
         this._controlField = newControlField;
         if (this._controlField) {
             const inputType = this._controlField.attr('type');
@@ -294,7 +294,7 @@ export default class FieldSet
             }
             // Should we show the icon in the username field?
             if (this._pageControl.settings.showUsernameIcon) {
-                this._controlField.addClass(styles.textboxIcon).addClass(
+                this._controlField.addClass(styles.textBoxIcon).addClass(
                     this._pageControl.credentials?.length ? styles.green : styles.orange);
             }
         }

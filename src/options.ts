@@ -1,4 +1,4 @@
-import * as $ from 'jquery-slim';
+import $ from 'jquery-slim';
 import Client from './classes/BackgroundClient';
 import { loadSettings, saveSettings } from './Settings';
 
@@ -146,7 +146,7 @@ function doSave()
 }
 
 /**
- * Close the options dialog.
+ * Close the "Options" dialog.
  */
 function closeOptionDialog() {
     window.close();
@@ -158,7 +158,7 @@ function closeOptionDialog() {
 function openShortcuts() {
     chrome.tabs.create({
         url: 'chrome://extensions/shortcuts'
-    })
+    }).catch((reason) => console.error(`Failed to open shortcuts: ${reason}`));
 }
 
 /**

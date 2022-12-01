@@ -4,7 +4,7 @@
 
 ChromeKeePass/EdgeKeePass is an open source Chrome extension to automatically entering credentials into websites.
 
-The extension depends on [KeePassHttp](https://github.com/pfn/keepasshttp), using this KeePass plugin we're able to create a secure communication between the browserextension and KeePass.
+The extension depends on [KeePassHttp](https://github.com/pfn/keepasshttp), using this KeePass plugin we're able to create a secure communication between the browser extension and KeePass.
 
 ![Demo](Documents/Images/DemoMicrosoft.gif)
 
@@ -43,7 +43,7 @@ The goal of this project is to create a user-friendly KeePass integration. With 
 ## Contribute to ChromeKeePass
 
 - When contributing, always base you changes on the `dev` branch. The `master` branch contains the currently released version. Pull requests will be merged into the `dev` branch
-- Try to keep the coding style as consistant as possible
+- Try to keep the coding style as consistent as possible
 - You can find build instructions [over here](Documents/Manuals/Buildinstructions.md)
 
 ## Donate

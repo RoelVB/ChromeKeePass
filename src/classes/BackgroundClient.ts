@@ -7,7 +7,7 @@ export default class BackgroundClient
 {
 
     /**
-     * Associate with KeePassHttp
+     * Associate with KeePass
      */
     public static associate(): Promise<IMessage.Association>
     {
@@ -17,7 +17,7 @@ export default class BackgroundClient
     }
 
     /**
-     * Test the association with KeePassHttp
+     * Test the association with KeePass
      */
     public static testAssociate(): Promise<IMessage.Association>
     {

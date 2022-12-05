@@ -65,7 +65,7 @@ export default class BackgroundListener
         return result;
     }
 
-    /** Associate with KeePassHttp */
+    /** Associate with KeePass */
     private async _associate(): Promise<IMessage.Association>
     {
         let associated;
@@ -87,7 +87,7 @@ export default class BackgroundListener
         };
     }
 
-    /** Test the association with KeePassHttp */
+    /** Test the association with KeePass */
     private async _testAssociate(): Promise<IMessage.Association>
     {
         let associated;

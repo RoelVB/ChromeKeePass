@@ -4,8 +4,7 @@ import { loadSettings, saveSettings } from './Settings';
 
 $(()=>{
     fillSettings();
-    // noinspection JSIgnoredPromiseFromCall
-    getExtensionCommands();
+    getExtensionCommands().catch(error => console.warn(`Failed to get extension commands: ${error}`));
 
     Client.testAssociate().then((association)=>{
         if(association.Associated)

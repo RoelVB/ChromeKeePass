@@ -8,8 +8,7 @@ export default class BackgroundListener
     {
         chrome.runtime.onMessage.addListener(this._onMessage.bind(this));
 
-        // noinspection JSIgnoredPromiseFromCall
-        this._testAssociate();
+        this._testAssociate().catch(error => console.error(`Failed to initially test the association: ${error}`));
     }
 
     /** When a message is received */

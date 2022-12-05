@@ -1,6 +1,6 @@
-import KeePassHTTP from './KeePassHTTP';
 import * as IMessage from '../IMessage';
 import { ISettings, defaultSettings } from '../Settings';
+import {getKeePass} from './KeePass';
 
 /**
  * This class is responsible for handling HTTP Basic Authentication
@@ -50,7 +50,7 @@ export default class BasicAuth
         this._url = request.url;
 
         try {
-            this._credentials = await KeePassHTTP.getLogins(request.url);
+            this._credentials = await (await getKeePass()).getLogins(request.url);
             if(this._credentials.length) // Found some credentials?
             {
                 if(this._settings.autoFillSingleCredential && this._credentials.length === 1) // Auto-fill single credential?

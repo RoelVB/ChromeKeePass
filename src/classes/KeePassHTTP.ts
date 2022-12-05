@@ -3,8 +3,9 @@ import { Mutex } from 'async-mutex';
 import * as IMessage from '../IMessage';
 import { loadSettings } from '../Settings';
 import { Buffer } from 'buffer';
+import {KeePassConnection} from './KeePass';
 
-export interface IRequestBody
+interface IRequestBody
 {
     RequestType: 'test-associate' | 'associate' | 'get-logins' | 'get-logins-count' | 'set-login';
     /** Don't really understand why this is here, this is an option in the KeePassHTTP options screen within KeePass */
@@ -23,7 +24,7 @@ export interface IRequestBody
     SubmitUrl?: string;
 }
 
-export interface IEntry
+interface IEntry
 {
     /** ENCRYPTED: Login name */
     Login: string;
@@ -37,7 +38,7 @@ export interface IEntry
     Uuid: string;
 }
 
-export interface IResponseBody
+interface IResponseBody
 {
     /** Number of logins when RequestType is `get-logins-count` */
     Count: number;
@@ -58,8 +59,7 @@ export interface IResponseBody
     Version: string;
 }
 
-export class KeePassHTTP
-{
+export class KeePassHTTP implements KeePassConnection {
     /** Mutex to prevent CKP from checking association before the key is loaded */
     private _loadingKeyMutex = new Mutex();
     private static _id: string | null = '';
@@ -97,9 +97,9 @@ export class KeePassHTTP
     /**
      * Get the id used associating with KeePass. Will return an empty string when not associated.
      */
-    get id(): string
+    get id(): Promise<string>
     {
-        return KeePassHTTP._id || '';
+        return Promise.resolve(KeePassHTTP._id || '');
     }
 
     public async associate(): Promise<boolean>
@@ -236,6 +236,3 @@ export class KeePassHTTP
     }
 
 }
-
-const KeePassHTTPInstance = new KeePassHTTP();
-export default KeePassHTTPInstance;

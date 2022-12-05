@@ -1,5 +1,5 @@
 import * as IMessage from '../IMessage';
-import KeePassHTTP from './KeePassHTTP';
+import {getKeePass} from './KeePass';
 
 export default class BackgroundListener
 {
@@ -54,9 +54,10 @@ export default class BackgroundListener
         if (!url) {
             return []; // We didn't get a URL
         }
+        const connection = await getKeePass();
         let result;
         try {
-            result = await KeePassHTTP.getLogins(url);
+            result = await connection.getLogins(url);
         } catch(error) {
             BackgroundListener._setErrorIcon();
             throw error;
@@ -68,21 +69,22 @@ export default class BackgroundListener
     /** Associate with KeePass */
     private async _associate(): Promise<IMessage.Association>
     {
+        const connection = await getKeePass();
         let associated;
         try {
-            associated = await KeePassHTTP.associate();
+            associated = await connection.associate();
         } catch (error) {
             console.error(error);
             BackgroundListener._setErrorIcon();
             return {
-                Id: KeePassHTTP.id,
+                Id: await connection.id,
                 Associated: false,
                 Error: 'Something went wrong... did you accept the connection within KeePass?',
             };
         }
         BackgroundListener._setErrorIcon(true);
         return {
-            Id: KeePassHTTP.id,
+            Id: await connection.id,
             Associated: associated,
         };
     }
@@ -90,21 +92,22 @@ export default class BackgroundListener
     /** Test the association with KeePass */
     private async _testAssociate(): Promise<IMessage.Association>
     {
+        const connection = await getKeePass();
         let associated;
         try {
-            associated = await KeePassHTTP.testAssociate();
+            associated = await connection.testAssociate();
         } catch (error) {
             console.error(error);
             BackgroundListener._setErrorIcon();
             return {
-                Id: KeePassHTTP.id,
+                Id: await connection.id,
                 Associated: false,
                 Error: 'Something went wrong... is KeePass running and is the KeePassHttp plugin installed?',
             };
         }
         BackgroundListener._setErrorIcon(associated);
         return {
-            Id: KeePassHTTP.id,
+            Id: await connection.id,
             Associated: associated,
         };
     }

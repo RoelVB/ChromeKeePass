@@ -1,5 +1,5 @@
 import * as IMessage from '../IMessage';
-import {getKeePass} from './KeePass';
+import {getKeePass} from './keepass/KeePass';
 
 export default class BackgroundListener
 {

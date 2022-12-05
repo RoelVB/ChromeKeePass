@@ -1,7 +1,7 @@
 import * as sjcl from 'sjcl-all';
 import { Mutex } from 'async-mutex';
-import * as IMessage from '../IMessage';
-import { loadSettings } from '../Settings';
+import * as IMessage from '../../IMessage';
+import { loadSettings } from '../../Settings';
 import { Buffer } from 'buffer';
 import {KeePassConnection} from './KeePass';
 

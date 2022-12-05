@@ -1,4 +1,4 @@
-import * as IMessage from '../IMessage';
+import * as IMessage from '../../IMessage';
 import {KeePassHTTP} from './KeePassHTTP';
 
 /** A connection to the KeePass database. */

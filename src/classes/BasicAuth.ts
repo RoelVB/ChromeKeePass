@@ -1,6 +1,6 @@
 import * as IMessage from '../IMessage';
 import { ISettings, defaultSettings } from '../Settings';
-import {getKeePass} from './KeePass';
+import {getKeePass} from './keepass/KeePass';
 
 /**
  * This class is responsible for handling HTTP Basic Authentication

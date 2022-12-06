@@ -293,6 +293,9 @@ function doSave()
         saveStatus.text('Options saved');
         setTimeout(() => saveStatus.text(''), 1500);
         loadSettings().then(AssociationManager.updateAssociationState);
+    }, (error) => {
+        console.error(`Failed to save settings: ${error}`)
+        $('#saveStatus').text('⚠ Failed to save options! ⚠');
     });
 }
 

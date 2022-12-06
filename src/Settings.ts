@@ -15,6 +15,14 @@ export interface ITheme {
     dropdownScrollbarColor: string
 }
 
+/** The connection types the plugin can use to communicate with KeePass. */
+export enum ConnectionType {
+    /** A http connection via the KeePassHttp plugin. */
+    HTTP = 'HTTP',
+    /** A native messaging channel via the KeePassNatMsg plugin. */
+    Native = 'Native',
+}
+
 export interface ISettings
 {
     /** Show the ChromeKeePass icon in the username field? */
@@ -37,6 +45,10 @@ export interface ISettings
     searchForInputsOnUpdate: boolean;
     /** Settings determining the look of user interface elements */
     theme: ITheme;
+    /** The connection type the plugin uses to communicate with KeePass */
+    connectionType: ConnectionType;
+    /** The native app id where KeePass can be reached via native messaging */
+    keePassNativeAppId: string
 }
 
 export const defaultSettings: ISettings =
@@ -57,8 +69,10 @@ export const defaultSettings: ISettings =
         dropdownBorderWidth: 1,
         dropdownShadowWidth: 0,
         dropdownItemPadding: 3,
-        dropdownScrollbarColor: '#5273d0'
-    }
+        dropdownScrollbarColor: '#5273d0',
+    },
+    connectionType: ConnectionType.HTTP,
+    keePassNativeAppId: 'org.keepassxc.keepassxc_browser',
 }
 
 /** Async method for loading settings */

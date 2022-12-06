@@ -3,6 +3,7 @@ import {KeePassConnection} from '../KeePass';
 import {box, BoxKeyPair, randomBytes} from 'tweetnacl';
 import {decodeBase64, decodeUTF8, encodeBase64, encodeUTF8} from 'tweetnacl-util';
 import {MutexProtectedLocalStorageVariable, MutexProtectedVariable} from '../../MutexProtectedVariable';
+import {ISettings} from '../../../Settings';
 
 /** Our association with the KeePass database. */
 interface Association {
@@ -66,6 +67,17 @@ export class KeePassNative implements KeePassConnection {
 
     /** Our client id during the current session. */
     private readonly _clientId = encodeBase64(randomBytes(24));
+
+    /** The native app id of the KeePassNatMsg plugin. */
+    private _keePassAppId: string;
+
+    constructor(settings: ISettings) {
+        this._keePassAppId = settings.keePassNativeAppId;
+    }
+
+    updateFromSettings(settings: ISettings): void {
+        this._keePassAppId = settings.keePassNativeAppId;
+    }
 
     get id(): Promise<string> {
         return this._association.get().then((association) => association?.id || '');
@@ -205,11 +217,9 @@ export class KeePassNative implements KeePassConnection {
                 clientID: this._clientId,
             }
         }
-        const keepassAppId = 'org.keepassxc.keepassxc_browser';
-
         // Send the request to KeePass
         const response = await chrome.runtime.sendNativeMessage(
-            keepassAppId, body) as Partial<EncryptedBody> | ErrorResponse;
+            this._keePassAppId, body) as Partial<EncryptedBody> | ErrorResponse;
         if (response.action !== unencryptedBody.action) {
             throw 'Invalid response (Different action in response)';
         }

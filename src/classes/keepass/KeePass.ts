@@ -1,5 +1,6 @@
 import * as IMessage from '../../IMessage';
 import {KeePassHTTP} from './KeePassHTTP';
+import {KeePassNative} from './native/KeePassNative';
 
 /** A connection to the KeePass database. */
 export interface KeePassConnection {
@@ -22,9 +23,10 @@ export interface KeePassConnection {
     /**
      * Fetch credentials using KeePass.
      * @param url The url for which to fetch credentials.
+     * @param forHttpBasicAuth Whether the request is made for http basic auth.
      * @returns A list of credentials for the given url.
      */
-    getLogins(url: string): Promise<IMessage.Credential[]>;
+    getLogins(url: string, forHttpBasicAuth?: boolean): Promise<IMessage.Credential[]>;
 }
 
 let _keePassConnectionInstance: KeePassConnection | null = null;
@@ -33,7 +35,8 @@ let _keePassConnectionInstance: KeePassConnection | null = null;
  * @returns The currently KeePass connection as selected in the settings.
  */
 export async function getKeePass(): Promise<KeePassConnection> {
-    const connectionClass = KeePassHTTP;
+    // const connectionClass = KeePassHTTP;
+    const connectionClass = KeePassNative;
     if (!(_keePassConnectionInstance instanceof connectionClass)) {
         _keePassConnectionInstance = new connectionClass();
     }

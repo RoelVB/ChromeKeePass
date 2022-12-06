@@ -57,7 +57,8 @@
         "storage",
         "contextMenus",
         "webRequest",
-        "webRequestAuthProvider"
+        "webRequestAuthProvider",
+        "nativeMessaging"
     ],
     "host_permissions": [
         "<all_urls>"

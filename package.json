@@ -15,7 +15,9 @@
     "dependencies": {
         "async-mutex": "^0.4.0",
         "jquery-slim": "^3.0.0",
-        "sjcl-all": "^1.0.1"
+        "sjcl-all": "^1.0.1",
+        "tweetnacl": "^1.0.3",
+        "tweetnacl-util": "^0.15.1"
     },
     "devDependencies": {
         "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",

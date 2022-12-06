@@ -132,7 +132,7 @@ export class KeePassHTTP implements KeePassConnection {
     /**
      * fetch credentials using KeePassHttp
      */
-    public async getLogins(url: string): Promise<IMessage.Credential[]>
+    public async getLogins(url: string, forHttpBasicAuth?: boolean): Promise<IMessage.Credential[]>
     {
         const json = await KeePassHTTP._fetchJson({RequestType: 'get-logins', Url: url});
         if (!(json.Entries && json.Nonce)) {

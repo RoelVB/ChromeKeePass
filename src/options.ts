@@ -1,32 +1,184 @@
 import $ from 'jquery-slim';
 import Client from './classes/BackgroundClient';
-import { loadSettings, saveSettings } from './Settings';
+import {ConnectionType, ISettings, loadSettings, saveSettings} from './Settings';
+import {MutexProtectedVariable} from './classes/MutexProtectedVariable';
+import {Association} from './IMessage';
+
+/** A view of the plugins association state with the KeePass database. */
+interface AssociationState {
+    /** The association id, if we are successfully associated. */
+    id?: string;
+
+    /** An error message, if the association or association test request failed. */
+    error?: string
+
+    /** A snapshot of the settings that are important for the connection that was used during association. */
+    settings: any[]
+}
+
+/** A manager for the association state and UI in the options. */
+class AssociationManager {
+    /** The cached state of the association per connection type.  */
+    private static _associationState = new Map<ConnectionType, MutexProtectedVariable<AssociationState>>();
+    /** Whether the last request was an association request. */
+    private static _lastRequestWasAssociate = false;
+
+    /**
+     * Request the association state or try to associate the client for the given settings and update the UI.
+     * @param settings The currently active settings.
+     * @param doAssociate Whether to try to associate or just check the association state.
+     */
+    static updateAssociationState(settings: ISettings, doAssociate?: boolean) {
+        const connectionType = settings.connectionType;
+        const pluginSettings = AssociationManager._getPluginSettings(connectionType, settings);
+        let associationState = AssociationManager._associationState.get(connectionType);
+        if (!associationState) {
+            associationState = new MutexProtectedVariable(() => ({settings: pluginSettings} as AssociationState));
+            AssociationManager._associationState.set(connectionType, associationState);
+        }
+        associationState.set(async (): Promise<AssociationState> => {
+            AssociationManager._lastRequestWasAssociate = doAssociate === true;
+            $('#connectionStatus').text(doAssociate ?
+                'Waiting for confirmation... (check if a KeePass window opened)' : 'Getting status...');
+            $('#connectButton').hide();
+            $('#saveAndCheckButton').hide();
+            $('#retryConnectionButton').hide();
+            $('#checkConnectionButton').hide();
+            let association: Association;
+            try {
+                association = await (doAssociate ? Client.associate() : Client.testAssociate());
+            } catch (error) {
+                console.error(error);
+                let pluginName: string;
+                switch (connectionType) {
+                    case ConnectionType.HTTP:
+                        pluginName = 'KeePassHttp';
+                        break
+                    case ConnectionType.Native:
+                        pluginName = 'KeePassNatMsg';
+                        break
+                }
+                return {
+                    error: `Something went wrong... is KeePass running and is the ${pluginName} plugin installed?`,
+                    settings: pluginSettings,
+                }
+            }
+            return {
+                id: association.Associated? association.Id : undefined,
+                error: association.Error,
+                settings: pluginSettings,
+            }
+        }).finally(AssociationManager.updateUiForCurrentState);
+    }
+
+    /** Retry the last request, which was either an association or test request. */
+    static retryLastRequest() {
+        loadSettings().then((settings) => AssociationManager.updateAssociationState(
+            settings, AssociationManager._lastRequestWasAssociate));
+    }
+
+    /** Update the UI for the current association state and the users' selection. */
+    static updateUiForCurrentState() {
+        loadSettings().then(async (settings) => {
+            const selectedConnectionType = ConnectionType[$('#connectionType').val() as keyof typeof ConnectionType];
+            const associationState = await AssociationManager._associationState.get(selectedConnectionType)?.get();
+            const pluginSettings = AssociationManager._getPluginSettings(selectedConnectionType);
+            const connectionStatus = $('#connectionStatus');
+            const connectButton = $('#connectButton');
+            const saveAndCheckButton = $('#saveAndCheckButton');
+            const retryConnectionButton = $('#retryConnectionButton');
+            const checkConnectionButton = $('#checkConnectionButton')
+            if (!associationState) {
+                const haveSettingChanges = selectedConnectionType !== settings.connectionType;
+                checkConnectionButton.toggle(!haveSettingChanges);
+                connectButton.hide();
+                saveAndCheckButton.toggle(haveSettingChanges);
+                retryConnectionButton.hide();
+                connectionStatus.text('');
+            } else {
+                const haveSettingChanges = selectedConnectionType !== settings.connectionType ||
+                    !AssociationManager._arrayEquals(pluginSettings, associationState.settings);
+                if (associationState.error) {
+                    connectionStatus.text(associationState.error);
+                    checkConnectionButton.hide();
+                    connectButton.hide();
+                    saveAndCheckButton.toggle(haveSettingChanges);
+                    retryConnectionButton.toggle(!haveSettingChanges);
+                } else if (associationState.id) {
+                    connectionStatus.text(`Connected as '${associationState.id}'`);
+                    checkConnectionButton.hide();
+                    connectButton.hide();
+                    // If we already know about our association state after switching to another connection type,
+                    // we don't want to show the save and check button. The user can use the normal save button instead.
+                    saveAndCheckButton.toggle(
+                        !AssociationManager._arrayEquals(pluginSettings, associationState.settings));
+                    retryConnectionButton.hide();
+                } else {
+                    connectionStatus.text('Not connected');
+                    checkConnectionButton.hide();
+                    connectButton.toggle(!haveSettingChanges);
+                    saveAndCheckButton.toggle(haveSettingChanges);
+                    retryConnectionButton.hide();
+                }
+            }
+        }).catch((error) => console.warn(`Failed to update association UI: ${error}`));
+    }
+
+    /**
+     * Get the setting values that are important for the given connection type.
+     * @param connectionType The connection type.
+     * @param settings If given, the values are taken from these settings, otherwise they are loaded from the UI.
+     * @returns The important setting values for the connection type.
+     */
+    private static _getPluginSettings(connectionType: ConnectionType, settings?: ISettings): any[] {
+        switch (connectionType) {
+            case ConnectionType.HTTP:
+                return settings ?
+                    [settings.keePassHost, settings.keePassPort] :
+                    [$('#keePassHost').val() as string, parseInt($('#keePassPort').val() as any)];
+            case ConnectionType.Native:
+                return settings ?
+                    [settings.keePassNativeAppId] :
+                    [$('#keePassNativeAppId').val() as string];
+        }
+    }
+
+    /**
+     * Check whether the two arrays are equal (have the same length and contain the same values).
+     * @param firstArray The first array to compare against.
+     * @param secondArray The other array to compare the first against.
+     * @returns Whether both arrays are equal.
+     */
+    private static _arrayEquals(firstArray: any[], secondArray: any[]): boolean {
+        return firstArray.length === secondArray.length &&
+            firstArray.every((element, index) => element === secondArray[index]);
+    }
+}
 
 $(()=>{
     fillSettings();
     getExtensionCommands().catch(error => console.warn(`Failed to get extension commands: ${error}`));
 
-    Client.testAssociate().then((association)=>{
-        if(association.Associated)
-            $('#connectionStatus').text(`Connected as '${association.Id}'`);
-        else
-        {
-            const associateButton = $('<button>').text('Connect').on('click', associate).css({
-                'margin-left': '10px'
-            });
-            $('#connectionStatus').text('Not connected ').append(associateButton);
-        }
-    }).catch((error)=>{
-        console.error(error);
-        $('#connectionStatus').text('Something went wrong... is KeePass running and is the KeePassHttp plugin installed?');
-    });
-
+    $('#connectButton').on('click', () => loadSettings().then(
+        (settings) => AssociationManager.updateAssociationState(settings, true)));
+    $('#saveAndCheckButton').on('click', doSave);
+    $('#retryConnectionButton').on('click', AssociationManager.retryLastRequest);
+    $('#checkConnectionButton').on('click', () => loadSettings().then(AssociationManager.updateAssociationState));
     $('#save').on('click', doSave);
     if (navigator.userAgent.indexOf('Edg/') !== -1) // Edge doesn't support closing
         $('#cancel').remove();
     else
         $('#cancel').on('click', closeOptionDialog);
     $('#openShortcuts').on('click', openShortcuts);
+
+    const connectionTypeSelect = $('#connectionType');
+    connectionTypeSelect.on('change', () => {
+        _updateUiForConnectionType(ConnectionType[connectionTypeSelect.val() as keyof typeof ConnectionType]);
+    });
+    $('#keePassHost').on('input', AssociationManager.updateUiForCurrentState);
+    $('#keePassPort').on('input', AssociationManager.updateUiForCurrentState);
+    $('#keePassNativeAppId').on('input', AssociationManager.updateUiForCurrentState);
+
     const rangeInputs = $('.range-input');
     rangeInputs.on('mouseover', (event) => {
         let valueBubble = event.delegateTarget.querySelector<HTMLElement>('.value-bubble');
@@ -71,21 +223,14 @@ function onRangeValueChange(rangeInput: HTMLElement) {
     }
 }
 
-function associate()
-{
-    $('#connectionStatus').text('Waiting for confirmation... (check if a KeePass window opened)');
-
-    Client.associate().then((association)=>{
-        if(association.Associated)
-            $('#connectionStatus').text(`Connected as '${association.Id}'`);
-        else
-        {
-            const associateButton = $('<button>').text('Connect').on('click', associate);
-            $('#connectionStatus').text('Not connected ').append(associateButton);
-        }
-    }).catch((error)=>{
-        $('#connectionStatus').text(error);
-    });
+/**
+ * Update the UI components when the connection type changes.
+ * @param connectionType The new connection type.
+ */
+function _updateUiForConnectionType(connectionType: ConnectionType) {
+    $('#keePassHttpOptions').toggle(connectionType === ConnectionType.HTTP);
+    $('#keePassNativeOptions').toggle(connectionType === ConnectionType.Native);
+    AssociationManager.updateUiForCurrentState();
 }
 
 /**
@@ -110,6 +255,10 @@ function fillSettings()
         $('#dropdownShadowWidth').val(settings.theme.dropdownShadowWidth);
         $('#dropdownItemPadding').val(settings.theme.dropdownItemPadding);
         $('#dropdownScrollbarColor').val(settings.theme.dropdownScrollbarColor);
+        $('#connectionType').val(settings.connectionType.valueOf());
+        $('#keePassNativeAppId').val(settings.keePassNativeAppId);
+        AssociationManager.updateAssociationState(settings);
+        _updateUiForConnectionType(settings.connectionType);
     });
 }
 
@@ -137,10 +286,13 @@ function doSave()
             dropdownItemPadding: $('#dropdownItemPadding').val() as number,
             dropdownScrollbarColor: $('#dropdownScrollbarColor').val() as string,
         },
+        connectionType: ConnectionType[$('#connectionType').val() as keyof typeof ConnectionType],
+        keePassNativeAppId: $('#keePassNativeAppId').val() as string,
     }).then(() => {
         const saveStatus = $('#saveStatus');
         saveStatus.text('Options saved');
         setTimeout(() => saveStatus.text(''), 1500);
+        loadSettings().then(AssociationManager.updateAssociationState);
     });
 }
 

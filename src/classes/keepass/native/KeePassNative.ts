@@ -83,6 +83,10 @@ export class KeePassNative implements KeePassConnection {
         return this._association.get().then((association) => association?.id || '');
     }
 
+    get pluginName(): string {
+        return 'KeePassNatMsg';
+    }
+
     public async associate(): Promise<boolean> {
         const key = box.keyPair();
         const connection = await this._loadEncryptionKeys();

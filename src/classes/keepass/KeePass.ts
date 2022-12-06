@@ -15,6 +15,9 @@ export interface KeePassConnection {
     /** Get the id used associating with KeePass. Will return an empty string when not associated. */
     get id(): Promise<string>;
 
+    /** The name of the KeePass plugin that is used by this plugin. */
+    get pluginName(): string;
+
     /**
      * Associate this extension as a client with the database.
      * @returns Whether the association was successful.

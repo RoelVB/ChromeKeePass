@@ -102,7 +102,7 @@ export default class BackgroundListener
             return {
                 Id: await connection.id,
                 Associated: false,
-                Error: 'Something went wrong... is KeePass running and is the KeePassHttp plugin installed?',
+                Error: `Something went wrong... is KeePass running and the ${connection.pluginName} plugin installed?`,
             };
         }
         BackgroundListener._setErrorIcon(associated);

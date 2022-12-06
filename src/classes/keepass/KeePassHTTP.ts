@@ -115,6 +115,10 @@ export class KeePassHTTP implements KeePassConnection {
         return Promise.resolve(this._id || '');
     }
 
+    get pluginName(): string {
+        return 'KeePassHttp';
+    }
+
     public async associate(): Promise<boolean>
     {
         this._key = KeePassHTTP._generateSharedKey();

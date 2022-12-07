@@ -1,5 +1,5 @@
-import * as $ from 'jquery-slim';
-import * as styles from "../scss/content.scss";
+import $ from 'jquery-slim';
+import styles from '../scss/content.scss';
 import * as IMessage from "../IMessage";
 import Client from "./BackgroundClient";
 import FieldSet from "./FieldSet";
@@ -40,7 +40,7 @@ export default class CredentialsDropdown {
     }
 
     /**
-     * Open the credentials dropdown.
+     * Open the "Credentials" dropdown.
      * @param fieldSet The field set to open the credential drawer for.
      */
     public open(fieldSet: FieldSet) {
@@ -62,7 +62,7 @@ export default class CredentialsDropdown {
             'box-shadow': `0 ${theme.dropdownShadowWidth}px ${theme.dropdownShadowWidth}px 0 rgba(0,0,0,0.2)`,
         });
         this._fieldSet = fieldSet;
-        let style = this._dropdown.get(0).style;
+        let style = this._dropdown.get(0)!.style;
         style.setProperty('--dropdown-select-background-start', theme.dropdownSelectedItemColorStart);
         style.setProperty('--dropdown-select-background-end', theme.dropdownSelectedItemColorEnd);
         style.setProperty('--scrollbar-color', theme.dropdownScrollbarColor);
@@ -76,13 +76,13 @@ export default class CredentialsDropdown {
             // Create the footer and add it to the dropdown
             // noinspection HtmlRequiredAltAttribute,RequiredAttributes
             const footerItems: (JQuery | string)[] = [
-                $('<img>').addClass(styles.logo).attr('src', chrome.extension.getURL('images/icon48.png'))
+                $('<img>').addClass(styles.logo).attr('src', chrome.runtime.getURL('images/icon48.png'))
                     .attr('alt', ''),
                 'ChromeKeePass',
-                $('<img>').attr('src', chrome.extension.getURL('images/gear.png')).attr('tabindex', '0')
+                $('<img>').attr('src', chrome.runtime.getURL('images/gear.png')).attr('tabindex', '0')
                     .attr('alt', 'Open Settings').attr('title', 'Open settings').css({cursor: 'pointer'})
                     .on('click', this._openOptionsWindow.bind(this)).on('focusout', this._onItemFocusLost.bind(this)),
-                // $('<img>').attr('src', chrome.extension.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
+                // $('<img>').attr('src', chrome.runtime.getURL('images/key.png')).attr('title', 'Generate password').css({cursor: 'pointer'}),
             ];
             const footer = $('<div>').addClass(styles.footer).append(...footerItems);
             this._dropdown.append(footer);
@@ -137,7 +137,7 @@ export default class CredentialsDropdown {
             }
         }
         this._credentialItems[selectedIndex].addClass(styles.selected);
-        this._credentialItems[selectedIndex].get(0).scrollIntoView({
+        this._credentialItems[selectedIndex].get(0)?.scrollIntoView({
             behavior: "auto",
             block: "nearest"
         });
@@ -227,7 +227,7 @@ export default class CredentialsDropdown {
                     'Your passwords should be registered with the following URL:'));
 
                 const urlInput = $('<input>').attr('readonly', 'readonly').attr('type', 'url')
-                    .val(self.location.origin);
+                    .val(self.location.origin) as JQuery<HTMLInputElement>;
                 const copyToClipboardIcon = $('<div>').addClass(styles.copyIcon).html(copyIcon)
                     .attr('title', 'Copy to clipboard').attr('tabindex', '0')
                     .on('click', (event)=>{
@@ -253,8 +253,16 @@ export default class CredentialsDropdown {
      * @param icon The icon that was clicked.
      * @param urlInput The input element that contains the url of the current iframe.
      */
-    private _copyIframeUrl(icon: JQuery, urlInput: JQuery) {
+    private _copyIframeUrl(icon: JQuery, urlInput: JQuery<HTMLInputElement>) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(urlInput.get(0)!.value).then(() => {
+                icon.addClass(styles.success);
+                setTimeout(() => icon.removeClass(styles.success), 3000);
+            });
+            return;
+        }
         urlInput.trigger('select');
+        // noinspection JSDeprecatedSymbols
         const success = document.execCommand('copy');
         if (success) {
             icon.addClass(styles.success);

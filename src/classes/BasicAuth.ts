@@ -1,6 +1,6 @@
-import KeePassHTTP from './KeePassHTTP';
 import * as IMessage from '../IMessage';
 import { ISettings, defaultSettings } from '../Settings';
+import {getKeePass} from './keepass/KeePass';
 
 /**
  * This class is responsible for handling HTTP Basic Authentication
@@ -50,7 +50,7 @@ export default class BasicAuth
         this._url = request.url;
 
         try {
-            this._credentials = await KeePassHTTP.getLogins(request.url);
+            this._credentials = await (await getKeePass()).getLogins(request.url);
             if(this._credentials.length) // Found some credentials?
             {
                 if(this._settings.autoFillSingleCredential && this._credentials.length === 1) // Auto-fill single credential?
@@ -78,7 +78,8 @@ export default class BasicAuth
                         chrome.runtime.onMessage.removeListener(messageListener);
 
                         // Close the popup window if it's still open
-                        if(this._popupWindowId !== undefined) chrome.windows.remove(this._popupWindowId);
+                        if(this._popupWindowId !== undefined) chrome.windows.remove(this._popupWindowId).catch(
+                            (reason) => console.warn(`Failed to close the popup window: ${reason}`));
 
                         if(selectedCredential !== undefined) // Credentials selected?
                         {
@@ -100,23 +101,18 @@ export default class BasicAuth
     /**
      * Create a popup for credential selection
      */
-    private _createPopup(): Promise<number | undefined>
-    {
-        return new Promise<number | undefined>((resolve, reject)=>{
-            chrome.windows.create({
-                url: `html/credentialSelector.html?nonce=${this._nonce}`,
-                focused: true,
-                type: 'popup',
-                height: 200,
-                width: 300,
-            }, (window)=>{
-                if (window === undefined) {
-                    reject();
-                } else {
-                    resolve(window?.id);
-                }
-            });
+    private async _createPopup(): Promise<number | undefined> {
+        const window = await chrome.windows.create({
+            url: `html/credentialSelector.html?nonce=${this._nonce}`,
+            focused: true,
+            type: 'popup',
+            height: 200,
+            width: 300,
         });
+        if (window === undefined) {
+            throw undefined;
+        }
+        return window.id;
     }
 
     /**

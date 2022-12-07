@@ -188,6 +188,28 @@ input[type=color] {
     background: transparent;
 }
 
+select {
+    --arrow-width: 10px;
+    --select-side-padding: 8px;
+    -webkit-appearance: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' fill='%235F6368'%3E%3Cpath d='M0 0h24L12 12z'/%3E%3C/svg%3E") calc(100% - var(--select-side-padding)) center no-repeat;
+    background-color: #f1f3f4;
+    background-size: var(--arrow-width);
+    border: none;
+    border-radius: 4px;
+    color: #202124;
+    cursor: pointer;
+    max-width: 100%;
+    outline: 0;
+    padding-inline-end: calc(var(--select-side-padding) + var(--arrow-width) + 3px);
+    padding-inline-start: var(--select-side-padding);
+    padding-bottom: 6px;
+    padding-top: 6px;
+    width: 160px;
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
 .range-input {
     display: flex;
     align-items: stretch;

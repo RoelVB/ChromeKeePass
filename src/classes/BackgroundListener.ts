@@ -1,5 +1,5 @@
 import * as IMessage from '../IMessage';
-import KeePassHTTP from './KeePassHTTP';
+import {getKeePass} from './keepass/KeePass';
 
 export default class BackgroundListener
 {
@@ -8,15 +8,14 @@ export default class BackgroundListener
     {
         chrome.runtime.onMessage.addListener(this._onMessage.bind(this));
 
-        // noinspection JSIgnoredPromiseFromCall
-        this._testAssociate();
+        this._testAssociate().catch(error => console.error(`Failed to initially test the association: ${error}`));
     }
 
     /** When a message is received */
     private _onMessage(message: IMessage.Request, sender: chrome.runtime.MessageSender, sendResponse: (response: IMessage.Response)=>void)
     {
         let responsePromise: Promise<IMessage.Response> | undefined;
-        
+
         switch(message.type)
         {
             case IMessage.RequestType.openOptions:
@@ -49,78 +48,73 @@ export default class BackgroundListener
      * We got a credentials request
      * @param url URL the user wants credentials for
      */
-    private _findCredentials(url: string): Promise<IMessage.Credential[]>
+    private async _findCredentials(url: string): Promise<IMessage.Credential[]>
     {
-        return new Promise<IMessage.Credential[]>((resolve, reject)=>{
-            console.log('get credentials for ', url);
-            if(url)
-            {
-                KeePassHTTP.getLogins(url).then((result)=>{
-                    BackgroundListener._setErrorIcon(true);
-                    resolve(result);
-                }).catch((error)=>{
-                    BackgroundListener._setErrorIcon();
-                    reject(error);
-                });
-            }
-            else
-                resolve([]); // We didn't get a URL
-        });
+        console.log('get credentials for ', url);
+        if (!url) {
+            return []; // We didn't get a URL
+        }
+        const connection = await getKeePass();
+        let result;
+        try {
+            result = await connection.getLogins(url);
+        } catch(error) {
+            BackgroundListener._setErrorIcon();
+            throw error;
+        }
+        BackgroundListener._setErrorIcon(true);
+        return result;
     }
 
-    /** Associate with KeePassHttp */
-    private _associate(): Promise<IMessage.Association>
+    /** Associate with KeePass */
+    private async _associate(): Promise<IMessage.Association>
     {
-        return new Promise<IMessage.Association>((resolve)=>{
-            KeePassHTTP.associate().then((associated)=>{
-                BackgroundListener._setErrorIcon(true);
-                resolve({
-                    Id: KeePassHTTP.id,
-                    Associated: associated,
-                });
-
-            }).catch((error)=>{
-                console.error(error);
-                BackgroundListener._setErrorIcon();
-                resolve({
-                    Id: KeePassHTTP.id,
-                    Associated: false,
-                    Error: 'Something went wrong... did you accept the connection within KeePass?',
-                });
-            });
-        });
+        const connection = await getKeePass();
+        let associated;
+        try {
+            associated = await connection.associate();
+        } catch (error) {
+            console.error(error);
+            BackgroundListener._setErrorIcon();
+            return {
+                Id: await connection.id,
+                Associated: false,
+                Error: 'Something went wrong... did you accept the connection within KeePass?',
+            };
+        }
+        BackgroundListener._setErrorIcon(true);
+        return {
+            Id: await connection.id,
+            Associated: associated,
+        };
     }
 
-    /** Test the association with KeePassHttp */
-    private _testAssociate(): Promise<IMessage.Association>
+    /** Test the association with KeePass */
+    private async _testAssociate(): Promise<IMessage.Association>
     {
-        return new Promise<IMessage.Association>((resolve)=>{
-            KeePassHTTP.testAssociate().then((associated)=>{
-                BackgroundListener._setErrorIcon(associated);
-                resolve({
-                    Id: KeePassHTTP.id,
-                    Associated: associated,
-                });
-
-            }).catch((error)=>{
-                console.error(error);
-                BackgroundListener._setErrorIcon();
-                resolve({
-                    Id: KeePassHTTP.id,
-                    Associated: false,
-                    Error: 'Something went wrong... is KeePass running and is the KeePassHttp plugin installed?',
-                });
-            });
-        });
+        const connection = await getKeePass();
+        let associated;
+        try {
+            associated = await connection.testAssociate();
+        } catch (error) {
+            console.error(error);
+            BackgroundListener._setErrorIcon();
+            return {
+                Id: await connection.id,
+                Associated: false,
+                Error: `Something went wrong... is KeePass running and the ${connection.pluginName} plugin installed?`,
+            };
+        }
+        BackgroundListener._setErrorIcon(associated);
+        return {
+            Id: await connection.id,
+            Associated: associated,
+        };
     }
 
     private _getExtensionCommands(): Promise<chrome.commands.Command[]>
     {
-        return new Promise<chrome.commands.Command[]>((resolve, _reject)=>{
-            chrome.commands.getAll((commands)=>{
-                resolve(commands);
-            });
-        });
+        return chrome.commands.getAll();
     }
 
     /**
@@ -130,9 +124,9 @@ export default class BackgroundListener
     private static _setErrorIcon(clear?: boolean)
     {
         if(clear)
-            chrome.browserAction.setIcon({path: 'images/icon48.png'});
+            chrome.action.setIcon({path: '../images/icon48.png'});
         else
-            chrome.browserAction.setIcon({path: 'images/icon48_red.png'});
+            chrome.action.setIcon({path: '../images/icon48_red.png'});
     }
 
 }

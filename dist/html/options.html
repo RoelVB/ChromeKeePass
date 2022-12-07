@@ -11,16 +11,32 @@
     <div id="option-container">
         <h2 style="margin-top: 10px">Connection</h2>
         <div class="group-container">
-            <label>
+            <label style="align-items: baseline">
                 Status <span id="connectionStatus">Getting status...</span>
+                <button style="margin-left: 10px; display: none;" id="connectButton">Connect</button>
+                <button style="margin-left: 10px; display: none;" id="saveAndCheckButton">Save and check</button>
+                <button style="margin-left: 10px; display: none;" id="retryConnectionButton">Retry</button>
+                <button style="margin-left: 10px; display: none;" id="checkConnectionButton">Check</button>
             </label>
             <div class="separator"></div>
             <label>
+                KeePass access method
+                <select id="connectionType">
+                    <option value="HTTP">KeePassHttp</option>
+                    <option value="Native">KeePassNatMsg</option>
+                </select>
+            </label>
+            <div class="separator"></div>
+            <label id="keePassHttpOptions">
                 KeePassHttp address
                 <span style="display: flex; align-items: baseline">
                     <input style="width: 100%" id="keePassHost" type="text" placeholder="host"/>:<input
                         id="keePassPort" type="number" placeholder="port"/>
                 </span>
+            </label>
+            <label id="keePassNativeOptions">
+                Native app identifier
+                <input style="width: 50%" id="keePassNativeAppId" type="text" placeholder="App id"/>
             </label>
         </div>
         <h2>Options</h2>

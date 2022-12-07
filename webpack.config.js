@@ -1,4 +1,7 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const devMode = process.env.npm_lifecycle_event !== 'prod';
 
 module.exports = {
     entry: {
@@ -8,6 +11,7 @@ module.exports = {
         options: './src/options.ts',
         credentialSelector: './src/credentialSelector.ts',
     },
+    plugins: [new MiniCssExtractPlugin()],
     output: {
         path: path.resolve(__dirname, 'dist/js'),
         filename: '[name].js',
@@ -18,24 +22,15 @@ module.exports = {
                 exclude: /node_modules/,
                 test: /\.scss$/,
                 use: [
+                    MiniCssExtractPlugin.loader,
+                    '@teamsupercell/typings-for-css-modules-loader',
                     {
-                        loader: 'style-loader',
+                        loader: 'css-loader',
                         options: {
-                            convertToAbsoluteUrls: false,
-                            transform: './styleTransform.js',
-                        },
-                    },
-                    {
-                        loader: 'typings-for-css-modules-loader',
-                        options: {
-                            namedExport: true,
                             modules: true,
-                            sass: true,
                             url: false,
-                            root: '',
-                            sourceMap: process.env.npm_lifecycle_event!=='prod',
-                            minimize: process.env.npm_lifecycle_event==='prod',
-                        },
+                            sourceMap: devMode,
+                        }
                     },
                     'sass-loader',
                 ],
@@ -57,7 +52,7 @@ module.exports = {
             'crypto': false
         },
     },
-    devtool: process.env.npm_lifecycle_event!=='prod'?'inline-source-map':undefined,
+    devtool: devMode ? 'inline-source-map' : undefined,
     performance: {
         hints: false,
     },
@@ -68,5 +63,11 @@ module.exports = {
         chunkOrigins: false,
         modules: false,
         entrypoints: false,
+    },
+    optimization: {
+        minimizer: [
+            `...`,
+            new CssMinimizerPlugin(),
+        ],
     },
 };

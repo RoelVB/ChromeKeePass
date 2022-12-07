@@ -1,17 +1,17 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
 
     "name": "ChromeKeePass",
     "description": "Chrome extension for automatically entering credentials from KeePass/KeeWeb",
     "version": "1.4.7",
 
     "commands": {
-        "redetect_fields": {
+        "re_detect_fields": {
             "suggested_key": {
                 "default": "Ctrl+Shift+Z",
                 "mac": "Command+Shift+Z"
             },
-            "description": "Redetect credential fields"
+            "description": "Re-detect credential fields"
         }
     },
 
@@ -19,15 +19,17 @@
         {
             "matches": ["<all_urls>"],
             "js": ["js/content_script.js"],
+            "css": ["js/content_script.css"],
             "all_frames": true
         }
     ],
 
     "background": {
-        "scripts": ["js/background.js"]
+        "service_worker": "js/background.js",
+        "type": "module"
     },
 
-    "browser_action": {
+    "action": {
         "default_popup": "html/popup.html",
         "default_icon": {
             "128": "images/icon128.png",
@@ -45,15 +47,21 @@
     },
 
     "web_accessible_resources": [
-        "images/*"
+        {
+            "resources": [ "images/*" ],
+            "matches": [ "<all_urls>" ]
+        }
     ],
 
     "permissions": [
         "storage",
-        "<all_urls>",
         "contextMenus",
         "webRequest",
-        "webRequestBlocking"
+        "webRequestAuthProvider",
+        "nativeMessaging"
+    ],
+    "host_permissions": [
+        "<all_urls>"
     ],
 
     "minimum_chrome_version": "51"

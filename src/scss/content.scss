@@ -4,22 +4,22 @@ $lighterLightPurple: rgba(218, 225, 245, 0.4);
 $darkPurple: rgb(82, 115, 208);
 $lighterDarkPurple: rgba(82, 115, 208, 0.4);
 
-.textboxIcon {
+.textBoxIcon {
     background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48.png') !important;
     background-repeat: no-repeat !important;
     background-position: right !important;
     background-size: auto 100% !important;
 }
 
-.textboxIcon.green {
+.textBoxIcon.green {
     background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_green.png') !important;
 }
 
-.textboxIcon.orange {
+.textBoxIcon.orange {
     background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_orange.png') !important;
 }
 
-.textboxIcon.red {
+.textBoxIcon.red {
     background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_red.png') !important;
 }
 
@@ -34,9 +34,9 @@ $lighterDarkPurple: rgba(82, 115, 208, 0.4);
     z-index: 999999;
     text-align: start;
     line-height: normal;
-    --dropdown-select-background-start: $lighterLightPurple;
-    --dropdown-select-background-end: $lighterDarkPurple;
-    --scrollbar-color: $darkPurple;
+    --dropdown-select-background-start: #{$lighterLightPurple};
+    --dropdown-select-background-end: #{$lighterDarkPurple};
+    --scrollbar-color: #{$darkPurple};
 
     ::-webkit-scrollbar {
         height: 4px;

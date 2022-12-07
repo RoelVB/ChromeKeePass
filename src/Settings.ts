@@ -1,4 +1,3 @@
-
 export interface ITheme {
     /** Show a footer in the credential dropdown list? */
     enableDropdownFooter: boolean;
@@ -14,6 +13,14 @@ export interface ITheme {
     dropdownItemPadding: number
     /** The color of the scrollbar in the credential dropdown list dropdown */
     dropdownScrollbarColor: string
+}
+
+/** The connection types the plugin can use to communicate with KeePass. */
+export enum ConnectionType {
+    /** A http connection via the KeePassHttp plugin. */
+    HTTP = 'HTTP',
+    /** A native messaging channel via the KeePassNatMsg plugin. */
+    Native = 'Native',
 }
 
 export interface ISettings
@@ -38,9 +45,13 @@ export interface ISettings
     searchForInputsOnUpdate: boolean;
     /** Settings determining the look of user interface elements */
     theme: ITheme;
+    /** The connection type the plugin uses to communicate with KeePass */
+    connectionType: ConnectionType;
+    /** The native app id where KeePass can be reached via native messaging */
+    keePassNativeAppId: string
 }
 
-export const defaultSettings: ISettings = 
+export const defaultSettings: ISettings =
 {
     showUsernameIcon: true,
     showDropdownOnFocus: true,
@@ -58,32 +69,18 @@ export const defaultSettings: ISettings =
         dropdownBorderWidth: 1,
         dropdownShadowWidth: 0,
         dropdownItemPadding: 3,
-        dropdownScrollbarColor: '#5273d0'
-    }
+        dropdownScrollbarColor: '#5273d0',
+    },
+    connectionType: ConnectionType.HTTP,
+    keePassNativeAppId: 'org.keepassxc.keepassxc_browser',
 }
 
 /** Async method for loading settings */
 export function loadSettings(): Promise<ISettings> {
-    return new Promise<ISettings>((resolve, reject) => {
-        chrome.storage.sync.get(defaultSettings, (items) => {
-            if (chrome.runtime.lastError !== undefined) {
-                reject();
-            } else {
-                resolve(items as ISettings);
-            }
-        });
-    });
+    return chrome.storage.sync.get(defaultSettings) as Promise<ISettings>;
 }
 
 /** Async method for saving settings */
 export function saveSettings(settings: Partial<ISettings>): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        chrome.storage.sync.set(settings, () => {
-            if (chrome.runtime.lastError !== undefined) {
-                reject();
-            } else {
-                resolve();
-            }
-        });
-    });
+    return chrome.storage.sync.set(settings);
 }

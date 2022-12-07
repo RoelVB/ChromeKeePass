@@ -5,12 +5,12 @@ export enum RequestType
     findCredentials,
     /** Open the extension's options */
     openOptions,
-    /** Check KeePassHttp association */
+    /** Check KeePass association */
     testAssociate,
-    /** Associate with KeePassHttp */
+    /** Associate with KeePass */
     associate,
     /** Re-detect the credentials fields */
-    redetectFields,
+    reDetectFields,
     /** Get extension commands */
     getCommands,
 }

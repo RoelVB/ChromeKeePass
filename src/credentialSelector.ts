@@ -1,65 +1,32 @@
-import { onDocumentReady } from './classes/Constants';
 import * as IMessage from './IMessage';
+import { mount as mountPicker } from './components/PickerPopup';
 
-onDocumentReady(()=>{
-    new CredentialSelector();
-});
+const nonce = Number(new URLSearchParams(location.search).get('nonce'));
 
-class CredentialSelector
+const fetchCredentials = (): Promise<IMessage.Credential[]> =>
 {
-    private readonly _nonce: number;
-    private _credentialsList: HTMLDivElement;
-
-    constructor()
-    {
-        const params = new URLSearchParams(location.search);
-
-        this._nonce = parseInt(params.get('nonce')!);    
-        this._credentialsList = document.getElementById('credentialsList') as HTMLDivElement;
-        
-        this._fetchCredentials();
-    }
-
-    /** Fetch the credentials from the background process */
-    private _fetchCredentials()
-    {
+    return new Promise<IMessage.Credential[]>((resolve, reject)=>{
         chrome.runtime.sendMessage({
-            nonce: this._nonce,
+            nonce: nonce,
             command: 'getCredentials',
         } as IMessage.BasicAuth,
         (response: IMessage.BasicAuthResponse)=>{
-            if(response.credentials === undefined)
-                this._credentialsList.textContent = 'No credentials found';
-            else
-            {
-                if(response.url) document.getElementById('title')!.textContent = `Select credentials for: ${response.url}`;
-
-                this._credentialsList.innerHTML = '';
-                response.credentials.forEach((credential)=>{
-                    const title = document.createElement('div');
-                    title.style.fontWeight = 'bold';
-                    title.textContent = credential.title;
-
-                    const username = document.createElement('div');
-                    username.textContent = credential.username;
-
-                    const item = document.createElement('div');
-                    item.classList.add('credentialItem');
-                    item.append(title, username);
-                    item.addEventListener('click', this._onClickCredential.bind(this, credential));
-
-                    this._credentialsList.append(item);
-                });
-            }
+            resolve(response.credentials || []);
         });
-    }
+    });
+};
 
-    private _onClickCredential(credential: IMessage.Credential)
-    {
-        chrome.runtime.sendMessage({
-            nonce: this._nonce,
-            command: 'selectCredential',
-            credential,
-        } as IMessage.BasicAuth);
-    }
-}
+const onSelect = (cred: IMessage.Credential) =>
+{
+    chrome.runtime.sendMessage({
+        nonce: nonce,
+        command: 'selectCredential',
+        credential: cred,
+    } as IMessage.BasicAuth);
+};
+
+// Mount React picker component
+mountPicker(document.getElementById('root')!, {
+    credentials: fetchCredentials,
+    onSelect: onSelect,
+});

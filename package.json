@@ -8,25 +8,30 @@
         "url": "https://github.com/RoelVB/ChromeKeePass.git"
     },
     "scripts": {
-        "dev": ".\\node_modules\\.bin\\webpack --mode \"development\"",
-        "prod": ".\\node_modules\\.bin\\webpack --mode \"production\"",
-        "watch": ".\\node_modules\\.bin\\webpack --mode \"development\" -w"
+        "dev": "webpack --mode \"development\"",
+        "prod": "webpack --mode \"production\"",
+        "watch": "webpack --mode \"development\" -w"
     },
     "dependencies": {
+        "@emotion/react": "^11.10.5",
+        "@emotion/styled": "^11.10.5",
+        "@mui/icons-material": "^5.11.0",
+        "@mui/material": "^5.11.2",
+        "@reduxjs/toolkit": "^1.9.1",
         "async-mutex": "^0.3.2",
-        "sjcl-all": "^1.0.1"
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-redux": "^8.0.5",
+        "sjcl-all": "^1.0.1",
+        "uuid": "^9.0.0"
     },
     "devDependencies": {
         "@types/chrome": "^0.0.128",
+        "@types/react-dom": "^18.0.10",
         "@types/sjcl": "^1.0.29",
-        "css-loader": "^0.28.11",
-        "node-sass": "^5.0.0",
-        "sass-loader": "^10.1.1",
-        "style-loader": "^0.20.3",
-        "svg-inline-loader": "^0.8.2",
+        "@types/uuid": "^9.0.0",
         "ts-loader": "^8.0.14",
         "typescript": "^4.1.3",
-        "typings-for-css-modules-loader": "^1.7.0",
         "webpack": "^5.15.0",
         "webpack-cli": "^4.4.0"
     }

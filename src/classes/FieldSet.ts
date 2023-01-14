@@ -1,19 +1,15 @@
-import { isElementVisible } from './Constants';
-import * as styles from '../scss/content.scss';
+import { ExtensionName, isElementVisible } from './Constants';
 
 import PageControl from './PageControl';
 import * as IMessage from '../IMessage';
 
+const styles = {textboxIcon: 'CKP-textboxIcon', green: 'CKP-green', orange: 'CKP-orange', red: 'CKP-red'};
 
 /**
  * Class for handling a set (username+password) fields
  */
 export default class FieldSet
 {
-    /** The selected credential. */
-    private _selectedCredential?: IMessage.Credential;
-    /** Holds the old value for the username field, so we only react when the value changes */
-    private _oldUsernameValue: string = '';
     /** Is the cursor currently on the KeePass icon? */
     private _onIcon: boolean = false;
     /** Did the click start on the KeePass icon? */
@@ -82,9 +78,7 @@ export default class FieldSet
                     this._controlField?.classList.add(styles.orange);
                 }
             }
-            if (this._pageControl.dropdown.isOpen) { // Is the dropdown open?
-                this._changeCredentials();
-            }
+
             // Do we already have to fill the fields?
             if(this._pageControl.settings.autoFillSingleCredential && this._pageControl.credentials.length === 1)
                 this._inputCredential(this._pageControl.credentials[0]);
@@ -97,46 +91,24 @@ export default class FieldSet
         }
     }
 
-    /**
-     * Select the specified credential.
-     * @param credential The credential to select.
-     */
-    public selectCredential(credential?: IMessage.Credential) {
-        this._selectedCredential = credential;
-    }
-
-    /**
-     * @param filter An optional filter.
-     * @return The filtered credentials list.
-     */
-    public getCredentials(filter?: string): IMessage.Credential[] {
-        if(!(this._pageControl.credentials instanceof Array)) { // Do we have credentials available for this page?
-            return [];
-        }
-        if(filter) { // Do we need to filter?
-            filter = filter.toLowerCase();
-            return this._pageControl.credentials.filter(credential=>
-                credential.title.toLowerCase().indexOf(filter as string) !== -1
-                || credential.username.toLowerCase().indexOf(filter as string) !== -1
-            );
-        }
-        return this._pageControl.credentials; // No filter
+    /** Credentials available for this page */
+    public get credentials(): IMessage.Credential[]
+    {
+        return this._pageControl.credentials || [];
     }
 
     /**
      * @return The field that has the ChromeKeePass icon and should display the dropdown.
      */
-    public get controlField(): HTMLInputElement | undefined {
+    public get controlField(): HTMLInputElement | undefined
+    {
         return this._controlField;
     }
 
-    /** Enter the selected credentials into the fields */
-    public enterSelection() {
-        if (!this._selectedCredential || !this._pageControl.dropdown.isOpen) {
-            return; // We don't want to do this if we have no selection or the dropdown isn't open
-        }
-        this._inputCredential(this._selectedCredential);
-        this._selectedCredential = undefined;
+    /** Enter the credentials into the fields */
+    public enterCredentials(cred: IMessage.Credential)
+    {
+        this._inputCredential(cred);
         this._pageControl.dropdown.close();
     }
 
@@ -183,16 +155,14 @@ export default class FieldSet
     }
 
     /** Event when a key is pressed while in the username field */
-    private _onKeyPress(ev: KeyboardEvent) {
-        switch (ev.key) {
+    private _onKeyPress(ev: KeyboardEvent)
+    {
+        switch (ev.key)
+        {
             case 'ArrowUp':
             case 'ArrowDown':
                 ev.preventDefault(); // Else this action will move the cursor
                 this._pageControl.dropdown.open(this)
-                this._pageControl.dropdown.selectNextCredential(ev.key === 'ArrowUp');
-                break;
-            case 'Enter':
-                this.enterSelection();
                 break;
             case 'Escape':
             case 'Tab':
@@ -206,18 +176,8 @@ export default class FieldSet
     {
         const newValue: string = (ev.target as HTMLInputElement).value ?? (ev.target as HTMLInputElement).defaultValue;
 
-        if(this._oldUsernameValue !== newValue) // The entered value changed?
-        {
-            this._oldUsernameValue = newValue;
-
-            if(this._pageControl.settings.autoComplete) // Is autocomplete enabled?
-            {
-                this._pageControl.dropdown.open(this); // Try opening the dropdown
-                if (this._pageControl.dropdown.isOpen) { // The dropdown is open?
-                    this._changeCredentials(newValue)
-                }
-            }
-        }
+        if(newValue && this._pageControl.settings.autoComplete) // Is autocomplete enabled?
+            this._pageControl.dropdown.open(this); // Try opening the dropdown
     }
 
     /** Event when te mouse is moving over the username field */
@@ -317,23 +277,15 @@ export default class FieldSet
         if(deactivate)
         {
             this._controlField.style.cursor = '';
-            this._controlField.setAttribute('title', this._controlFieldTitle);
+            this._controlField.setAttribute('title', this._controlFieldTitle || '');
         }
         else
         {
-            this._controlFieldTitle = this._controlField.getAttribute('title') || '';
+            const currentTitle = this._controlField.getAttribute('title') || '';
+            if(currentTitle !== `Open ${ExtensionName} options`) this._controlFieldTitle = currentTitle;
             this._controlField.style.cursor = 'pointer';
-            this._controlField.setAttribute('title', 'Open ChromeKeePass options');
+            this._controlField.setAttribute('title', `Open ${ExtensionName} options`);
         }
-    }
-
-    /**
-     * Change the available credentials based on the filter.
-     * @param filter Optional text to filter credentials on.
-     */
-    private _changeCredentials(filter?: string) {
-        const credentials = this.getCredentials(filter);
-        this._pageControl.dropdown.setCredentials(credentials);
     }
 
     /** Input a credential into the fields */

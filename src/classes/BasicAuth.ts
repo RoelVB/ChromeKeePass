@@ -1,6 +1,7 @@
 import KeePassHTTP from './KeePassHTTP';
 import * as IMessage from '../IMessage';
 import { ISettings, defaultSettings } from '../Settings';
+import { log } from './Constants';
 
 /**
  * This class is responsible for handling HTTP Basic Authentication
@@ -49,6 +50,8 @@ export default class BasicAuth
     {
         this._url = request.url;
 
+        log('debug', `Trying basic auth for ${request.url}`);
+
         try {
             this._credentials = await KeePassHTTP.getLogins(request.url);
             if(this._credentials.length) // Found some credentials?
@@ -82,11 +85,11 @@ export default class BasicAuth
 
                         if(selectedCredential !== undefined) // Credentials selected?
                         {
-                            console.log(`Send credentials for "${selectedCredential.username}" to "${request.url}"`);
+                            log('debug', `Send credentials for "${selectedCredential.username}" to "${request.url}"`);
                             return {authCredentials: {username: selectedCredential.username, password: selectedCredential.password}};
                         }
                         else
-                            console.log(`No credentials where selected for ${request.url}`);
+                            log('debug', `No credentials where selected for ${request.url}`);
                     }
                 }
             }
@@ -107,7 +110,7 @@ export default class BasicAuth
                 url: `html/credentialSelector.html?nonce=${this._nonce}`,
                 focused: true,
                 type: 'popup',
-                height: 200,
+                height: 400,
                 width: 300,
             }, (window)=>{
                 if (window === undefined) {

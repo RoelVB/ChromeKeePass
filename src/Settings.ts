@@ -2,18 +2,6 @@
 export interface ITheme {
     /** Show a footer in the credential dropdown list? */
     enableDropdownFooter: boolean;
-    /** The start of the background color gradient of the selected item in the credential dropdown list */
-    dropdownSelectedItemColorStart: string;
-    /** The end of the background color gradient of the selected item in the credential dropdown list */
-    dropdownSelectedItemColorEnd: string;
-    /** The width of the border of the credential dropdown list dropdown */
-    dropdownBorderWidth: number
-    /** The width of the shadow of the credential dropdown list dropdown */
-    dropdownShadowWidth: number
-    /** The padding of an item in the credential dropdown list dropdown */
-    dropdownItemPadding: number
-    /** The color of the scrollbar in the credential dropdown list dropdown */
-    dropdownScrollbarColor: string
 }
 
 export interface ISettings
@@ -53,12 +41,6 @@ export const defaultSettings: ISettings =
     searchForInputsOnUpdate: true,
     theme: {
         enableDropdownFooter: true,
-        dropdownSelectedItemColorStart: '#f0f3fb',
-        dropdownSelectedItemColorEnd: '#bac7ec',
-        dropdownBorderWidth: 1,
-        dropdownShadowWidth: 0,
-        dropdownItemPadding: 3,
-        dropdownScrollbarColor: '#5273d0'
     }
 }
 

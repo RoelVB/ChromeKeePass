@@ -1,4 +1,4 @@
-import { isElementVisible } from './Constants';
+import { isElementVisible, log } from './Constants';
 import FieldSet from './FieldSet';
 import * as IMessage from '../IMessage';
 import { ISettings, defaultSettings } from '../Settings';
@@ -24,7 +24,7 @@ export default class PageControl
             if(message.type === IMessage.RequestType.redetectFields)
                 this.detectFields();
         });
-        this._dropdown = new CredentialsDropdown(this);
+        this._dropdown = new CredentialsDropdown();
     }
 
     /** Try to detect credentials fields */
@@ -49,7 +49,7 @@ export default class PageControl
      */
     public detectNewFields(passwordFields: NodeListOf<Element>)
     {
-        console.log('[CKP]: detectNewFields', passwordFields);
+        log('debug', 'detectNewFields', passwordFields);
 
         for(const passwordField of passwordFields)
         {

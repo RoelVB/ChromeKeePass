@@ -2,6 +2,9 @@
  * This file contains some globally used variables
  */
 
+/** Extension name ("EdgeKeePass" in Edge or "ChromeKeePass" in any other browser) */
+export const ExtensionName = navigator.userAgent.match(/Edge?\/\d+/)?'EdgeKeePass':'ChromeKeePass';
+
 /** Get the currently active tab */
 export function getActiveTab(): Promise<chrome.tabs.Tab | undefined>
 {
@@ -29,4 +32,21 @@ export function onDocumentReady(cb: ()=>void)
         cb();
     else
         document.addEventListener('DOMContentLoaded', cb);
+}
+
+export function log(type: 'debug'|'warn'|'error', msg: string, ...optionalParams: any[])
+{
+    switch(type)
+    {
+        case 'error':
+            console.error(`[CKP]: ${msg}`, ...optionalParams);
+            break;
+        case 'warn':
+            console.warn(`[CKP]: ${msg}`, ...optionalParams);
+            break;
+        default:
+            if(DEBUG)
+                console.log(`[CKP]: ${msg}`, ...optionalParams);
+            break;
+    }
 }

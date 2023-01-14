@@ -1,0 +1,19 @@
+
+.CKP-textboxIcon {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48.png') !important;
+    background-repeat: no-repeat !important;
+    background-position: right !important;
+    background-size: auto 100% !important;
+}
+
+.CKP-textboxIcon.CKP-green {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_green.png') !important;
+}
+
+.CKP-textboxIcon.CKP-orange {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_orange.png') !important;
+}
+
+.CKP-textboxIcon.CKP-red {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_red.png') !important;
+}

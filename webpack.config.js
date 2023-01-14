@@ -1,10 +1,11 @@
+const webpack = require('webpack');
 const path = require('path');
 
-module.exports = {
+module.exports = (env, argv) => ({
     entry: {
         background: './src/background.ts',
         content_script: './src/content_script.ts',
-        popup: './src/popup.ts',
+        toolbarPopup: './src/popup.ts',
         options: './src/options.ts',
         credentialSelector: './src/credentialSelector.ts',
     },
@@ -16,48 +17,24 @@ module.exports = {
         rules: [
             {
                 exclude: /node_modules/,
-                test: /\.scss$/,
-                use: [
-                    {
-                        loader: 'style-loader',
-                        options: {
-                            convertToAbsoluteUrls: false,
-                            transform: './styleTransform.js',
-                        },
-                    },
-                    {
-                        loader: 'typings-for-css-modules-loader',
-                        options: {
-                            namedExport: true,
-                            modules: true,
-                            sass: true,
-                            url: false,
-                            root: '',
-                            sourceMap: process.env.npm_lifecycle_event!=='prod',
-                            minimize: process.env.npm_lifecycle_event==='prod',
-                        },
-                    },
-                    'sass-loader',
-                ],
-            },
-            {
-                exclude: /node_modules/,
-                test: /\.ts$/,
+                test: /\.tsx?$/,
                 loader: 'ts-loader'
-            },
-            {
-                test: /\.svg$/,
-                loader: 'svg-inline-loader',
             },
         ],
     },
     resolve: {
-        extensions: ['.ts', '.tsx', '.scss', '.js'],
+        extensions: ['.ts', '.tsx', '.js'],
         fallback: {
             'crypto': false
         },
     },
-    devtool: process.env.npm_lifecycle_event!=='prod'?'inline-source-map':undefined,
+    plugins: [
+        new webpack.DefinePlugin({
+            DEBUG: (argv.mode!=='production'),
+            VERSION: JSON.stringify(require("./dist/manifest.json").version),
+        }),
+    ],
+    devtool: argv.mode==='production'?'inline-source-map':undefined,
     performance: {
         hints: false,
     },
@@ -69,4 +46,4 @@ module.exports = {
         modules: false,
         entrypoints: false,
     },
-};
+});

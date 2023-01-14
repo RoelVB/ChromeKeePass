@@ -1,4 +1,5 @@
 import * as IMessage from '../IMessage';
+import { log } from './Constants';
 import KeePassHTTP from './KeePassHTTP';
 
 export default class BackgroundListener
@@ -39,7 +40,7 @@ export default class BackgroundListener
         if(responsePromise) // Did the switch-case result in a promise?
         {
             // Send the response when the Promise finishes
-            responsePromise.then((response)=>sendResponse(response)).catch((error)=>console.log('Uncaught error in BackgroundListener', error));
+            responsePromise.then((response)=>sendResponse(response)).catch((error)=>log('error', 'Uncaught error in BackgroundListener', error));
 
             return true; // We need to return true, to let Chrome know the sendResponse will be called asynchronously
         }
@@ -52,7 +53,7 @@ export default class BackgroundListener
     private _findCredentials(url: string): Promise<IMessage.Credential[]>
     {
         return new Promise<IMessage.Credential[]>((resolve, reject)=>{
-            console.log('get credentials for ', url);
+            log('debug', 'Get credentials for ', url);
             if(url)
             {
                 KeePassHTTP.getLogins(url).then((result)=>{

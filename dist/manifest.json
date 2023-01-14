@@ -2,8 +2,8 @@
     "manifest_version": 2,
 
     "name": "ChromeKeePass",
-    "description": "Chrome extension for automatically entering credentials from KeePass/KeeWeb",
-    "version": "1.4.6",
+    "description": "Chrome extension for automatically entering credentials from KeePass",
+    "version": "2.0.0",
 
     "commands": {
         "redetect_fields": {
@@ -19,9 +19,11 @@
         {
             "matches": ["<all_urls>"],
             "js": ["js/content_script.js"],
+            "css": ["css/content_script.css"],
             "all_frames": true
         }
     ],
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
 
     "background": {
         "scripts": ["js/background.js"]
@@ -35,9 +37,7 @@
         }
     },
 
-    "options_ui": {
-        "page": "html/options.html"
-    },
+    "options_page": "html/options.html",
 
     "icons": {
         "128": "images/icon128.png",

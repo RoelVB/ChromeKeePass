@@ -103,7 +103,7 @@ const useInputControls = (onSelect: IProps['onSelect'], filterInput?: HTMLInputE
     React.useEffect(()=>{
         if(filterInput && credentials)
         {
-            let currentIndex = selectedCredIndex % credentials.length;
+            let currentIndex = (selectedCredIndex % credentials.length) || 0; // Default to zero, because in some cases the result could become NaN
 
             const onKeyDown = (ev: KeyboardEvent)=>
             {

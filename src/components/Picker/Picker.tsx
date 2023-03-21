@@ -121,7 +121,8 @@ const useInputControls = (onSelect: IProps['onSelect'], filterInput?: HTMLInputE
                         setSelectedCredIndex(currentIndex); // Set the new index state
                         break;
                     case 'Enter':
-                        onSelect(credentials[currentIndex]);
+                        if(selectedCredIndex >= 0 && credentials[currentIndex]) // There's a selection?
+                            onSelect(credentials[currentIndex]);
                         break;
                 }
             };
@@ -132,7 +133,7 @@ const useInputControls = (onSelect: IProps['onSelect'], filterInput?: HTMLInputE
                 filterInput.removeEventListener('keydown', onKeyDown);
             };
         }
-    }, [filterInput, credentials]);
+    }, [filterInput, credentials, selectedCredIndex]);
 
     return selectedCredIndex;
 };
@@ -173,12 +174,10 @@ const Picker = React.forwardRef<IPickerRef, IProps>((props, ref)=>
 {
     const [credentials, credentialsErrorMessage] = useCredentials(props.credentials);
 
-    // Selected credentials
-    const selectedCredIndex = useInputControls(props.onSelect, props.filterInput, credentials);
-
     // Filter credentials
     const filterValue = useFilterInput(props.filterInput);
     const [filteredCreds, setFilteredCreds] = React.useState<IMessage.Credential[]>([]);
+    const selectedCredIndex = useInputControls(props.onSelect, props.filterInput, filteredCreds);
     React.useEffect(()=>{
         if(props.disableAutoComplete)
             setFilteredCreds(credentials || []);

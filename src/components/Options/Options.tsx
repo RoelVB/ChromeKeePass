@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider, useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState, store } from '../redux/Store';
+import { Provider } from 'react-redux';
+import { store, useAppDispatch, useAppSelector } from '../redux/Store';
 import { loadSettings } from '../redux/Settings';
 import Box from '@mui/material/Box';
 import PageHeader from './PageHeader';
@@ -28,7 +28,7 @@ export interface IProps
 
 export const PaperGrid: React.FC<React.PropsWithChildren<{gridProps?: GridProps}>> = (props)=>
 {
-    const isLoading = useSelector((state: RootState) => state.settings.isLoading);
+    const isLoading = useAppSelector(state=>state.settings.isLoading);
 
     if(isLoading)
         return (<Skeleton sx={{minHeight: 48}} />)
@@ -45,8 +45,8 @@ export const PaperGrid: React.FC<React.PropsWithChildren<{gridProps?: GridProps}
 const Options: React.FC<IProps> = (props)=>
 {
     const [selectedTab, setSelectedTab] = React.useState<'connection'|'behaviour'>('connection');
-    const errorMessage = useSelector((state: RootState) => state.settings.errorMessage);
-    const dispatch = useDispatch<AppDispatch>();
+    const errorMessage = useAppSelector(state=>state.settings.errorMessage);
+    const dispatch = useAppDispatch();
 
     React.useEffect(()=>{
         // Update the page title (for Edge users)

@@ -1,5 +1,4 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
@@ -7,7 +6,7 @@ import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 import { useAssociation } from '../Hooks/Association';
 import { PaperGrid } from './Options';
-import { AppDispatch, RootState } from '../redux/Store';
+import { useAppDispatch, useAppSelector } from '../redux/Store';
 import { defaultSettings } from '../../Settings';
 import Button from '@mui/material/Button';
 import { saveSettings } from '../redux/Settings';
@@ -16,7 +15,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 const AssociationStatus: React.FC = ()=>
 {
-    const settings = useSelector((state: RootState) => state.settings.settings);
+    const settings = useAppSelector(state=>state.settings.settings);
     const [status, associationId, associationError, associate] = useAssociation([settings?.keePassHost, settings?.keePassPort]);
 
     if(status === 'checking')
@@ -57,9 +56,8 @@ const Connection: React.FC = ()=>
 {
     const [ inputHost, setInputHost ] = React.useState<string>();
     const [ inputPort, setInputPort ] = React.useState<number>();
-    const settings = useSelector((state: RootState) => state.settings.settings);
-    const isSaving = useSelector((state: RootState) => state.settings.isSaving);
-    const dispatch = useDispatch<AppDispatch>();
+    const [settings, isSaving] = useAppSelector(state=>[state.settings.settings, state.settings.isSaving]);
+    const dispatch = useAppDispatch();
 
     /** Host or port changed? */
     const canApply = React.useMemo(()=>{

@@ -1,9 +1,8 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
 import { ISettings } from '../../Settings';
-import { AppDispatch, RootState } from '../redux/Store';
+import { useAppDispatch, useAppSelector } from '../redux/Store';
 import { saveSettings } from '../redux/Settings';
 
 export interface IProps
@@ -14,15 +13,15 @@ export interface IProps
 
 const SwitchOption: React.FC<IProps> = (props)=>
 {
-    const isSaving = useSelector((state: RootState) => state.settings.isSaving);
-    const optionEnabled = useSelector((state: RootState) =>{
+    const isSaving = useAppSelector(state=>state.settings.isSaving);
+    const optionEnabled = useAppSelector(state=>{
         const [ option, subOption ] = props.option.split('.') as [keyof ISettings, keyof ISettings['theme']];
         if(subOption)
             return (state.settings.settings as any)?.[option]?.[subOption] as boolean;
         else
             return state.settings.settings?.[option] as boolean;
     });
-    const dispatch = useDispatch<AppDispatch>();
+    const dispatch = useAppDispatch();
 
     const setOption = React.useCallback((checked: boolean)=>{
         const [ option, subOption ] = props.option.split('.') as [keyof ISettings, keyof ISettings['theme']];

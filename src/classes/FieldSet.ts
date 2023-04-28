@@ -114,11 +114,9 @@ export default class FieldSet
 
     /** Event when the username field gets focussed */
     private _onFocus(ev: FocusEvent) {
-        // Show the dropdown on focus when enabled and whe either have more than one credential or no credentials.
-        if (this._pageControl.settings.showDropdownOnFocus && !this._iconOwnsClick
-            && this._pageControl.credentials && this._pageControl.credentials.length === 1) {
+        // Show the dropdown on focus when enabled
+        if(this._pageControl.settings.showDropdownOnFocus && !this._iconOwnsClick)
             this._pageControl.dropdown.open(this);
-        }
     }
 
     /**

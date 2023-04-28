@@ -41,6 +41,7 @@ const AssociationStatus: React.FC = ()=>
         return (<>
             Not connected
             <Button
+                id='connectBtn'
                 variant='contained'
                 size='small'
                 sx={{ml: 1}}
@@ -86,6 +87,7 @@ const Connection: React.FC = ()=>
         <PaperGrid gridProps={{flexDirection: 'column', gap: 1}}>
             <Grid item container alignItems='center'>
                 <TextField
+                    id='hostnameField'
                     sx={{width: '250px'}}
                     variant='filled'
                     size='small'
@@ -95,6 +97,7 @@ const Connection: React.FC = ()=>
                 />
                 <Typography>:</Typography>
                 <TextField
+                    id='portField'
                     sx={{width: '120px'}}
                     type='number'
                     variant='filled'
@@ -106,6 +109,7 @@ const Connection: React.FC = ()=>
             </Grid>
             <Grid item>
                 <Button
+                    id='applyBtn'
                     variant='contained'
                     disabled={isSaving || !canApply}
                     onClick={onApply}

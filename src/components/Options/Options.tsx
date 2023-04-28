@@ -66,9 +66,9 @@ const Options: React.FC<IProps> = (props)=>
 
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={selectedTab} onChange={(ev,val)=>setSelectedTab(val)}>
-                    <Tab sx={{minHeight: 'auto'}} label='Connection' icon={<ElectricalServicesIcon />} iconPosition='start' value='connection' />
-                    <Tab sx={{minHeight: 'auto'}} label='Behaviour' icon={<FindInPageIcon />} iconPosition='start' value='behaviour' />
-                    <Tab sx={{minHeight: 'auto'}} label='Appearance' icon={<FormatPaintIcon />} iconPosition='start' value='appearance' />
+                    <Tab id='tab-Connection' sx={{minHeight: 'auto'}} label='Connection' icon={<ElectricalServicesIcon />} iconPosition='start' value='connection' />
+                    <Tab id='tab-Behaviour' sx={{minHeight: 'auto'}} label='Behaviour' icon={<FindInPageIcon />} iconPosition='start' value='behaviour' />
+                    <Tab id='tab-Appearance' sx={{minHeight: 'auto'}} label='Appearance' icon={<FormatPaintIcon />} iconPosition='start' value='appearance' />
                 </Tabs>
             </Box>
 

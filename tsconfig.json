@@ -8,5 +8,11 @@
     "rootDir": "src",
     "outDir": "dist/js",
     "esModuleInterop": true
+  },
+  "exclude": [
+    "test"
+  ],
+  "ts-node": {
+    "skipIgnore": true
   }
 }

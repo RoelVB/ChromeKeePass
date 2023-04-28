@@ -40,7 +40,7 @@ const SwitchOption: React.FC<IProps> = (props)=>
         }
     }, [props.option])
 
-    return (<Grid item container alignItems='center'>
+    return (<Grid id={`switchOption-${props.option}`} item container alignItems='center'>
         <Grid item>
             <Switch
                 disabled={isSaving}

@@ -1,0 +1,30 @@
+name: Build
+
+on: [ workflow_call ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build extension
+        run: npm run prod
+
+      - name: Upload build
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: dist/
+          if-no-files-found: error
+          

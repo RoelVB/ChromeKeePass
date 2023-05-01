@@ -1,0 +1,51 @@
+name: Basic tests
+
+on:
+  pull_request:
+    branches: [ dev-v2 ]
+  push:
+    branches: [ dev-v2 ]
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+  test:
+    runs-on: windows-latest
+    needs: [ build ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: dist
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run standard tests
+        run: npm test -- --reporter json --reporter-option output=test-results.json
+
+      - name: Test report
+        uses: phoenix-actions/test-reporting@v12
+        if: success() || failure()
+        with:
+          name: Test result
+          path: test-results.json
+          reporter: mocha-json
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: test-screenshots
+          path: test/screenshots/
+          if-no-files-found: ignore

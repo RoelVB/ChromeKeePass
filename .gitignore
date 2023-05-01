@@ -1,5 +1,6 @@
 /node_modules
 /dist/js
+/test/screenshots
 *.scss.d.ts
 *.zip
 .env

@@ -6,6 +6,7 @@ import Browser from './classes/Browser';
 import MockKeePassHttp from './classes/MockKeePassHttp';
 
 chai.use(chaiAsPromised);
+chai.config.truncateThreshold = 0; // disable truncating
 
 export let browser: Awaited<ReturnType<typeof Browser.launch>>;
 
@@ -13,7 +14,15 @@ export let browser: Awaited<ReturnType<typeof Browser.launch>>;
 const skipStandard = process.argv.includes('--skipStandard');
 const includeSites = process.argv.find(f=>f.startsWith('--includeSites'))?.substring(15).split(',').filter(f=>f); // Parse "--includeSites=Google,Microsoft" to array "['Google','Microsoft']"
 
+// Make screenshot directory
+try {
+    fs.mkdirSync('./test/screenshots');
+} catch(error) {
+    // ignore error
+}
+
 describe('ChromeKeePass', function(){
+    this.slow('10s');
 
     before('Setup Mock-KeePassHttp', async function(){
         this.timeout('10s'); // Starting and setting up Mock-KeePassHttp should not take more than 10 seconds

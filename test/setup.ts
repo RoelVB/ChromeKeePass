@@ -6,7 +6,7 @@ import MockKeePassHttp from './classes/MockKeePassHttp';
 
 describe('Setup CKP', async function()
 {
-    this.bail(true);
+    this.timeout('10s');
 
     it('Change CKP port', async function()
     {

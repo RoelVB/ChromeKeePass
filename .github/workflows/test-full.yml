@@ -28,7 +28,7 @@ jobs:
         run: npm ci
 
       - name: Load site logins
-        uses: oNaiPs/secrets-to-env-action@v1.2
+        uses: ChromeKeePass/action-secrets-to-env
         with:
           secrets: ${{ toJSON(secrets) }}
           include: ^TESTSITE_.*
@@ -37,7 +37,7 @@ jobs:
         run: npm run test:all -- --reporter json --reporter-option output=test-results.json
 
       - name: Test report
-        uses: phoenix-actions/test-reporting@v12
+        uses: ChromeKeePass/action-test-reporting
         if: success() || failure()
         with:
           name: Test result

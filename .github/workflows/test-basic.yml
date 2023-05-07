@@ -35,7 +35,7 @@ jobs:
         run: npm test -- --reporter json --reporter-option output=test-results.json
 
       - name: Test report
-        uses: phoenix-actions/test-reporting@v12
+        uses: ChromeKeePass/action-test-reporting
         if: success() || failure()
         with:
           name: Test result

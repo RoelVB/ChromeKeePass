@@ -9,7 +9,7 @@ export const openLoginPage = async (pageType: Parameters<typeof webserver.getUrl
 {
     const url = webserver.getUrl(pageType);
     const page: Page = await expect(browser.newPage(), 'Failed to open a new page').to.eventually.be.fulfilled;
-    await expect(page.goto(url, {waitUntil: 'networkidle2'}), `Failed to load ${url}`).to.eventually.be.fulfilled;
+    await expect(page.goto(url, {waitUntil: 'networkidle2', timeout: 5000}), `Failed to load ${url}`).to.eventually.be.fulfilled;
 
     return page;
 };

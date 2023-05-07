@@ -89,7 +89,7 @@ export default class Browser implements ProxyHandler<Browser>
             if(typeof settings[optionName] === 'boolean')
             {
                 try {
-                    const option = (await optionsPage.waitForSelector(`#switchOption-${optionName} input`))!;
+                    const option = (await optionsPage.waitForSelector(`#switchOption-${optionName} input`, {timeout: 2000}))!;
                     const isEnabled = await optionsPage.$eval(`#switchOption-${optionName} input`, option=>option.checked);
                     if(isEnabled !== settings[optionName])
                     {

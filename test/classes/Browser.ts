@@ -20,7 +20,11 @@ export default class Browser implements ProxyHandler<Browser>
         const browser = await puppeteer.launch({
             ...{
                 headless: false,
-                args: [`--disable-extensions-except=${extensionPath}`,`--load-extension=${extensionPath}`],
+                args: [
+                    `--disable-extensions-except=${extensionPath}`,
+                    `--load-extension=${extensionPath}`,
+                    '--disable-gpu', // This can prevent issues while testing using Github Actions for example
+                ],
             },
             ...options
         });

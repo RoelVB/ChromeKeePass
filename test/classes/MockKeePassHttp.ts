@@ -6,11 +6,13 @@ export default class MockKeePassHttp
     static kphPort = 1337;
     static #server: Server;
 
-    static start(): Promise<void>
+    static start(disableLogging = true): Promise<void>
     {
-        setLogger((level, msg, ...optionalParams)=>{
-            // Ignore logging
-        });
+        if(disableLogging)
+            setLogger((level, msg, ...optionalParams)=>{});
+        else
+            setLogger((level, msg, ...optionalParams)=>console.log(`[Mock-KeePassHttp] [${level}] ${msg}`, ...optionalParams));
+            
         this.#server = new Server(this.kphPort);
         return this.#server.start();
     }

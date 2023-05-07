@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ChomeKeePass: Test loginpage: Generated form</title>
+        <script>
+            function generateForm()
+            {
+                var form = document.createElement('form');
+                form.setAttribute('method', 'post');
+                form.setAttribute('action', '');
+
+                // Add username field
+                var usernameInput = document.createElement('input');
+                usernameInput.setAttribute('type', 'text');
+                usernameInput.setAttribute('name', 'username');
+                var usernameDiv = document.createElement('div');
+                usernameDiv.append(usernameInput);
+                form.append(usernameDiv);
+
+                // Add password field
+                var passwordInput = document.createElement('input');
+                passwordInput.setAttribute('type', 'password');
+                passwordInput.setAttribute('name', 'password');
+                var passwordDiv = document.createElement('div');
+                passwordDiv.append(passwordInput);
+                form.append(passwordDiv);
+
+                // Add submit button
+                var submitBtn = document.createElement('input');
+                submitBtn.setAttribute('type', 'submit');
+                submitBtn.innerText = 'Login';
+                var submitDiv = document.createElement('div');
+                submitDiv.append(submitBtn);
+                form.append(submitDiv);
+
+                // Add form into the body
+                document.body.append(form);
+            }
+        </script>
+    </head>
+    <body>
+        <div>
+            <input id="btnGenerateForm" type="button" onclick="generateForm()" value="Generate form" />
+        </div>
+    </body>
+</html>

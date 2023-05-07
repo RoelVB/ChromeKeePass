@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ChomeKeePass: Test loginpage: Hidden form</title>
+        <script>
+            function showForm()
+            {
+                document.querySelector('form').style.display = '';
+            }
+        </script>
+    </head>
+    <body>
+        <div>
+            <input id="btnShowForm" type="button" onclick="showForm()" value="Show form" />
+        </div>
+
+        <form style="display:none" method="post" action="">
+            <div>Username:</div>
+            <div><input type="text" name="username" /></div>
+            <div>Password:</div>
+            <div><input type="password" name="password" /></div>
+            <div><button type="submit">Login</button></div>
+        </form>
+    </body>
+</html>

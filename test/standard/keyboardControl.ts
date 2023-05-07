@@ -18,7 +18,7 @@ describe('Keyboard control', function()
         webserver.setLogins(loginsCount, undefined, [testLogin]);
 
         // Open login page
-        const page = await openLoginPage();
+        const page = await openLoginPage('Default');
 
         // Is there an input field?
         const usernameInput = await findUsernameField(page);
@@ -72,7 +72,7 @@ describe('Keyboard control', function()
         webserver.setLogins(loginsCount);
 
         // Open login page
-        const page = await openLoginPage();
+        const page = await openLoginPage('Default');
 
         // Check if the dropdown is NOT there yet
         await expect(page.waitForSelector('div[id^="ckpInput-"]', {timeout: 1000}), 'The CKP dropdown is already there').to.eventually.be.rejected;
@@ -107,7 +107,7 @@ describe('Keyboard control', function()
         webserver.setLogins(loginsCount, [validLoginIndex]);
 
         // Open login page
-        const page = await openLoginPage();
+        const page = await openLoginPage('Default');
 
         // Find the input field and focus it
         const usernameInput = await findUsernameField(page);

@@ -5,10 +5,11 @@ import { browser } from "../test";
 
 export let webserver: Awaited<ReturnType<typeof Webserver.start>>;
 
-export const openLoginPage = async (): Promise<Page> =>
+export const openLoginPage = async (pageType: Parameters<typeof webserver.getUrl>[0]): Promise<Page> =>
 {
+    const url = webserver.getUrl(pageType);
     const page: Page = await expect(browser.newPage(), 'Failed to open a new page').to.eventually.be.fulfilled;
-    await expect(page.goto(webserver.url, {waitUntil: 'networkidle2'}), `Failed to load ${webserver.url}`).to.eventually.be.fulfilled;
+    await expect(page.goto(url, {waitUntil: 'networkidle2'}), `Failed to load ${url}`).to.eventually.be.fulfilled;
 
     return page;
 };

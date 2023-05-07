@@ -9,6 +9,11 @@ export const findUsernameField = async (page: Page): Promise<ElementHandle<HTMLI
     return await expect(page.waitForSelector('input[name="username"]', {timeout: 2000}), 'Username field not found').to.eventually.be.fulfilled;
 };
 
+export const findPasswordField = async (page: Page): Promise<ElementHandle<HTMLInputElement>> =>
+{
+    return await expect(page.waitForSelector('input[name="password"]', {timeout: 2000}), 'Password field not found').to.eventually.be.fulfilled;
+};
+
 /** Find logins in the CKP dropdown */
 export const findLogins = async (page: Page): Promise<ElementHandle<HTMLDivElement>[]> =>
 {

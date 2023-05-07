@@ -15,7 +15,7 @@ describe('Dropdown behaviour', function()
         webserver.setLogins(loginsCount);
 
         // Open login page
-        const page = await openLoginPage();
+        const page = await openLoginPage('Default');
 
         // Check if the dropdown is NOT there yet
         await expect(page.waitForSelector('div[id^="ckpInput-"]', {timeout: 1000}), 'The CKP dropdown is already there').to.eventually.be.rejected;
@@ -43,7 +43,7 @@ describe('Dropdown behaviour', function()
         webserver.setLogins(loginsCount);
 
         // Open login page
-        const page = await openLoginPage();
+        const page = await openLoginPage('Default');
 
         // Check if the dropdown is NOT there yet
         await expect(page.waitForSelector('div[id^="ckpInput-"]', {timeout: 1000}), 'The CKP dropdown is already there').to.eventually.be.rejected;
@@ -71,7 +71,7 @@ describe('Dropdown behaviour', function()
         webserver.setLogins(loginsCount);
 
         // Open login page
-        const page = await openLoginPage();
+        const page = await openLoginPage('Default');
 
         // Check if the dropdown is NOT there yet
         await expect(page.waitForSelector('div[id^="ckpInput-"]', {timeout: 1000}), 'The CKP dropdown is already there').to.eventually.be.rejected;

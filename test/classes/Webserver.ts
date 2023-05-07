@@ -8,7 +8,6 @@ export type Response = http.ServerResponse<http.IncomingMessage> & {req: http.In
 export default class Webserver
 {
     #server: http.Server;
-    #loginPage: string;
     #validLogins: ILogin[] = [];
 
     static start(...args: ConstructorParameters<typeof Webserver>): Promise<Webserver>
@@ -18,7 +17,6 @@ export default class Webserver
 
     constructor(public readonly port: number = 8080)
     {
-        this.#loginPage = fs.readFileSync('./test/assets/loginpage.html').toString('utf8');
         this.#server = http.createServer(this.#listener.bind(this));
     }
 
@@ -39,9 +37,9 @@ export default class Webserver
         this.#server.close();
     }
 
-    get url(): string
+    getUrl(type: 'Default'|'HiddenPassword'|'PasswordOnly'|'HiddenForm'|'GeneratedForm' = 'Default'): string
     {
-        return `http://localhost:${this.port}`;
+        return `http://localhost:${this.port}/login${type}.html`;
     }
 
     get urlBasicAuth(): string
@@ -67,7 +65,7 @@ export default class Webserver
 
         // Add logins to KeePassHttp
         Setup.addLogins([{
-            url: this.url,
+            url: this.getUrl(),
             logins: generatedLogins,
         }]);
 
@@ -106,7 +104,7 @@ export default class Webserver
             if(req.method === 'POST')
             {
                 const params = new URLSearchParams(await this.#getRequestBody(req));
-                if(this.#validateLogin(params.get('username')!, params.get('password')!))
+                if(this.#validateLogin(params.get('username') || '', params.get('password')!))
                     res.end('Login successful');
                 else
                 {
@@ -115,7 +113,16 @@ export default class Webserver
                 }
             }
             else
-                res.end(this.#loginPage);
+            {
+                const file = `./test/assets${req.url}`;
+                if(fs.existsSync(file))
+                    res.end(fs.readFileSync(file).toString('utf8'));
+                else
+                {
+                    res.statusCode = 404;
+                    res.end('Page not found');
+                }
+            }
         }
     }
 

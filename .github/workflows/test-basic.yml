@@ -35,7 +35,7 @@ jobs:
         run: npm test -- --reporter json --reporter-option output=test-results.json
 
       - name: Test report
-        uses: ChromeKeePass/action-test-reporting
+        uses: ChromeKeePass/action-test-reporting@main
         if: success() || failure()
         with:
           name: Test result

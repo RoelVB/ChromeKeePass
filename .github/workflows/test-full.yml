@@ -28,7 +28,7 @@ jobs:
         run: npm ci
 
       - name: Load site logins
-        uses: ChromeKeePass/action-secrets-to-env
+        uses: ChromeKeePass/action-secrets-to-env@main
         with:
           secrets: ${{ toJSON(secrets) }}
           include: ^TESTSITE_.*
@@ -37,7 +37,7 @@ jobs:
         run: npm run test:all -- --reporter json --reporter-option output=test-results.json
 
       - name: Test report
-        uses: ChromeKeePass/action-test-reporting
+        uses: ChromeKeePass/action-test-reporting@main
         if: success() || failure()
         with:
           name: Test result

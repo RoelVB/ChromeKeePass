@@ -29,7 +29,10 @@ it('Google', async function()
         // Wait for password input
         const passwordInput: ElementHandle<HTMLInputElement> = await expect(page.waitForSelector('input[type="password"]', {timeout: 2000, visible: true}), 'Password field not found').to.eventually.be.fulfilled;
         await expect(passwordInput.click(), 'Failed to select password field').to.eventually.be.fulfilled;
-        // Selecter first ogins and Enter
+        // Is the CKP dropdown open?
+        const passwordLogins = await findLogins(page);
+        expect(passwordLogins.length, 'No logins found').to.be.greaterThan(0);
+        // Selecter first login and Enter
         await usernameInput.press('ArrowDown');
         await usernameInput.press('Enter');
 

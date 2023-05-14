@@ -47,7 +47,7 @@ export default class Browser implements ProxyHandler<Browser>
         if(this.#extensionId === undefined)
         {
             // Wait for the background page
-            const backgroundPageTarget = await this.browser.waitForTarget(target => target.type() === 'service_worker', {timeout: 10000});
+            const backgroundPageTarget = await this.browser.waitForTarget(target => target.type() === 'service_worker');
             // Capture logs from the background
             // const backgroundPage = await backgroundPageTarget.page()
             // backgroundPage?.on('console', msg => console.log(`[CKP-Background]: ${msg.type()}: ${msg.text()}`));

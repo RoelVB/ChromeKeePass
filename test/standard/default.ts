@@ -154,8 +154,7 @@ it('Password only (no username)', async function()
     await page.close();
 });
 
-// TODO: Needs te be supported, currently isn't
-it.skip('Hidden login form (becomes visible)', async function()
+it('Hidden login form (becomes visible)', async function()
 {
     await ensureBehaviourSettings({
         showDropdownOnFocus: true,

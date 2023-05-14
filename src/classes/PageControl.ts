@@ -68,25 +68,29 @@ export default class PageControl
     private _createFieldSet(passwordField: HTMLInputElement)
     {
         let prevField: HTMLInputElement | undefined;
-        let prevVisibleField: HTMLInputElement | undefined;
 
         for(const input of document.querySelectorAll<HTMLInputElement>('input')) // Loop through input fields to find the field before our password field
         {
             const inputType = input.getAttribute('type') || 'text'; // Get input type, if none default to "text"
             if (inputType === 'text' || inputType === 'email' || inputType === 'tel')  // We didn't reach our password field?
             {
-                prevField = input; // Is this a possible username field?
-                if (isElementVisible(input)) // Field is visible?
-                    prevVisibleField = input;
+                prevField = input; // Remember this possible username field?
             }
             else if (inputType === 'password' && input === passwordField) // Found our password field?
             {
-                let controlField = isElementVisible(input) ? prevField : prevVisibleField; // When the passwordfield is visible, we don't care if the usernamefield is visible, otherwise we need a visible usernamefield
-                if (!controlField && isElementVisible(input)) // We didn't find the username field. Check if password field is actually visible
+                let controlField: HTMLInputElement | undefined;
+                if(prevField && isElementVisible(prevField)) // We have a visible username field?
+                    controlField = prevField;
+                else if(prevField && !isElementVisible(prevField) && !isElementVisible(passwordField)) // There's a username field, but both are invisible?
+                    controlField = prevField;
+                else // There's no visible username field?
                     controlField = passwordField;
 
-                if(controlField && !this._fieldSets.has(controlField)) // Only create a FieldSet once for every field
+                if(!this._fieldSets.has(controlField)) // Only create a FieldSet once for every field
+                {
+                    log('debug', 'Created FieldSet\nControlField:', controlField, '\nPasswordField:', passwordField);
                     this._fieldSets.set(controlField, new FieldSet(this, passwordField, controlField));
+                }
 
                 break;
             }

@@ -12,7 +12,8 @@
         "prod": "webpack --mode \"production\"",
         "watch": "webpack --mode \"development\" -w",
         "test": "ts-mocha",
-        "test:all": "ts-mocha --includeSites"
+        "test:all": "ts-mocha --includeSites",
+        "test:webserver": "ts-node --transpile-only ./test/runWebserver.ts"
     },
     "dependencies": {
         "@emotion/react": "^11.10.5",

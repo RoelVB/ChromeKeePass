@@ -77,28 +77,16 @@ export class KeePassHTTP
     {
         this._loadingKeyMutex.runExclusive(async ()=>{
             await new Promise<void>((resolve, reject)=>{
-                KeePassHTTP._id = localStorage.getItem('KeePassHttpId');
-                KeePassHTTP._key = localStorage.getItem('KeePassHttpKey');
-                if(KeePassHTTP._id && KeePassHTTP._key) // Found key using the old method?
-                {
-                    this._saveKey();
-                    localStorage.removeItem('KeePassHttpId');
-                    localStorage.removeItem('KeePassHttpKey');
-                    resolve();
-                }
-                else
-                {
-                    chrome.storage.local.get('KeePassHttp', res=>{
-                        if(chrome.runtime.lastError)
-                            reject(chrome.runtime.lastError);
-                        else
-                        {
-                            KeePassHTTP._id = res.KeePassHttp?.Id;
-                            KeePassHTTP._key = res.KeePassHttp?.Key;
-                            resolve();
-                        }
-                    });
-                }
+                chrome.storage.local.get('KeePassHttp', res=>{
+                    if(chrome.runtime.lastError)
+                        reject(chrome.runtime.lastError);
+                    else
+                    {
+                        KeePassHTTP._id = res.KeePassHttp?.Id;
+                        KeePassHTTP._key = res.KeePassHttp?.Key;
+                        resolve();
+                    }
+                });
             });
         });
     }

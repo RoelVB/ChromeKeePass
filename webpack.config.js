@@ -34,7 +34,7 @@ module.exports = (env, argv) => ({
             VERSION: JSON.stringify(require("./dist/manifest.json").version),
         }),
     ],
-    devtool: argv.mode==='production'?'inline-source-map':undefined,
+    devtool: argv.mode!=='production'?'inline-source-map':undefined,
     performance: {
         hints: false,
     },

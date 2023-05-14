@@ -29,10 +29,10 @@ export const FooterContainer = styled(Box)(({ theme })=>({
 const Footer: React.FC<IProps> = (props)=>
 {
     return (<FooterContainer>
-        <img src={chrome.extension.getURL('images/icon48.png')} />
+        <img src={chrome.runtime.getURL('images/icon48.png')} />
         <Typography component='div' variant='body1' sx={{fontWeight:'bold'}}>{ExtensionName}</Typography>
         {props.onOpenOptions ?
-            <Link component='img' title='Open options' tabIndex={0} src={chrome.extension.getURL('images/gear.png')} sx={{cursor: 'pointer'}} onClick={props.onOpenOptions} />
+            <Link component='img' title='Open options' tabIndex={0} src={chrome.runtime.getURL('images/gear.png')} sx={{cursor: 'pointer'}} onClick={props.onOpenOptions} />
         : <Box />}
     </FooterContainer>);
 };

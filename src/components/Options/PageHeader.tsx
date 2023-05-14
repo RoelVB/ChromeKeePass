@@ -18,7 +18,7 @@ const PageHeader: React.FC = ()=>
 {
     return (<StyledAppBar position='sticky'>
         <Toolbar variant='dense' sx={{gap: 2}}>
-            <Avatar src={chrome.extension.getURL('images/icon48.png')} alt='CKP logo' />
+            <Avatar src={chrome.runtime.getURL('images/icon48.png')} alt='CKP logo' />
             <Box>
                 {ExtensionName}: Options
             </Box>

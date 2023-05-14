@@ -1,5 +1,5 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
 
     "name": "ChromeKeePass",
     "description": "Chrome extension for automatically entering credentials from KeePass",
@@ -23,13 +23,13 @@
             "all_frames": true
         }
     ],
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
 
     "background": {
-        "scripts": ["js/background.js"]
+        "service_worker": "js/background.js",
+        "type": "module"
     },
 
-    "browser_action": {
+    "action": {
         "default_popup": "html/popup.html",
         "default_icon": {
             "128": "images/icon128.png",
@@ -45,16 +45,19 @@
     },
 
     "web_accessible_resources": [
-        "images/*"
+        {
+            "resources": ["images/*"],
+            "matches": ["<all_urls>"]
+        }
     ],
 
     "permissions": [
         "storage",
-        "<all_urls>",
         "contextMenus",
         "webRequest",
-        "webRequestBlocking"
+        "webRequestAuthProvider"
     ],
-
-    "minimum_chrome_version": "51"
+    "host_permissions": [
+        "<all_urls>"
+    ]
   }

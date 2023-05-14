@@ -47,9 +47,9 @@ export default class Browser implements ProxyHandler<Browser>
         if(this.#extensionId === undefined)
         {
             // Wait for the background page
-            const backgroundPageTarget = await this.browser.waitForTarget(target => target.type() === 'background_page');
-            const backgroundPage = await backgroundPageTarget.page()
+            const backgroundPageTarget = await this.browser.waitForTarget(target => target.type() === 'service_worker', {timeout: 10000});
             // Capture logs from the background
+            // const backgroundPage = await backgroundPageTarget.page()
             // backgroundPage?.on('console', msg => console.log(`[CKP-Background]: ${msg.type()}: ${msg.text()}`));
             // Get the extesion ID from the URL
             const extensionId = /^chrome-extension:\/\/(\w+)\//.exec(backgroundPageTarget?.url() || '')?.[1];

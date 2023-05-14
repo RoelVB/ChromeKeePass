@@ -26,7 +26,7 @@ const Popup: React.FC<IProps> = (props)=>
     return (<Wrapper>
         <PopupContainer>
             <FooterContainer>
-                <img src={chrome.extension.getURL('images/icon48.png')} />
+                <img src={chrome.runtime.getURL('images/icon48.png')} />
                 <Typography component='div' variant='body1' sx={{fontWeight:'bold'}}>
                     {status === 'checking' ?
                         'Getting status...'
@@ -38,7 +38,7 @@ const Popup: React.FC<IProps> = (props)=>
                         'Not connected'
                     }
                 </Typography>
-                <Link component='img' title='Open options' tabIndex={0} src={chrome.extension.getURL('images/gear.png')} sx={{cursor: 'pointer'}} onClick={Client.openOptions} />
+                <Link component='img' title='Open options' tabIndex={0} src={chrome.runtime.getURL('images/gear.png')} sx={{cursor: 'pointer'}} onClick={Client.openOptions} />
             </FooterContainer>
         </PopupContainer>
     </Wrapper>);

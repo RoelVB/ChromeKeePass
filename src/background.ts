@@ -29,13 +29,16 @@ chrome.commands.onCommand.addListener(async (command)=>{
 
 // Determine if we have to show the changelog
 chrome.runtime.onInstalled.addListener(async (details)=>{
-    const settings = await loadSettings();
-    if(settings.showChangelogAfterUpdate)
+    if(details.reason === chrome.runtime.OnInstalledReason.UPDATE) // Extenstion got updated?
     {
-        // Open changelog
-        chrome.tabs.create({
-            url: `${chrome.runtime.getURL('html/options.html')}?update=${details.previousVersion || 'Unknown'}`,
-        });
+        const settings = await loadSettings();
+        if(settings.showChangelogAfterUpdate)
+        {
+            // Open changelog
+            chrome.tabs.create({
+                url: `${chrome.runtime.getURL('html/options.html')}?update=${details.previousVersion || 'Unknown'}`,
+            });
+        }
     }
 });
 

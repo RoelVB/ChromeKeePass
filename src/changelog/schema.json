@@ -1,0 +1,64 @@
+{
+	"definitions": {},
+	"$schema": "http://json-schema.org/draft-07/schema#", 
+	"$id": "https://example.com/object1688231508.json", 
+	"title": "Root", 
+	"type": "object",
+	"required": [
+		"versions"
+	],
+	"properties": {
+		"versions": {
+			"$id": "#root/versions", 
+			"title": "Versions", 
+			"type": "array",
+			"items":{
+				"$id": "#root/versions/items", 
+				"title": "Items", 
+				"type": "object",
+				"required": [
+					"version",
+					"changes"
+				],
+				"properties": {
+					"version": {
+						"$id": "#root/versions/items/version", 
+						"title": "Version", 
+						"type": "string",
+						"pattern": "^2\\.\\d+\\.\\d+$|^current$",
+                        "examples": ["current"]
+					},
+					"changes": {
+						"$id": "#root/versions/items/changes", 
+						"title": "Changes", 
+						"type": "array",
+						"items":{
+							"$id": "#root/versions/items/changes/items", 
+							"title": "Items", 
+							"type": "object",
+							"required": [
+								"type",
+								"description"
+							],
+							"properties": {
+								"type": {
+									"$id": "#root/versions/items/changes/items/type", 
+									"title": "Type", 
+									"type": "string",
+                                    "enum": ["new","improvement","fix"]
+								},
+								"description": {
+									"$id": "#root/versions/items/changes/items/description", 
+									"title": "Description", 
+									"type": "string"
+								}
+							}
+						}
+
+					}
+				}
+			}
+
+		}
+	}
+}

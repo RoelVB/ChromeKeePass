@@ -1,0 +1,18 @@
+{
+    "$schema": "./schema.json",
+    "versions": [
+        {
+            "version": "current",
+            "changes": [
+                {
+                    "type": "new",
+                    "description": "Lots of rewritten/new code"
+                },
+                {
+                    "type": "improvement",
+                    "description": "Automated testing for more reliable and faster development"
+                }
+            ]
+        }
+    ]
+}

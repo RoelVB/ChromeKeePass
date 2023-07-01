@@ -4,9 +4,11 @@ import Switch from '@mui/material/Switch';
 import { ISettings } from '../../Settings';
 import { useAppDispatch, useAppSelector } from '../redux/Store';
 import { saveSettings } from '../redux/Settings';
+import { SxProps, Theme } from '@mui/material/styles';
 
 export interface IProps
 {
+    sx?: SxProps<Theme>;
     option: keyof ISettings|`theme.${keyof ISettings['theme']}`;
     description: string;
 }
@@ -40,7 +42,7 @@ const SwitchOption: React.FC<IProps> = (props)=>
         }
     }, [props.option])
 
-    return (<Grid id={`switchOption-${props.option}`} item container alignItems='center'>
+    return (<Grid id={`switchOption-${props.option}`} sx={props.sx} item container alignItems='center'>
         <Grid item>
             <Switch
                 disabled={isSaving}

@@ -15,11 +15,13 @@ import Alert from '@mui/material/Alert';
 import ElectricalServicesIcon from '@mui/icons-material/ElectricalServices';
 import FormatPaintIcon from '@mui/icons-material/FormatPaint';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
+import FiberNewIcon from '@mui/icons-material/FiberNew';
 import { ExtensionName } from '../../classes/Constants';
 import Connection from './Connection';
 import Wrapper from '../Wrapper';
 import Behaviour from './Behaviour';
 import Appearance from './Appearance';
+import Changelog from './Changelog';
 
 export interface IProps
 {
@@ -44,7 +46,8 @@ export const PaperGrid: React.FC<React.PropsWithChildren<{gridProps?: GridProps}
 
 const Options: React.FC<IProps> = (props)=>
 {
-    const [selectedTab, setSelectedTab] = React.useState<'connection'|'behaviour'>('connection');
+    const showUpdate = React.useMemo(()=>new URLSearchParams(location.search).get('update'), []);
+    const [selectedTab, setSelectedTab] = React.useState<'connection'|'behaviour'|'appearance'|'changelog'>(showUpdate?'changelog':'connection');
     const errorMessage = useAppSelector(state=>state.settings.errorMessage);
     const dispatch = useAppDispatch();
 
@@ -64,11 +67,14 @@ const Options: React.FC<IProps> = (props)=>
                 <Alert>{errorMessage || 'An unknown error occured'}</Alert>
             : null}
 
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between' }}>
                 <Tabs value={selectedTab} onChange={(ev,val)=>setSelectedTab(val)}>
                     <Tab id='tab-Connection' sx={{minHeight: 'auto'}} label='Connection' icon={<ElectricalServicesIcon />} iconPosition='start' value='connection' />
                     <Tab id='tab-Behaviour' sx={{minHeight: 'auto'}} label='Behaviour' icon={<FindInPageIcon />} iconPosition='start' value='behaviour' />
                     <Tab id='tab-Appearance' sx={{minHeight: 'auto'}} label='Appearance' icon={<FormatPaintIcon />} iconPosition='start' value='appearance' />
+                </Tabs>
+                <Tabs value={selectedTab} onChange={(ev,val)=>setSelectedTab(val)}>
+                    <Tab id='tab-Changelog' sx={{minHeight: 'auto'}} label='Changelog' icon={<FiberNewIcon />} iconPosition='start' value='changelog' />
                 </Tabs>
             </Box>
 
@@ -79,6 +85,8 @@ const Options: React.FC<IProps> = (props)=>
                     <Behaviour />
                 : selectedTab === 'appearance' ?
                     <Appearance />
+                : selectedTab === 'changelog' ?
+                    <Changelog showUpdate={showUpdate} />
                 : null}
             </Box>
         </Container>

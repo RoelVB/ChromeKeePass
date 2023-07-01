@@ -26,6 +26,8 @@ export interface ISettings
     searchForInputsOnUpdate: boolean;
     /** Settings determining the look of user interface elements */
     theme: ITheme;
+    /** Should we show the changelog when CKP got updated? */
+    showChangelogAfterUpdate: boolean;
 }
 
 export const defaultSettings: ISettings = 
@@ -41,7 +43,8 @@ export const defaultSettings: ISettings =
     searchForInputsOnUpdate: true,
     theme: {
         enableDropdownFooter: true,
-    }
+    },
+    showChangelogAfterUpdate: true,
 }
 
 /** Async method for loading settings */

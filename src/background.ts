@@ -3,6 +3,7 @@ import BasicAuth from './classes/BasicAuth';
 import ContextMenu from './classes/ContextMenu,';
 import * as IMessage from './IMessage';
 import * as C from './classes/Constants';
+import { loadSettings, saveSettings } from './Settings';
 
 /**
  * Create the contextMenu
@@ -23,6 +24,18 @@ chrome.commands.onCommand.addListener(async (command)=>{
         chrome.tabs.sendMessage(activeTab?.id as number, {
             type: IMessage.RequestType.redetectFields,
         } as IMessage.Request);
+    }
+});
+
+// Determine if we have to show the changelog
+chrome.runtime.onInstalled.addListener(async (details)=>{
+    const settings = await loadSettings();
+    if(settings.showChangelogAfterUpdate)
+    {
+        // Open changelog
+        chrome.tabs.create({
+            url: `${chrome.runtime.getURL('html/options.html')}?update=${details.previousVersion || 'Unknown'}`,
+        });
     }
 });
 

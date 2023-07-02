@@ -1,20 +1,12 @@
 # ChromeKeePass / EdgeKeePass
 
-> Setup instructions below (or see [https://youtu.be/0cVEjYQXrHc](https://youtu.be/0cVEjYQXrHc))
+> Setup instructions below (or see [https://youtu.be/0cVEjYQXrHc](https://youtu.be/0cVEjYQXrHc)) (NOTE! This shows an old version of the extension)
 
 ChromeKeePass/EdgeKeePass is an open source Chrome extension to automatically entering credentials into websites.
 
-The extension depends on [KeePassHttp](https://github.com/pfn/keepasshttp), using this KeePass plugin we're able to create a secure communication between the browserextension and KeePass.
+To use this extension you **need to have KeePass installed** and the [KeePassHttp](https://github.com/pfn/keepasshttp) plugin, using this KeePass plugin we're able to create secure communication between the browser and KeePass.
 
 ![Demo](Documents/Images/DemoMicrosoft.gif)
-
-The goal of this project is to create a user-friendly KeePass integration. With an easily readable and understandable sourcecode.
-
-## Features
-
-- Automatically entering credentials from KeePass into your browser
-- Autocomplete while typing in the username field
-- More to come
 
 ## Setup
 
@@ -22,27 +14,27 @@ The goal of this project is to create a user-friendly KeePass integration. With 
 
 2. Make sure KeePass is running, and a password database is opened
 
-3. Click the ChromeKeePass icon next to the address bar, it'll show 'Disconnected', click the gear to go to the options
+3. Click the extension's icon next to the address bar, it'll show 'Disconnected', click the gear to go to the options
 
    ![ChromeKeePass Popup](Documents/Images/CKPPopup.png)
 
-4. The ChromeKeePass options open, click the `Connect` button
+4. The options window opens, click the `Connect` button
 
-   ![ChromeKeePass options](Documents/Images/CKPOptions.png)
+   ![ChromeKeePass options](Documents/Images/CKPNotConnected.png)
 
 5. A KeePass dialog will open, enter a desired name and click `Save`
 
    ![KeePassHttp Associate](Documents/Images/CKPAssociation.png)
 
-6. The ChromeKeePass options dialog will now show it is connected
+6. The options dialog will now show it is connected
 
    ![ChromeKeePass Connected](Documents/Images/CKPOptionsConnected.png)
 
-7. The encryption key (for secure communication between KeePass en ChromeKeePass) is stored inside your KeePass database under the entry 'KeePassHttp Settings'
+7. The encryption key (for secure communication between KeePass and the browser) is stored inside your KeePass database under the entry 'KeePassHttp Settings'
 
 ## Contribute to ChromeKeePass
 
-- When contributing, always base you changes on the `dev` branch. The `master` branch contains the currently released version. Pull requests will be merged into the `dev` branch
+- When contributing, always base you changes on the `dev-v2` branch. Pull requests will also be merged into the `dev-v2` branch
 - Try to keep the coding style as consistant as possible
 - You can find build instructions [over here](Documents/Manuals/Buildinstructions.md)
 

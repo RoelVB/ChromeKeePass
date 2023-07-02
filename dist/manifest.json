@@ -2,7 +2,7 @@
     "manifest_version": 3,
 
     "name": "ChromeKeePass",
-    "description": "Chrome extension for automatically entering credentials from KeePass",
+    "description": "Extension for automatically entering logins from KeePass",
     "version": "2.0.0",
 
     "commands": {

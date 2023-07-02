@@ -1,0 +1,119 @@
+name: Deployment build
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: New version number
+        type: string
+      commit:
+        description: Commit the new version and create version tag
+        type: boolean
+      isBeta:
+        description: Bèta build
+        type: boolean
+  workflow_dispatch:
+    inputs:
+      version:
+        description: New version number
+        type: string
+      commit:
+        description: Commit the new version and create version tag
+        type: boolean
+      isBeta:
+        description: Bèta build
+        type: boolean
+
+jobs:
+  deploy-build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+
+      - name: Read manifest.json
+        id: manifest
+        uses: zoexx/github-action-json-file-properties@1.0.4
+        with:
+          file_path: dist/manifest.json
+
+      # Use Node to determine if the new version number is higher that the current
+      - name: Check version change
+        if: ${{ inputs.version }}
+        id: versionchange
+        run: |
+          node -p "'valid='+('${{ inputs.version }}' > '${{ steps.manifest.outputs.version }}'?'valid':'invalid')" >> $GITHUB_OUTPUT
+
+      - name: Invalid new version
+        if: ${{ inputs.version && steps.versionchange.outputs.valid != 'valid' }}
+        run: |
+          echo "::error ::The new version number (${{ inputs.version }}) is not higher than the current (${{ steps.manifest.outputs.version }})"
+          exit 1
+      
+      # Update the version in the manifest file
+      - name: Change version
+        if: ${{ inputs.version }}
+        uses: ChromeKeePass/action-github-change-json@main
+        with:
+          key: version
+          value: ${{ inputs.version }}
+          path: dist/manifest.json
+
+      - name: Push version bump
+        if: ${{ inputs.version && inputs.commit }}
+        uses: ChromeKeePass/action-git-auto-commit-action@master
+        with:
+          commit_message: Version bump
+          file_pattern: dist/manifest.json
+          tagging_message: v${{ inputs.version }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Change the name in the manifest for the Béta build
+      - name: Change name for Bèta build
+        if: ${{ inputs.isBeta }}
+        uses: ChromeKeePass/action-github-change-json@main
+        with:
+          key: name
+          value: ChromeKeePass Béta
+          path: dist/manifest.json
+
+      # Build with new name and version
+      - name: Create Chrome build
+        run: npm run build
+
+      - name: Upload Chrome build
+        uses: actions/upload-artifact@v3
+        with:
+          name: Chrome-build
+          path: dist/
+          if-no-files-found: error
+
+      # Change the name in the manifest for the Edge build
+      - name: Change name for Edge build
+        uses: ChromeKeePass/action-github-change-json@main
+        with:
+          key: name
+          value: ${{ inputs.isBeta && 'EdgeKeePass Bèta' || 'EdgeKeePass' }}
+          path: dist/manifest.json
+
+      # Build with new name and version
+      - name: Create Edge build
+        run: npm run build
+
+      - name: Upload Edge build
+        uses: actions/upload-artifact@v3
+        with:
+          name: Edge-build
+          path: dist/
+          if-no-files-found: error

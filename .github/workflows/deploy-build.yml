@@ -79,13 +79,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Change the name in the manifest for the Béta build
+      # Change the name in the manifest for the Bèta build
       - name: Change name for Bèta build
         if: ${{ inputs.isBeta }}
         uses: ChromeKeePass/action-github-change-json@main
         with:
           key: name
-          value: ChromeKeePass Béta
+          value: ChromeKeePass Bèta
           path: dist/manifest.json
 
       # Build with new name and version

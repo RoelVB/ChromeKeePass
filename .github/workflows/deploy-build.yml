@@ -92,8 +92,8 @@ jobs:
       - name: Create Chrome build
         run: npm run build
 
-      - name: Upload Chrome build
-        uses: actions/upload-artifact@v3
+      - name: Upload Chrome build artifact
+        uses: actions/upload-artifact@v4
         with:
           name: Chrome-build
           path: dist/
@@ -111,8 +111,8 @@ jobs:
       - name: Create Edge build
         run: npm run build
 
-      - name: Upload Edge build
-        uses: actions/upload-artifact@v3
+      - name: Upload Edge build artifact
+        uses: actions/upload-artifact@v4
         with:
           name: Edge-build
           path: dist/

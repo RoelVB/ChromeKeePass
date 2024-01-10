@@ -1,0 +1,95 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: New version number
+        required: true
+        type: string
+      commit:
+        description: Commit the new version and create version tag
+        type: boolean
+      isBeta:
+        description: Bèta build
+        type: boolean
+      deploy:
+        description: Deploy
+        required: true
+        type: choice
+        options:
+          - Both
+          - Chrome
+          - Edge
+
+jobs:
+  deploy-build:
+    uses: ./.github/workflows/deploy-build.yml
+    with:
+      version: ${{ inputs.version }}
+      commit: ${{ inputs.commit }}
+      isBeta:  ${{ inputs.isBeta }}
+    permissions:
+      contents: write
+
+  deploy-chrome:
+    if: inputs.deploy != 'Edge'
+    runs-on: ubuntu-latest
+    needs: [ deploy-build ]
+    environment: ${{ inputs.isBeta && 'Beta' || 'Stable' }}
+
+    permissions:
+      actions: read
+
+    steps:
+      - name: Download Chrome build
+        uses: actions/download-artifact@v4
+        with:
+          name: Chrome-build
+          path: Chrome-build
+
+      - name: Create ZIP
+        run: |
+          cd Chrome-build
+          zip -r ../Chrome-build.zip *
+
+      - name: Upload Chrome Extension
+        uses: wdzeng/chrome-extension@9cafc5ba58555992c51217628ca7546290a06109 # v1.2.1
+        with:
+          extension-id: ${{ vars.CWS_EXTENSIONID }}
+          client-id: ${{ secrets.CWS_CLIENTID }}
+          client-secret: ${{ secrets.CWS_SECRET }}
+          refresh-token: ${{ secrets.CWS_REFRESH }}
+          upload-only: true
+          zip-path: Chrome-build.zip
+
+  deploy-edge:
+    if: inputs.deploy != 'Chrome'
+    runs-on: ubuntu-latest
+    needs: [ deploy-build ]
+    environment: ${{ inputs.isBeta && 'Beta' || 'Stable' }}
+
+    permissions:
+      actions: read
+
+    steps:
+      - name: Download Edge build
+        uses: actions/download-artifact@v4
+        with:
+          name: Edge-build
+          path: Edge-build
+
+      - name: Create ZIP
+        run: |
+          cd Edge-build
+          zip -r ../Edge-build.zip *
+
+      - name: Upload Edge Add-on
+        uses: wdzeng/edge-addon@9ee4d774c434c7b8bd5e7c67f377ee6fc6957834 # v1.2.2
+        with:
+          product-id: ${{ vars.EDGE_PRODUCTID }}
+          client-id: ${{ secrets.EDGE_CLIENTID }}
+          client-secret: ${{ secrets.EDGE_CLIENTSECRET }}
+          access-token-url: ${{ secrets.EDGE_TOKENURL}}
+          upload-only: true
+          zip-path: Edge-build.zip

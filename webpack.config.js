@@ -32,6 +32,7 @@ module.exports = (env, argv) => ({
         new webpack.DefinePlugin({
             DEBUG: (argv.mode!=='production'),
             VERSION: JSON.stringify(require("./dist/manifest.json").version),
+            EXTENSIONNAME: JSON.stringify(require('./dist/manifest.json').name),
         }),
     ],
     devtool: argv.mode!=='production'?'inline-source-map':undefined,

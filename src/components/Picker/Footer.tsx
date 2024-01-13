@@ -2,7 +2,6 @@ import React from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
-import { ExtensionName } from '../../classes/Constants';
 import Typography from '@mui/material/Typography';
 
 export interface IProps
@@ -30,7 +29,7 @@ const Footer: React.FC<IProps> = (props)=>
 {
     return (<FooterContainer>
         <img src={chrome.runtime.getURL('images/icon48.png')} />
-        <Typography component='div' variant='body1' sx={{fontWeight:'bold'}}>{ExtensionName}</Typography>
+        <Typography component='div' variant='body1' sx={{fontWeight:'bold'}}>{EXTENSIONNAME}</Typography>
         {props.onOpenOptions ?
             <Link component='img' title='Open options' tabIndex={0} src={chrome.runtime.getURL('images/gear.png')} sx={{cursor: 'pointer'}} onClick={props.onOpenOptions} />
         : <Box />}

@@ -2,8 +2,11 @@
  * This file contains some globally used variables
  */
 
-/** Extension name ("EdgeKeePass" in Edge or "ChromeKeePass" in any other browser) */
-export const ExtensionName = navigator.userAgent.match(/Edge?\/\d+/)?'EdgeKeePass':'ChromeKeePass';
+/** Extension name (without possible "bèta" suffix) ("EdgeKeePass" in Edge or "ChromeKeePass" in any other browser) */
+export const [ExtensionName] = EXTENSIONNAME.split(' ');
+
+/** We are currently running a bèta version of the extension */
+export const isBeta = EXTENSIONNAME.toLowerCase().includes('bèta');
 
 /** Get the currently active tab */
 export function getActiveTab(): Promise<chrome.tabs.Tab | undefined>

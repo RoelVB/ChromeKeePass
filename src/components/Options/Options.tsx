@@ -16,7 +16,6 @@ import ElectricalServicesIcon from '@mui/icons-material/ElectricalServices';
 import FormatPaintIcon from '@mui/icons-material/FormatPaint';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import FiberNewIcon from '@mui/icons-material/FiberNew';
-import { ExtensionName } from '../../classes/Constants';
 import Connection from './Connection';
 import Wrapper from '../Wrapper';
 import Behaviour from './Behaviour';
@@ -52,8 +51,8 @@ const Options: React.FC<IProps> = (props)=>
     const dispatch = useAppDispatch();
 
     React.useEffect(()=>{
-        // Update the page title (for Edge users)
-        document.title = ExtensionName;
+        // Update the page title
+        document.title = EXTENSIONNAME;
 
         // Load settings
         dispatch(loadSettings());
@@ -92,7 +91,7 @@ const Options: React.FC<IProps> = (props)=>
         </Container>
 
         <Box sx={{color: 'GrayText', textAlign: 'center', p: 2}}>
-            {ExtensionName} version: {VERSION}
+            {EXTENSIONNAME} version: {VERSION}
         </Box>
     </Wrapper>);
 };

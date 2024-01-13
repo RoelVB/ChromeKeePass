@@ -28,6 +28,8 @@ export interface ISettings
     theme: ITheme;
     /** Should we show the changelog when CKP got updated? */
     showChangelogAfterUpdate: boolean;
+    /** Hide the "Try ChromeKeePass Bèta" message above the changelog */
+    hideTryBetaMsg: boolean;
 }
 
 export const defaultSettings: ISettings = 
@@ -45,6 +47,7 @@ export const defaultSettings: ISettings =
         enableDropdownFooter: true,
     },
     showChangelogAfterUpdate: true,
+    hideTryBetaMsg: false,
 }
 
 /** Async method for loading settings */

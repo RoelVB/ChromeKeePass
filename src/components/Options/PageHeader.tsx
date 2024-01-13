@@ -4,7 +4,6 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import { ExtensionName } from '../../classes/Constants';
 
 const StyledAppBar = styled(AppBar)(({ theme })=>({
     backgroundImage: `linear-gradient(to right, ${theme.palette.secondary.main}, ${theme.palette.primary.dark})`,
@@ -20,7 +19,7 @@ const PageHeader: React.FC = ()=>
         <Toolbar variant='dense' sx={{gap: 2}}>
             <Avatar src={chrome.runtime.getURL('images/icon48.png')} alt='CKP logo' />
             <Box>
-                {ExtensionName}: Options
+                {EXTENSIONNAME}: Options
             </Box>
         </Toolbar>
     </StyledAppBar>);

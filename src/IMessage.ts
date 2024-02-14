@@ -13,6 +13,13 @@ export enum RequestType
     redetectFields,
     /** Get extension commands */
     getCommands,
+
+    /** Send to a tab when the "Fill user + password" was selected in the contextmenu */
+    contextMenuFillUserPass,
+    /** Send to a tab when the "Fill user" was selected in the contextmenu */
+    contextMenuFillUser,
+    /** Send to a tab when the "Fill password" was selected in the contextmenu */
+    contextMenuFillPass,
 }
 
 export interface Request

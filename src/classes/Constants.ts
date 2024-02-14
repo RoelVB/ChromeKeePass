@@ -1,6 +1,7 @@
 /*
  * This file contains some globally used variables
  */
+import * as IMessage from '../IMessage';
 
 /** Extension name (without possible "bèta" suffix) ("EdgeKeePass" in Edge or "ChromeKeePass" in any other browser) */
 export const [ExtensionName] = EXTENSIONNAME.split(' ');
@@ -51,5 +52,30 @@ export function log(type: 'debug'|'warn'|'error', msg: string, ...optionalParams
             if(DEBUG)
                 console.log(`[CKP]: ${msg}`, ...optionalParams);
             break;
+    }
+}
+
+/** Returns the element if it is an enabled text/password input */
+export function elementIsEnabledInput(element: HTMLElement)
+{
+    if(element.tagName.toLowerCase() === 'input' && !(<HTMLInputElement>element).disabled && ['text','email','tel','password'].includes(element.getAttribute('type')?.toLowerCase() || 'text'))
+        return element as HTMLInputElement;
+}
+
+export function enterCredential(credential: IMessage.Credential, usernameField?: HTMLInputElement, passwordField?: HTMLInputElement)
+{
+    if(usernameField)
+    {
+        usernameField.value = credential.username;
+        usernameField.defaultValue = credential.username;
+        usernameField.dispatchEvent(new Event('input', {bubbles: true}));
+        usernameField.dispatchEvent(new Event('change', {bubbles: true}));
+    }
+    if(passwordField)
+    {
+        passwordField.value = credential.password;
+        passwordField.defaultValue = credential.password;
+        passwordField.dispatchEvent(new Event('input', {bubbles: true}));
+        passwordField.dispatchEvent(new Event('change', {bubbles: true}));
     }
 }

@@ -4,6 +4,7 @@ import * as IMessage from '../IMessage';
 import { ISettings, defaultSettings } from '../Settings';
 import Client from '../classes/BackgroundClient';
 import CredentialsDropdown from "./CredentialsDropdown";
+import UncontrolledFields from './UncontrolledFields';
 
 export default class PageControl
 {
@@ -25,6 +26,7 @@ export default class PageControl
                 this.detectFields();
         });
         this._dropdown = new CredentialsDropdown();
+        new UncontrolledFields(this);
     }
 
     /** Try to detect credentials fields */
@@ -35,7 +37,7 @@ export default class PageControl
         if(passwordFields.length) // Found some password fields?
         {
             passwordFields.forEach((passwordField, passwordIndex)=>{ // Loop through password fields
-                this._createFieldSet(passwordField);
+                this.createFieldSet(passwordField);
             });
         }
 
@@ -54,18 +56,28 @@ export default class PageControl
         for(const passwordField of passwordFields)
         {
             if(passwordField instanceof HTMLInputElement)
-                this._createFieldSet(passwordField);
+                this.createFieldSet(passwordField);
         }
 
         this._findCredentials();
         this._attachEscapeEvent();
     }
 
+    /** Find a FieldSet based on an input element */
+    public findFieldSet(field: HTMLInputElement): FieldSet | undefined
+    {
+        for(const [,fieldSet] of this._fieldSets)
+        {
+            if(fieldSet.usernameField === field || fieldSet.passwordField === field)
+                return fieldSet;
+        }
+    }
+
     /**
      * Create a fieldset for the `passwordField`. This method will also look for an username field
      * @param passwordField The password field we're going to use
      */
-    private _createFieldSet(passwordField: HTMLInputElement)
+    public createFieldSet(passwordField: HTMLInputElement): FieldSet | undefined
     {
         let prevField: HTMLInputElement | undefined;
 
@@ -91,8 +103,8 @@ export default class PageControl
                     log('debug', 'Created FieldSet\nControlField:', controlField, '\nPasswordField:', passwordField);
                     this._fieldSets.set(controlField, new FieldSet(this, passwordField, controlField));
                 }
-
-                break;
+                
+                return this._fieldSets.get(controlField);
             }
         }
     }

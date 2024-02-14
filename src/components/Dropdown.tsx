@@ -13,7 +13,7 @@ export interface IProps
 {
     anchorEl: Element;
     credentials: IMessage.Credential[];
-    onOpenOptions: ()=>void;
+    onOpenOptions?: ()=>void;
     onSelect: (cred: IMessage.Credential)=>void;
 }
 
@@ -81,7 +81,7 @@ export const open = (props: IProps): [string, ()=>void] =>
     log('debug', `Opening dropdown (${id})`);
     const container = document.createElement('div');
     container.id = id;
-    document.body.append(container);
+    document.querySelector('html')!.append(container); // Mount in outside of the body, because the body can be pushed down by the EmbeddedPicker
 
     const reactContainer = createRoot(container);
     reactContainer.render(<Dropdown {...props} />);

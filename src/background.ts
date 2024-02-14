@@ -1,9 +1,9 @@
 import BackgroundListener from './classes/BackgroundListener';
 import BasicAuth from './classes/BasicAuth';
-import ContextMenu from './classes/ContextMenu,';
+import ContextMenu from './classes/ContextMenu';
 import * as IMessage from './IMessage';
 import * as C from './classes/Constants';
-import { loadSettings, saveSettings } from './Settings';
+import { loadSettings } from './Settings';
 
 /**
  * Create the contextMenu

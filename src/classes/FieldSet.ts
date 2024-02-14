@@ -1,4 +1,4 @@
-import { ExtensionName, isElementVisible } from './Constants';
+import { ExtensionName, isElementVisible, enterCredential } from './Constants';
 
 import PageControl from './PageControl';
 import * as IMessage from '../IMessage';
@@ -289,16 +289,6 @@ export default class FieldSet
     /** Input a credential into the fields */
     private _inputCredential(credential: IMessage.Credential)
     {
-        if(this.usernameField)
-        {
-            this.usernameField.value = credential.username;
-            this.usernameField.defaultValue = credential.username;
-            this.usernameField.dispatchEvent(new Event('input', {bubbles: true}));
-            this.usernameField.dispatchEvent(new Event('change', {bubbles: true}));
-        }
-        this.passwordField.value = credential.password;
-        this.passwordField.defaultValue = credential.password;
-        this.passwordField.dispatchEvent(new Event('input', {bubbles: true}));
-        this.passwordField.dispatchEvent(new Event('change', {bubbles: true}));
+        enterCredential(credential, this.usernameField, this.passwordField);
     }
 }

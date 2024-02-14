@@ -32,6 +32,19 @@ const ckpTheme = createTheme({
     },
 });
 
+// Insert CKP style vars into DOM
+if(!document.getElementById('CKP-vars'))
+{
+    const style = document.createElement('style');
+    style.id = 'CKP-vars';
+    style.innerHTML = `:root {
+        --CKP-secondary: ${ckpTheme.palette.secondary.main};
+        --CKP-primaryDark: ${ckpTheme.palette.primary.dark};
+    }`;
+
+    document.head.append(style);
+}
+
 /** Add a prefix to all MUI classes */
 ClassNameGenerator.configure(componentName=>`CKP-${componentName}`);
 

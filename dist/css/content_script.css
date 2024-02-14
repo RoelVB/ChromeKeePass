@@ -17,3 +17,14 @@
 .CKP-textboxIcon.CKP-red {
     background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon48_red.png') !important;
 }
+
+.CKP-bodyDown {
+    transform: translateY(40px) !important;
+    min-height: 100%;
+}
+
+.CKP-inputHovered {
+    cursor: pointer !important;
+    background-color: var(--CKP-secondary, lavender) !important;
+    border: dashed 1px var(--CKP-primaryDark, black) !important;
+}

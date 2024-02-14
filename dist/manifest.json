@@ -1,62 +1,64 @@
 {
-    "manifest_version": 3,
-
-    "name": "ChromeKeePass",
-    "description": "Extension for automatically entering logins from KeePass",
-    "version": "2.0.0",
-    "commands": {
-        "redetect_fields": {
-            "suggested_key": {
-                "default": "Ctrl+Shift+Z",
-                "mac": "Command+Shift+Z"
-            },
-            "description": "Redetect credential fields"
-        }
-    },
-
-    "content_scripts": [
-        {
-            "matches": ["<all_urls>"],
-            "js": ["js/content_script.js"],
-            "css": ["css/content_script.css"],
-            "all_frames": true
-        }
-    ],
-
-    "background": {
-        "service_worker": "js/background.js",
-        "type": "module"
-    },
-
-    "action": {
-        "default_popup": "html/popup.html",
-        "default_icon": {
-            "128": "images/icon128.png",
-            "48": "images/icon48.png"
-        }
-    },
-
-    "options_page": "html/options.html",
-
-    "icons": {
-        "128": "images/icon128.png",
-        "48": "images/icon48.png"
-    },
-
-    "web_accessible_resources": [
-        {
-            "resources": ["images/*"],
-            "matches": ["<all_urls>"]
-        }
-    ],
-
-    "permissions": [
-        "storage",
-        "contextMenus",
-        "webRequest",
-        "webRequestAuthProvider"
-    ],
-    "host_permissions": [
+  "manifest_version": 3,
+  "name": "ChromeKeePass",
+  "description": "Extension for automatically entering logins from KeePass",
+  "version": "2.1.0",
+  "commands": {
+    "redetect_fields": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Z",
+        "mac": "Command+Shift+Z"
+      },
+      "description": "Redetect credential fields"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
         "<all_urls>"
-    ]
-  }
+      ],
+      "js": [
+        "js/content_script.js"
+      ],
+      "css": [
+        "css/content_script.css"
+      ],
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "service_worker": "js/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "html/popup.html",
+    "default_icon": {
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "options_page": "html/options.html",
+  "icons": {
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "webRequest",
+    "webRequestAuthProvider"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}

@@ -15,15 +15,27 @@ export default class UncontrolledFields
             this._contextMenuElement = ev.target as HTMLElement;
         });
 
-        // Listen for events from the contextmenu
-        chrome.runtime.onMessage.addListener((message: IMessage.Request, _sender, _sendResponse)=>{
+        const msgHandler = (message: IMessage.Request) =>
+        {
             if(message.type === IMessage.RequestType.contextMenuFillUserPass)
                 this._fillUserPass();
             else if(message.type === IMessage.RequestType.contextMenuFillUser)
                 this._fillUser();
             else if(message.type === IMessage.RequestType.contextMenuFillPass)
                 this._fillPass();
-        });
+        };
+
+        // Listen for events from the contextmenu
+        chrome.runtime.onMessage.addListener(msgHandler);
+
+        // Listen for messages when in automated testing
+        if(navigator.webdriver)
+        {
+            window.addEventListener('message', ev=>{
+                if(ev.data?.constructor === Object) // We got a dict?
+                    msgHandler(ev.data);
+            });
+        }
     }
 
     private _fillUser()

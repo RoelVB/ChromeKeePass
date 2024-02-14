@@ -37,7 +37,7 @@ export default class Webserver
         this.#server.close();
     }
 
-    getUrl(type: 'Default'|'HiddenPassword'|'PasswordOnly'|'HiddenForm'|'GeneratedForm' = 'Default'): string
+    getUrl(type: 'Default'|'HiddenPassword'|'PasswordOnly'|'HiddenForm'|'GeneratedForm'|'TextOnly' = 'Default'): string
     {
         return `http://localhost:${this.port}/login${type}.html`;
     }

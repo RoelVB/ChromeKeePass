@@ -60,7 +60,7 @@ export interface IResponseBody
 export class KeePassHTTP
 {
     /** Mutex to prevent CKP from checking association before the key is loaded */
-    private _loadingKeyMutex = new Mutex();
+    private static _loadingKeyMutex = new Mutex();
     private static _id: string | null = '';
     private static _key: string | null = '';
 
@@ -68,44 +68,28 @@ export class KeePassHTTP
     {
         // Enable CBC mode
         (sjcl as any).beware["CBC mode is dangerous because it doesn't protect message integrity."]();
-
-        this._loadKey();
     }
 
     /** Load association key */
-    private _loadKey()
+    private static async _loadKey()
     {
-        this._loadingKeyMutex.runExclusive(async ()=>{
-            await new Promise<void>((resolve, reject)=>{
-                chrome.storage.local.get('KeePassHttp', res=>{
-                    if(chrome.runtime.lastError)
-                        reject(chrome.runtime.lastError);
-                    else
-                    {
-                        KeePassHTTP._id = res.KeePassHttp?.Id;
-                        KeePassHTTP._key = res.KeePassHttp?.Key;
-                        resolve();
-                    }
-                });
-            });
+        await KeePassHTTP._loadingKeyMutex.runExclusive(async ()=>{
+            if(KeePassHTTP._key) return; // Cancel if we already have the key loaded
+
+            const res = await chrome.storage.local.get('KeePassHttp');
+            KeePassHTTP._id = res.KeePassHttp?.Id;
+            KeePassHTTP._key = res.KeePassHttp?.Key;
         });
     }
 
     /** Save the association key */
     private _saveKey()
     {
-        return new Promise<void>((resolve, reject)=>{
-            chrome.storage.local.set({
-                KeePassHttp: {
-                    Id: KeePassHTTP._id,
-                    Key: KeePassHTTP._key
-                },
-            }, ()=>{
-                if(chrome.runtime.lastError)
-                    reject(chrome.runtime.lastError);
-                else
-                    resolve();
-            });
+        return chrome.storage.local.set({
+            KeePassHttp: {
+                Id: KeePassHTTP._id,
+                Key: KeePassHTTP._key
+            },
         });
     }
 
@@ -143,7 +127,7 @@ export class KeePassHTTP
      */
     public async testAssociate(): Promise<boolean>
     {
-        await this._loadingKeyMutex.waitForUnlock();
+        await KeePassHTTP._loadingKeyMutex.waitForUnlock();
 
         return new Promise<boolean>((resolve, reject)=>{
             KeePassHTTP._fetchJson({RequestType: 'test-associate'}).then((json)=>{
@@ -187,6 +171,7 @@ export class KeePassHTTP
      */
     private static async _fetchJson(body: IRequestBody): Promise<IResponseBody>
     {
+        await KeePassHTTP._loadKey();
         if(KeePassHTTP._key) // Do we have a key?
         {
             const nonce = KeePassHTTP._generateNonce();

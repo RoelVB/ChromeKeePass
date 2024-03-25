@@ -5,6 +5,15 @@
             "version": "current",
             "changes": [
                 {
+                    "type": "fix",
+                    "description": "Logins would sometimes only show up after reloading the login page"
+                }
+            ]
+        },
+        {
+            "version": "2.1.0",
+            "changes": [
+                {
                     "type": "new",
                     "description": "It's now possible to enter a username and/or password into any textfield using the contextmenu (right click)"
                 }

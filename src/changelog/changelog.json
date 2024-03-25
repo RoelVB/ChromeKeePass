@@ -7,6 +7,10 @@
                 {
                     "type": "fix",
                     "description": "Logins would sometimes only show up after reloading the login page"
+                },
+                {
+                    "type": "fix",
+                    "description": "Setting to hide icon from username/password field didn't work"
                 }
             ]
         },

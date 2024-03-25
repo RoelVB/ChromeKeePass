@@ -1,3 +1,4 @@
+import { Mutex } from 'async-mutex';
 import { isElementVisible, log } from './Constants';
 import FieldSet from './FieldSet';
 import * as IMessage from '../IMessage';
@@ -12,15 +13,12 @@ export default class PageControl
     private _fieldSets = new Map<HTMLElement, FieldSet>();
     private _foundCredentials?: IMessage.Credential[];
     private _settings: ISettings = defaultSettings;
+    private _loadingSettings = new Mutex();
     /** The dropdown that allows the user to choose credentials */
     private readonly _dropdown: CredentialsDropdown;
 
     constructor()
     {
-        chrome.storage.sync.get(defaultSettings, (items)=>{
-            this._settings = items as ISettings;
-        });
-
         chrome.runtime.onMessage.addListener((message: IMessage.Request, _sender, _sendResponse)=>{
             if(message.type === IMessage.RequestType.redetectFields)
                 this.detectFields();
@@ -29,9 +27,18 @@ export default class PageControl
         new UncontrolledFields(this);
     }
 
-    /** Try to detect credentials fields */
-    public detectFields()
+    private async _loadSettings()
     {
+        await this._loadingSettings.runExclusive(async ()=>{
+            if(this._settings !== defaultSettings) return; // Cancel if we already loaded the settings
+            this._settings = (await chrome.storage.sync.get(defaultSettings)) as ISettings;
+        });
+    }
+
+    /** Try to detect credentials fields */
+    public async detectFields()
+    {
+        await this._loadSettings(); // Make sure we loaded the settings
         let passwordFields = document.querySelectorAll<HTMLInputElement>('input[type="password"]');
 
         if(passwordFields.length) // Found some password fields?

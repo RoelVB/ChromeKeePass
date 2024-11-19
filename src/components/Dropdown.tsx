@@ -29,7 +29,7 @@ const DropdownContainer = styled(Popper)(({ theme })=>({
 
 const Dropdown: React.FC<IProps> = (props)=>
 {
-    const settings = useSettings();
+    const settings = useSettings(state=>state.settings);
 
     // Keep track of the anchor element's width
     const [minWidth, setMinWidth] = React.useState<number|undefined>(props.anchorEl.clientWidth);

@@ -1,8 +1,5 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { store, useAppDispatch, useAppSelector } from '../redux/Store';
-import { loadSettings } from '../redux/Settings';
 import Box from '@mui/material/Box';
 import PageHeader from './PageHeader';
 import Container from '@mui/material/Container';
@@ -18,6 +15,7 @@ import FindInPageIcon from '@mui/icons-material/FindInPage';
 import FiberNewIcon from '@mui/icons-material/FiberNew';
 import Connection from './Connection';
 import Wrapper from '../Wrapper';
+import useSettings from '../Hooks/Settings';
 import Behaviour from './Behaviour';
 import Appearance from './Appearance';
 import Changelog from './Changelog';
@@ -29,7 +27,7 @@ export interface IProps
 
 export const PaperGrid: React.FC<React.PropsWithChildren<{gridProps?: GridProps}>> = (props)=>
 {
-    const isLoading = useAppSelector(state=>state.settings.isLoading);
+    const isLoading = useSettings(state=>state.isLoading);
 
     if(isLoading)
         return (<Skeleton sx={{minHeight: 48}} />)
@@ -47,15 +45,15 @@ const Options: React.FC<IProps> = (props)=>
 {
     const showUpdate = React.useMemo(()=>new URLSearchParams(location.search).get('update'), []);
     const [selectedTab, setSelectedTab] = React.useState<'connection'|'behaviour'|'appearance'|'changelog'>(showUpdate?'changelog':'connection');
-    const errorMessage = useAppSelector(state=>state.settings.errorMessage);
-    const dispatch = useAppDispatch();
+    const errorMessage = useSettings(state=>state.errorMsg);
+    const loadSettings = useSettings(state=>state.loadSettings);
 
     React.useEffect(()=>{
         // Update the page title
         document.title = EXTENSIONNAME;
 
         // Load settings
-        dispatch(loadSettings());
+        loadSettings();
     }, []);
 
     return (<Wrapper sx={{minHeight: '100vh'}}>
@@ -105,9 +103,7 @@ const Options: React.FC<IProps> = (props)=>
 export const mount = (container: HTMLElement, props: IProps): ()=>void =>
 {
     const reactContainer = createRoot(container);
-    reactContainer.render(<Provider store={store}>
-        <Options {...props} />
-    </Provider>);
+    reactContainer.render(<Options {...props} />);
 
     return reactContainer.unmount;
 };

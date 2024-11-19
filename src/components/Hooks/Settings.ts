@@ -1,41 +1,52 @@
-import React from 'react';
-import { Mutex } from 'async-mutex';
+import { create } from 'zustand';
 import { log } from '../../classes/Constants';
-import { ISettings, loadSettings } from '../../Settings';
+import { ISettings, loadSettings, saveSettings } from '../../Settings';
 
-const fetchingSettings = new Mutex();
-let fetchedSettings: ISettings|undefined;
-
-/**
- * This hooks fetches settings only once, even if it's used in multiple components
- * @returns settings
- */
-export const useSettings = () =>
+interface SettingsState
 {
-    const [settings, setSettings] = React.useState<ISettings>();
+    settings?: ISettings;
+    isLoading: boolean;
+    isSaving: boolean;
+    errorMsg?: string;
+    loadSettings: ()=>void;
+    saveSettings: (settings: Partial<ISettings>)=>void;
+}
 
-    React.useEffect(()=>{
-        (async ()=>{
-            if(fetchingSettings.isLocked()) // Some other component is already fetching the settings?
-            {
-                await fetchingSettings.waitForUnlock();
-                setSettings(fetchedSettings);
+export const useSettings = create<SettingsState>()((set, get, store) => ({
+    isLoading: false,
+    isSaving: false,
+    loadSettings: async ()=>{
+        if(!get().isLoading)
+        {
+            log('debug', 'Load settings');
+            try {
+                set({isLoading: true, errorMsg: undefined});
+                set({settings: await loadSettings()});
+            } catch(error) {
+                console.error('Failed to load settings.', error);
+                set({errorMsg: `Failed to load settings. ${String(error)}`});
+            } finally {
+                set({isLoading: false});
             }
-            else if(!fetchedSettings) // We need to fetch the settings
-            {
-                await fetchingSettings.runExclusive(async ()=>{
-                    try {
-                        fetchedSettings = await loadSettings();
-                        setSettings(fetchedSettings);
-                    } catch(error) {
-                        log('error', 'Failed to load settings.', error);
-                    }
-                });
-            }
-            else // We already have loaded the settings
-                setSettings(fetchedSettings);
-        })();
-    }, []);
+        }
+    },
+    saveSettings: async (settings)=>{
+        log('debug', 'Saving settings', settings);
+        try {
+            set({isSaving: true, errorMsg: undefined});
+            await saveSettings(settings);
 
-    return settings;
-};
+            if(get().settings) // We already have settings loaded?
+                set(state => ({settings: {...state.settings!, ...settings}})); // Merge new settings with the original
+            else
+                get().loadSettings(); // Load all settings
+        } catch(error) {
+            console.error('Failed to save settings.', error);
+            set({errorMsg: `Failed to save settings. ${String(error)}`});
+        } finally {
+            set({isSaving: false});
+        }
+    },
+}));
+
+export default useSettings;

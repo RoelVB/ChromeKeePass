@@ -6,16 +6,15 @@ import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 import { useAssociation } from '../Hooks/Association';
 import { PaperGrid } from './Options';
-import { useAppDispatch, useAppSelector } from '../redux/Store';
 import { defaultSettings } from '../../Settings';
 import Button from '@mui/material/Button';
-import { saveSettings } from '../redux/Settings';
 import { log } from '../../classes/Constants';
 import CircularProgress from '@mui/material/CircularProgress';
+import useSettings from '../Hooks/Settings';
 
 const AssociationStatus: React.FC = ()=>
 {
-    const settings = useAppSelector(state=>state.settings.settings);
+    const settings = useSettings(state=>state.settings);
     const [status, associationId, associationError, associate] = useAssociation([settings?.keePassHost, settings?.keePassPort]);
 
     if(status === 'checking')
@@ -57,8 +56,9 @@ const Connection: React.FC = ()=>
 {
     const [ inputHost, setInputHost ] = React.useState<string>();
     const [ inputPort, setInputPort ] = React.useState<number>();
-    const [settings, isSaving] = useAppSelector(state=>[state.settings.settings, state.settings.isSaving]);
-    const dispatch = useAppDispatch();
+    const settings = useSettings(state=>state.settings);
+    const isSaving = useSettings(state=>state.isSaving);
+    const saveSettings = useSettings(state=>state.saveSettings);
 
     /** Host or port changed? */
     const canApply = React.useMemo(()=>{
@@ -71,10 +71,10 @@ const Connection: React.FC = ()=>
     /** Save host and port */
     const onApply = React.useCallback(()=>{
         log('debug', `Apply KeePassHttp settings (${inputHost || defaultSettings.keePassHost}:${inputPort || defaultSettings.keePassPort})`);
-        dispatch(saveSettings({
+        saveSettings({
             keePassHost: inputHost || defaultSettings.keePassHost,
             keePassPort: inputPort || defaultSettings.keePassPort,
-        }));
+        });
     }, [inputHost, inputPort]);
 
     return (<Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>

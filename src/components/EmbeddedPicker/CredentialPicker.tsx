@@ -25,7 +25,7 @@ export const CredentialPicker: React.FC<IProps> = (props)=>
     const dropdown = React.useRef<ReturnType<typeof openDropdown>>();
     const [credentails, setCredentials] = React.useState(props.credentails);
     const [errorMsg, setErrorMsg] = React.useState<string>();
-    const settings = useSettings();
+    const settings = useSettings(state=>state.settings);
 
     // Close the dropdown when this element unmounts
     React.useEffect(()=>{

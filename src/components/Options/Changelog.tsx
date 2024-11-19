@@ -7,11 +7,10 @@ import Link from '@mui/material/Link';
 import AlertTitle from '@mui/material/AlertTitle';
 import ScienceIcon from '@mui/icons-material/Science';
 import changelog from '../../changelog/changelog';
+import { ExtensionName, isBeta } from '../../classes/Constants';
+import useSettings from '../Hooks/Settings';
 import { PaperGrid } from './Options';
 import SwitchOption from './SwitchOption';
-import { ExtensionName, isBeta } from '../../classes/Constants';
-import { useAppDispatch, useAppSelector } from '../redux/Store';
-import { saveSettings } from '../redux/Settings';
 
 export interface IProps
 {
@@ -21,8 +20,8 @@ export interface IProps
 
 const Changelog: React.FC<IProps> = (props)=>
 {
-    const dispatch = useAppDispatch();
-    const hideTryBetaMsg = useAppSelector(state=>state.settings.settings?.hideTryBetaMsg);
+    const hideTryBetaMsg = useSettings(state=>state.settings?.hideTryBetaMsg);
+    const saveSettings = useSettings(state=>state.saveSettings);
 
     // Order by version number
     const versions = React.useMemo(()=>{
@@ -37,7 +36,7 @@ const Changelog: React.FC<IProps> = (props)=>
     }, []);
 
     const disabledBetaMsg = React.useCallback(()=>{
-        dispatch(saveSettings({hideTryBetaMsg: true}));
+        saveSettings({hideTryBetaMsg: true});
     }, []);
 
     return (<Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>

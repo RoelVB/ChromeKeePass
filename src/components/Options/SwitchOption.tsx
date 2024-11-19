@@ -1,10 +1,9 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
-import { ISettings } from '../../Settings';
-import { useAppDispatch, useAppSelector } from '../redux/Store';
-import { saveSettings } from '../redux/Settings';
 import { SxProps, Theme } from '@mui/material/styles';
+import { ISettings } from '../../Settings';
+import useSettings from '../Hooks/Settings';
 
 export interface IProps
 {
@@ -15,30 +14,30 @@ export interface IProps
 
 const SwitchOption: React.FC<IProps> = (props)=>
 {
-    const isSaving = useAppSelector(state=>state.settings.isSaving);
-    const optionEnabled = useAppSelector(state=>{
+    const isSaving = useSettings(state=>state.isSaving);
+    const optionEnabled = useSettings(state=>{
         const [ option, subOption ] = props.option.split('.') as [keyof ISettings, keyof ISettings['theme']];
         if(subOption)
-            return (state.settings.settings as any)?.[option]?.[subOption] as boolean;
+            return (state.settings as any)?.[option]?.[subOption] as boolean;
         else
-            return state.settings.settings?.[option] as boolean;
+            return state.settings?.[option] as boolean;
     });
-    const dispatch = useAppDispatch();
+    const saveSettings = useSettings(state=>state.saveSettings);
 
     const setOption = React.useCallback((checked: boolean)=>{
         const [ option, subOption ] = props.option.split('.') as [keyof ISettings, keyof ISettings['theme']];
 
         if(subOption)
         {
-            dispatch(saveSettings({
+            saveSettings({
                 [option]: {[subOption]: checked},
-            }));
+            });
         }
         else
         {
-            dispatch(saveSettings({
+            saveSettings({
                 [option]: checked,
-            }));
+            });
         }
     }, [props.option])
 

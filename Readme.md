@@ -1,3 +1,21 @@
+> ⚠️ **Status: Archived — No Longer Maintained**  
+> Licensed under **GPLv3**. Forks and continued development are welcome!
+
+This project is no longer actively maintained.  
+Due to limited time and a lack of motivation to continue development, I have decided to discontinue work on it.  
+
+I have personally transitioned to using (self-hosted) [**Vaultwarden**](https://github.com/dani-garcia/vaultwarden). I can see some room for improvent on the browser extension there and since it is also open source I would contribute there when I find time.
+
+Since ChromeKeePass is licensed under **GPLv3**, you are free to:
+
+- Fork the repository
+- Modify the code
+- Continue development
+- Share your own versions, provided you comply with the GPLv3 license terms
+
+If you are interested in continuing development, please fork the project and make it your own.
+Thank you to everyone who has contributed or used this project!
+
 # ChromeKeePass / EdgeKeePass
 
 > Setup instructions below (or see [https://youtu.be/0cVEjYQXrHc](https://youtu.be/0cVEjYQXrHc)) (NOTE! This shows an old version of the extension)
